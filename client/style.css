@@ -1,0 +1,6 @@
+.dropdown {
+  width: 30px; /* фиксируем ширину контейнера */
+}
+.li-1 {
+    border: 1px solid black;
+}
