@@ -1,5 +1,50 @@
+/* :root{
+    --primary-color: rgb(54, 190, 54);
+    --primary-color-hover: rgb(114, 128, 167);
+    --primary-color-active: rgb(114, 163, 51);
+
+    --primary-color-outline: rgb(94, 188, 86);
+} */
+
+/* .btn-primary{
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color)!important;
+}
+.btn-primary:focus{
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color)!important;
+}
+.btn-primary:hover {
+    background-color: var(--primary-color-hover)!important;
+    border-color: var(--primary-color-hover)!important;
+}
+.btn-primary:active {
+    background-color: var(--primary-color-active)!important;
+    border-color: var(--primary-color-active)!important;
+}
+.btn-outline-primary{
+    color: var(--primary-color-outline);
+    border-color: var(--primary-color-outline)!important;
+}
+.btn-outline-primary:focus{
+    color: var(--primary-color-outline);
+    border-color: var(--primary-color-outline)!important;
+}
+.btn-outline-primary:focus:hover{
+    color: white;
+    border-color: var(--primary-color-outline)!important;
+}
+.btn-outline-primary:hover {
+    color: white;
+    background-color: var(--primary-color-hover)!important;
+    border-color: var(--primary-color-hover)!important;
+}
+.btn-outline-primary:active {
+    background-color: var(--primary-color-active)!important;
+    border-color: var(--primary-color-active)!important;
+} */
 .dropdown {
-  width: 30px; /* фиксируем ширину контейнера */
+  width: 30px;
 }
 .li-1 {
     border: 1px solid black;

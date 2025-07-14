@@ -37,13 +37,36 @@
             </p>
           </div>
           <div class="col-md-10 mx-auto col-lg-5">
-            <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary">
+            <form
+              class="p-4 p-md-5 border rounded-3 bg-body-tertiary needs-validation"
+              novalidate
+            >
+              <a
+                class="d-inline-flex fw-bold gap-2 link-primary mb-4"
+                href="index.html"
+              >
+                <i class="hstack fs-5">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="1em"
+                    height="1em"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="m7.373 12.75 5.696 5.696L12 19.5 4.5 12 12 4.5l1.07 1.054-5.697 5.696H19.5v1.5H7.373Z"
+                    ></path>
+                  </svg>
+                </i>
+                Go back
+              </a>
               <div class="form-floating mb-3">
                 <input
                   type="email"
                   class="form-control"
                   id="floatingInput"
                   placeholder="name@example.com"
+                  required
                 />
                 <label for="floatingInput">Email address</label>
               </div>
@@ -53,11 +76,12 @@
                   class="form-control"
                   id="floatingPassword"
                   placeholder="Password"
+                  required
                 />
                 <label for="floatingPassword">Password</label>
               </div>
               <div id="CheckboxForm" class="form-check">
-                <input id="Checkbox" type="checkbox" class="form-check-input" />
+                <!-- <input id="Checkbox" type="checkbox" class="form-check-input" />
                 <label for="Checkbox" class="form-check-label text-body">
                   Yes, I have read and agree to the Terms of Service.
                   <a
@@ -67,9 +91,19 @@
                   >
                     Terms of Service.
                   </a>
+                </label> -->
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value=""
+                  id="invalidCheck"
+                  required
+                />
+                <label class="form-check-label" for="invalidCheck">
+                  Agree to terms and conditions
                 </label>
                 <div class="invalid-feedback">
-                  You must agree to the Terms of Service
+                  You must agree before submitting.
                 </div>
               </div>
 
