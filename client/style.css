@@ -1,12 +1,18 @@
 /* :root{
-    --primary-color: rgb(54, 190, 54);
-    --primary-color-hover: rgb(114, 128, 167);
-    --primary-color-active: rgb(114, 163, 51);
-
-    --primary-color-outline: rgb(94, 188, 86);
+  --primary-color: rgb(0, 123, 255);
+  --primary-color-hover: rgb(0, 105, 217);
+  --primary-color-active: rgb(0, 90, 190);
+  --primary-color-outline: rgb(0, 123, 255);
 } */
 
-/* .btn-primary{
+:root{
+  --primary-color: rgb(40, 167, 69);         
+  --primary-color-hover: rgb(33, 136, 56);  
+  --primary-color-active: rgb(28, 117, 48);
+  --primary-color-outline: rgb(40, 167, 69);
+}
+
+.btn-primary{
     background-color: var(--primary-color) !important;
     border-color: var(--primary-color)!important;
 }
@@ -42,10 +48,17 @@
 .btn-outline-primary:active {
     background-color: var(--primary-color-active)!important;
     border-color: var(--primary-color-active)!important;
-} */
+}
 .dropdown {
   width: 30px;
 }
 .li-1 {
     border: 1px solid black;
+}
+.btn {
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.btn:hover {
+    transform: translateY(-5px);
 }

@@ -5,3 +5,4 @@ document.querySelector("#signUp").addEventListener("click", () => {
 document.querySelector("#logIn").addEventListener("click", () => {
     window.location.href = "logIn.html";
 })
+

@@ -16,6 +16,7 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
@@ -26,14 +27,12 @@
       <div class="container col-xl-10 col-xxl-8 px-4 py-5">
         <div class="row align-items-center g-lg-5 py-5">
           <div class="col-lg-7 text-center text-lg-start">
-            <h1 class="display-4 fw-bold lh-1 text-body-emphasis mb-3">
-              Please log-in to continue shopping!
-            </h1>
+            <h2 class="display-4 fw-bold lh-1 text-body-emphasis mb-3">
+              Pro Shop - shop with us quickly and easily!
+            </h2>
             <p class="col-lg-10 fs-4">
-              Below is an example form built entirely with Bootstrap’s form
-              controls. Each required form group has a validation state that can
-              be triggered by attempting to submit the form without completing
-              it.
+              Please log in to continue your journey through the world of goods
+              with us!
             </p>
           </div>
           <div class="col-md-10 mx-auto col-lg-5">
@@ -86,7 +85,10 @@
                   Remember me
                 </label>
               </div>
-              <button class="w-100 btn btn-lg btn-primary" type="submit">
+              <button
+                class="w-100 btn btn-lg btn-primary"
+                type="submit logInButton"
+              >
                 Log in
               </button>
               <hr class="my-4" />
@@ -114,5 +116,11 @@
       crossorigin="anonymous"
     ></script>
     <script src="logIn.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.10.0/axios.min.js"
+      integrity="sha512-WkZrEcQ5LMyNy6Y2PQf+Tu3vMcsmKKRKuPXtJSTHQJ3mpuvLRlA5dlDDhrrcXfyWr6Z/y3wIMfjfqVFO/gDZYQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
   </body>
 </html>

@@ -16,6 +16,7 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
@@ -26,14 +27,12 @@
       <div class="container col-xl-10 col-xxl-8 px-4 py-5">
         <div class="row align-items-center g-lg-5 py-5">
           <div class="col-lg-7 text-center text-lg-start">
-            <h1 class="display-4 fw-bold lh-1 text-body-emphasis mb-3">
-              Please sign-up to start shopping!
-            </h1>
+            <h2 class="display-4 fw-bold lh-1 text-body-emphasis mb-3">
+              Pro Shop - shop with us quickly and easily!
+            </h2>
             <p class="col-lg-10 fs-4">
-              Below is an example form built entirely with Bootstrap’s form
-              controls. Each required form group has a validation state that can
-              be triggered by attempting to submit the form without completing
-              it.
+              Please sing up to start your journey through the world of goods
+              with us!
             </p>
           </div>
           <div class="col-md-10 mx-auto col-lg-5">
@@ -62,9 +61,19 @@
               </a>
               <div class="form-floating mb-3">
                 <input
+                  type="username"
+                  class="form-control"
+                  id="username-input"
+                  placeholder="Username"
+                  required
+                />
+                <label for="floatingInput">Username</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input
                   type="email"
                   class="form-control"
-                  id="floatingInput"
+                  id="email-input"
                   placeholder="name@example.com"
                   required
                 />
@@ -74,24 +83,13 @@
                 <input
                   type="password"
                   class="form-control"
-                  id="floatingPassword"
+                  id="password-input"
                   placeholder="Password"
                   required
                 />
                 <label for="floatingPassword">Password</label>
               </div>
               <div id="CheckboxForm" class="form-check">
-                <!-- <input id="Checkbox" type="checkbox" class="form-check-input" />
-                <label for="Checkbox" class="form-check-label text-body">
-                  Yes, I have read and agree to the Terms of Service.
-                  <a
-                    class="link-primary"
-                    target="_blank"
-                    href="https://cloud.google.com/terms"
-                  >
-                    Terms of Service.
-                  </a>
-                </label> -->
                 <input
                   class="form-check-input"
                   type="checkbox"
@@ -108,7 +106,10 @@
               </div>
 
               <div class="sign-up">
-                <button class="w-100 btn btn-lg btn-primary mt-3" id="submit">
+                <button
+                  class="w-100 btn btn-lg btn-primary mt-3"
+                  id="signUpButton"
+                >
                   Sign up
                 </button>
                 <hr class="my-4" />
@@ -138,5 +139,11 @@
       crossorigin="anonymous"
     ></script>
     <script src="signUp.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.10.0/axios.min.js"
+      integrity="sha512-WkZrEcQ5LMyNy6Y2PQf+Tu3vMcsmKKRKuPXtJSTHQJ3mpuvLRlA5dlDDhrrcXfyWr6Z/y3wIMfjfqVFO/gDZYQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
   </body>
 </html>
