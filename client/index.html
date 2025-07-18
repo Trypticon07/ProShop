@@ -16,11 +16,12 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="style.css" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
     />
+    <style></style>
+    <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
@@ -29,13 +30,225 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
     />
 
-    <header class="p-3 bg-dark text-white align-items-center">
+    <header class="p-3 bg-dark text-white">
       <div class="container">
         <div
           class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"
         >
+          <button
+            class="btn btn-outline-light me-3"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#sidebarMenu"
+            aria-controls="sidebarmenu"
+          >
+            ☰
+          </button>
+          <!-- Sidebar -->
+          <div
+            class="offcanvas offcanvas-start sidebar-1"
+            tabindex="-1"
+            id="sidebarMenu"
+            aria-labelledby="sidebarMenuLabel"
+          >
+            <div class="offcanvas-header">
+              <img
+                class="d-block"
+                src="images/png/projectImage.png"
+                alt=""
+                width="40"
+                height="40"
+              />
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="offcanvas"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="offcanvas-body p-0">
+              <div class="p-3" style="width: 100%">
+                <ul class="list-unstyled ps-0">
+                  <li class="mb-1">
+                    <button
+                      class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#home-collapse"
+                      aria-expanded="false"
+                    >
+                      Home
+                    </button>
+                    <div class="collapse" id="home-collapse">
+                      <ul
+                        class="btn-toggle-nav list-unstyled fw-normal pb-1 small"
+                      >
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >Overview</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >Updates</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >Reports</a
+                          >
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+
+                  <li class="mb-1">
+                    <button
+                      class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#dashboard-collapse"
+                      aria-expanded="false"
+                    >
+                      Dashboard
+                    </button>
+                    <div class="collapse" id="dashboard-collapse">
+                      <ul
+                        class="btn-toggle-nav list-unstyled fw-normal pb-1 small"
+                      >
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >Overview</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >Weekly</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >Monthly</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >Annually</a
+                          >
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+
+                  <li class="mb-1">
+                    <button
+                      class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#orders-collapse"
+                      aria-expanded="false"
+                    >
+                      Orders
+                    </button>
+                    <div class="collapse" id="orders-collapse">
+                      <ul
+                        class="btn-toggle-nav list-unstyled fw-normal pb-1 small"
+                      >
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >New</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >Processed</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >Shipped</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >Returned</a
+                          >
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+
+                  <li class="border-top my-3"></li>
+
+                  <li class="mb-1">
+                    <button
+                      class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#account-collapse"
+                      aria-expanded="false"
+                    >
+                      Account
+                    </button>
+                    <div class="collapse" id="account-collapse">
+                      <ul
+                        class="btn-toggle-nav list-unstyled fw-normal pb-1 small"
+                      >
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >New...</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >Profile</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >Settings</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            >Sign out</a
+                          >
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
           <a
-            href="/"
+            href="#"
             class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none me-3"
           >
             <img
@@ -50,11 +263,22 @@
           <ul
             class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
           >
-            <li><a href="#" class="nav-link px-2 text-secondary">Home</a></li>
-            <li><a href="#" class="nav-link px-2 text-white">Features</a></li>
-            <li><a href="#" class="nav-link px-2 text-white">Pricing</a></li>
-            <li><a href="#" class="nav-link px-2 text-white">FAQs</a></li>
-            <li><a href="#" class="nav-link px-2 text-white">About</a></li>
+            <li>
+              <a href="/features" class="nav-link px-2 text-white me-3"
+                >Features</a
+              >
+            </li>
+            <li>
+              <a href="/pricing" class="nav-link px-2 text-white me-3"
+                >Pricing</a
+              >
+            </li>
+            <li>
+              <a href="/faqs" class="nav-link px-2 text-white me-3">FAQs</a>
+            </li>
+            <li>
+              <a href="/about" class="nav-link px-2 text-white me-3">About</a>
+            </li>
           </ul>
 
           <form
@@ -70,10 +294,19 @@
           </form>
 
           <div class="text-end">
-            <button type="button" class="btn btn-outline-light me-2" id="logIn">
+            <button
+              type="button"
+              class="btn btn-outline-light btn-anim me-2"
+              id="logIn"
+            >
               Log in
             </button>
-            <button type="button" class="btn btn-primary" id="signUp">
+            <button
+              type="button"
+              class="btn btn-primary btn-anim"
+              btn-anim
+              id="signUp"
+            >
               Sign up
             </button>
           </div>
@@ -159,10 +392,16 @@
             products, fast delivery, and great prices for every customer.
           </p>
           <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            <button type="button" class="btn btn-primary btn-lg px-4 gap-3">
+            <button
+              type="button"
+              class="btn btn-primary btn-anim btn-lg px-4 gap-3"
+            >
               Primary button
             </button>
-            <button type="button" class="btn btn-outline-secondary btn-lg px-4">
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-anim btn-lg px-4"
+            >
               Secondary
             </button>
           </div>

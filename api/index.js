@@ -3,6 +3,7 @@ import cors from "cors";
 import { Client } from "pg";
 import bodyParser from "body-parser";
 import morgan from "morgan";
+import bcrypt from "bcrypt";
 
 const connection = new Client({
   user: "YOUR_DB_USERNAME",
@@ -22,21 +23,60 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(morgan("tiny"))
 app.use(express.json())
 
-app.post("/submitSignUp", (req, res) => {
-  console.log(req.body)
+app.post('/register', async (req, res) => {
   const username = req.body.username
   const password = req.body.password
   const email = req.body.email
-  connection.query(`INSERT INTO users(username, password, email) VALUES ('${username}', '${password}', '${email}')`, (err, res) => {
-    if (err) {
-      console.error(err.stack);
-      res.status(500).send("Server error");
-    } else {
-      console.log("Data inserted");
+
+  try {
+    const DBresult = await connection.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email]
+    );
+
+    if (DBresult.rows.length > 0) {
+      return res.status(400).send("Email is already used");
     }
-  })
-  res.status(201)
-})
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    
+    await connection.query(
+      'INSERT INTO users (username, password, email) VALUES ($1, $2, $3)',
+      [username, hashedPassword, email]
+    );
+
+    res.status(201).send("User created");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+app.post('/logIn', async (req, res) => {
+  const password = req.body.password
+  const email = req.body.email
+
+  try {
+    const result = await connection.query('SELECT * FROM users WHERE email = $1', [email]);
+
+    if (result.rows.length === 0) {
+      return res.status(401).send('invalid email or password');
+    }
+
+    const user = result.rows[0];
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).send('invalid email or password');
+    }
+
+    res.status(200).send('You have successfully logged in!');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);

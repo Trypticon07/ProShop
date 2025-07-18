@@ -63,21 +63,27 @@
                 <input
                   type="email"
                   class="form-control"
-                  id="floatingInput"
-                  placeholder="name@example.com"
+                  id="email-input"
+                  placeholder="email"
                   required
                 />
-                <label for="floatingInput">Email address</label>
+                <label for="floatingInput">Email</label>
+                <div class="invalid-feedback" id="emailFeedback">
+                  Please enter a valid email
+                </div>
               </div>
               <div class="form-floating mb-3">
                 <input
                   type="password"
                   class="form-control"
-                  id="floatingPassword"
-                  placeholder="Password"
+                  id="password-input"
+                  placeholder="password"
                   required
                 />
-                <label for="floatingPassword">Password</label>
+                <label for="floatingInput">Password</label>
+                <div class="invalid-feedback" id="passwordFeedback">
+                  Please enter a valid password
+                </div>
               </div>
               <div class="checkbox mb-3">
                 <label>
