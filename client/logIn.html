@@ -84,6 +84,10 @@
                 <div class="invalid-feedback" id="passwordFeedback">
                   Please enter a valid password
                 </div>
+                <p
+                  id="invalid-email-or-password"
+                  class="invalid-feedback d-none"
+                ></p>
               </div>
               <div class="checkbox mb-3">
                 <label>
@@ -91,6 +95,10 @@
                   Remember me
                 </label>
               </div>
+              <div
+                class="g-recaptcha captcha mb-4"
+                data-sitekey="YOUR_RECAPTCHA_SITE_KEY"
+              ></div>
               <button
                 class="w-100 btn btn-lg btn-primary"
                 type="submit logInButton"
@@ -128,5 +136,6 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   </body>
 </html>

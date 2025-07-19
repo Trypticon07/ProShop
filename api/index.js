@@ -4,6 +4,7 @@ import { Client } from "pg";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 import bcrypt from "bcrypt";
+import axios from "axios";
 
 const connection = new Client({
   user: "YOUR_DB_USERNAME",
@@ -56,7 +57,17 @@ app.post('/logIn', async (req, res) => {
   const password = req.body.password
   const email = req.body.email
 
+  const userCaptchaToken = req.body.captcha;
+  const secretKey = '6LcFn4grAAAAAMGmnQx-Isc1NQ_FDrcYIUUZDfwF';
   try {
+    const response = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${userCaptchaToken}`
+    );
+
+    if (!response.data.success) {
+      return res.status(400).send("reCAPTCHA verification failed");
+    }
+
     const result = await connection.query('SELECT * FROM users WHERE email = $1', [email]);
 
     if (result.rows.length === 0) {
@@ -73,6 +84,7 @@ app.post('/logIn', async (req, res) => {
 
     res.status(200).send('You have successfully logged in!');
   } catch (err) {
+    console.error('reCAPTCHA verification error:', err);
     console.error(err);
     res.status(500).send('Server error');
   }

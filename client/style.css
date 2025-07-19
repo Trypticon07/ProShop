@@ -92,3 +92,9 @@
 .sidebar-1 {
     width: 250px !important;
 }
+.captcha {
+  transform: scale(0.9);
+  transform-origin: 0 0;
+    width: 304px;
+  height: 78px;
+}
