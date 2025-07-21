@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Register</title>
+    <title>Log in</title>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta
@@ -38,6 +38,7 @@
           <div class="col-md-10 mx-auto col-lg-5">
             <form
               class="p-4 p-md-5 border rounded-3 bg-body-tertiary needs-validation"
+              id="check-form"
               novalidate
             >
               <a
@@ -84,10 +85,6 @@
                 <div class="invalid-feedback" id="passwordFeedback">
                   Please enter a valid password
                 </div>
-                <p
-                  id="invalid-email-or-password"
-                  class="invalid-feedback d-none"
-                ></p>
               </div>
               <div class="checkbox mb-3">
                 <label>
@@ -95,16 +92,24 @@
                   Remember me
                 </label>
               </div>
-              <div
-                class="g-recaptcha captcha mb-4"
-                data-sitekey="YOUR_RECAPTCHA_SITE_KEY"
-              ></div>
+              <div class="mb-4">
+                <!-- <div
+                  class="g-recaptcha captcha"
+                  data-sitekey="YOUR_RECAPTCHA_SITE_KEY"
+                ></div> -->
+                <p id="captchaFeedback" class="invalid-feedback d-none"></p>
+              </div>
+
               <button
                 class="w-100 btn btn-lg btn-primary"
                 type="submit logInButton"
               >
                 Log in
               </button>
+              <p
+                id="invalid-email-or-password"
+                class="invalid-feedback d-none"
+              ></p>
               <hr class="my-4" />
               <small class="text-body-secondary"
                 >New to Pro Shop? <a href="signUp.html">Sign up</a></small
@@ -136,6 +141,6 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
   </body>
 </html>
