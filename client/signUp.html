@@ -113,7 +113,13 @@
                   You must agree before submitting.
                 </div>
               </div>
-
+              <div class="mb-4">
+                <div
+                  class="g-recaptcha captcha"
+                  data-sitekey="YOUR_RECAPTCHA_SITE_KEY"
+                ></div>
+                <p id="captchaFeedback" class="invalid-feedback d-none"></p>
+              </div>
               <div class="sign-up">
                 <button
                   class="w-100 btn btn-lg btn-primary mt-3"
@@ -121,6 +127,7 @@
                 >
                   Sign up
                 </button>
+                <p id="backend-response" class="d-none"></p>
                 <hr class="my-4" />
                 <small class="text-body-secondary"
                   >Already have an account?
@@ -154,5 +161,6 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   </body>
 </html>

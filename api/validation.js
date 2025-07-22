@@ -5,8 +5,8 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import bcrypt from "bcrypt";
 import axios from "axios";
-
-function checkEmailAndPassword(emailInput, passwordInput) {
+let isInvalid = false;
+export function checkEmailAndPassword(emailInput, passwordInput) {
   if (emailInput.length < 6 || emailInput.length > 100) {
     return {
       isInvalid: true,
@@ -35,4 +35,14 @@ function checkEmailAndPassword(emailInput, passwordInput) {
     return { isInvalid: false };
   }
 }
-export default checkEmailAndPassword;
+export function checkUsername(username) {
+  if (username.length < 3 || username.length > 50) {
+    return {
+      isInvalid: true,
+      field: "username",
+      error: "Username must be between 3 and 50 characters.",
+    };
+  } else {
+    return { isInvalid: false };
+  }
+}

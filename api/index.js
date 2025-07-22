@@ -5,7 +5,9 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import bcrypt from "bcrypt";
 import axios from "axios";
-import checkEmailAndPassword from "./validation.js";
+import { checkEmailAndPassword, checkUsername } from "./validation.js";
+import session from "express-session";
+import rateLimit from "express-rate-limit";
 
 const connection = new Client({
   user: "YOUR_DB_USERNAME",
@@ -24,13 +26,66 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("tiny"));
 app.use(express.json());
+app.use(
+  session({
+    secret:
+      "YOUR_SESSION_SECRET_KEY",
+    // node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+    },
+  })
+);
+function requireAuth(req, res, next) {
+  if (!req.session.user) {
+    return res.status(401).send("Unauthorized");
+  }
+  next();
+}
+const registerLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 mins
+  max: 5,
+  message: {
+    isInvalid: true,
+    field: "rateLimit",
+    error: "Too many registration attempts. Please try again after 10 minutes.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
-app.post("/register", async (req, res) => {
+app.post("/register", registerLimiter, async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
 
+  const userCaptchaToken = req.body.captcha;
+  const secretKey = "YOUR_RECAPTCHA_SECRET_KEY";
+
   try {
+    const response = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${userCaptchaToken}`
+    );
+    if (!response.data.success) {
+      return res.status(400).json({
+        isInvalid: true,
+        field: "captcha",
+        error: "Please confirm that you are not a robot.",
+      });
+    }
+    const checkResult = checkEmailAndPassword(email, password);
+    const usernameCheck = checkUsername(username);
+    if (checkResult.isInvalid) {
+      return res.status(400).json(checkResult);
+    }
+    if (usernameCheck.isInvalid) {
+      return res.status(400).json(usernameCheck);
+    }
+
     const DBresult = await connection.query(
       "SELECT * FROM users WHERE email = $1",
       [email]
@@ -62,12 +117,16 @@ app.post("/logIn", async (req, res) => {
   const secretKey = "YOUR_RECAPTCHA_SECRET_KEY";
 
   try {
-    // const response = await axios.post(
-    //   `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${userCaptchaToken}`
-    // );
-    // if (!response.data.success) {
-    //   return res.status(400).send("reCAPTCHA verification failed");
-    // }
+    const response = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${userCaptchaToken}`
+    );
+    if (!response.data.success) {
+      return res.status(400).json({
+        isInvalid: true,
+        field: "captcha",
+        error: "Please confirm that you are not a robot.",
+      });
+    }
 
     const checkResult = checkEmailAndPassword(email, password);
     if (checkResult.isInvalid) {
@@ -90,6 +149,11 @@ app.post("/logIn", async (req, res) => {
     if (!isMatch) {
       return res.status(401).send("invalid email or password");
     }
+    req.session.user = {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+    };
 
     res.status(200).send("You have successfully logged in!");
   } catch (err) {
@@ -98,7 +162,9 @@ app.post("/logIn", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
-
+app.get("/profile", requireAuth, async (req, res) => {
+  res.send(`Welcome, ${req.session.user.username}!`);
+});
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
