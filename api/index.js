@@ -22,7 +22,12 @@ connection.connect();
 const app = express();
 const port = 3000;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5500",
+    credentials: true,
+  })
+);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("tiny"));
 app.use(express.json());
@@ -48,11 +53,22 @@ function requireAuth(req, res, next) {
 }
 const registerLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 mins
-  max: 5,
+  max: 2,
   message: {
     isInvalid: true,
     field: "rateLimit",
     error: "Too many registration attempts. Please try again after 10 minutes.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+const loginLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 mins
+  max: 5,
+  message: {
+    isInvalid: true,
+    field: "rateLimit",
+    error: "Too many log in attempts. Please try again after 10 minutes.",
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -109,7 +125,7 @@ app.post("/register", registerLimiter, async (req, res) => {
     res.status(500).send("Server error");
   }
 });
-app.post("/logIn", async (req, res) => {
+app.post("/logIn", loginLimiter, async (req, res) => {
   const password = req.body.password;
   const email = req.body.email;
 
@@ -162,6 +178,16 @@ app.post("/logIn", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+app.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).send("Logout failed");
+    }
+    res.clearCookie("connect.sid");
+    res.send("Logged out");
+  });
+});
+
 app.get("/profile", requireAuth, async (req, res) => {
   res.send(`Welcome, ${req.session.user.username}!`);
 });

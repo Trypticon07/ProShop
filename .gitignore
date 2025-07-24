@@ -51,6 +51,7 @@ web_modules/
 # Optional npm cache directory
 .npm
 
+api/models/
 # Optional eslint cache
 .eslintcache
 

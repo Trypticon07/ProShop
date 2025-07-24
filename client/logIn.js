@@ -66,6 +66,7 @@ let isValidPassword = false;
         captchaError.classList.remove("d-none");
         captchaError.classList.add("d-block");
       }
+      //let captchaResponse = true;
 
       if (!isValidEmail || !isValidPassword || !captchaResponse) return;
       checkForm.classList.remove("form-invalid");
@@ -77,11 +78,17 @@ let isValidPassword = false;
 
 function Submit(captchaToken) {
   axios
-    .post("http://localhost:3000/logIn", {
-      password: document.querySelector("#password-input").value,
-      email: document.querySelector("#email-input").value,
-      captcha: captchaToken,
-    })
+    .post(
+      "http://localhost:3000/logIn",
+      {
+        password: document.querySelector("#password-input").value,
+        email: document.querySelector("#email-input").value,
+        captcha: captchaToken,
+      },
+      {
+        withCredentials: true,
+      }
+    )
     .then((response) => {
       console.log(response.data);
       window.location.href = "index.html";
@@ -107,6 +114,14 @@ function Submit(captchaToken) {
             captchaError.textContent = res.error;
             captchaError.classList.remove("d-none");
             captchaError.classList.add("d-block");
+          }
+        }
+      } else if (err.response?.status === 429) {
+        if (res?.isInvalid) {
+          if (res.field === "rateLimit") {
+            backendResponse.textContent = res.error;
+            backendResponse.classList.remove("d-none");
+            backendResponse.classList.add("d-block");
           }
         }
       } else {
