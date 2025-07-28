@@ -274,7 +274,7 @@
               <a
                 href="/client/pricing.html"
                 class="nav-link px-2 text-white me-3"
-                >Pricing</a
+                >Catalog</a
               >
             </li>
             <li>
@@ -301,7 +301,7 @@
             />
           </form>
 
-          <div class="text-end">
+          <div class="text-end" id="logInButtons">
             <button
               type="button"
               class="btn btn-outline-light btn-anim me-2"
@@ -318,7 +318,7 @@
               Sign up
             </button>
           </div>
-          <div class="dropdown d-inline-block ms-3 d-none">
+          <div class="dropdown d-inline-block ms-3 d-none" id="profileDropdown">
             <button
               class="btn p-0 border-0 bg-transparent text-decoration-none"
               type="button"
@@ -348,28 +348,41 @@
                 <strong>AlxPav Chr</strong><br />
                 <small class="text-muted">alx.pav2106@gmail.com</small>
               </li>
-              <div class="btn-holder-1">
+              <!-- <div class="btn-holder-1">
                 <li class="px-3 py-2 d-flex gap-2 justify-content-center li-1">
                   <button
-                    class="btn btn-outline-light btn-sm rounded-circle"
+                    class="btn btn-outline-dark btn-sm rounded-square"
                     title="Light"
                   >
-                    🌞
+                    <i class="bi bi-sun"></i>
                   </button>
                   <button
-                    class="btn btn-outline-light btn-sm rounded-circle"
+                    class="btn btn-outline-dark btn-sm rounded-square"
                     title="Dark"
                   >
-                    🌙
+                    <i class="bi bi-moon-fill"></i>
                   </button>
                   <button
-                    class="btn btn-outline-light btn-sm rounded-circle"
+                    class="btn btn-outline-dark btn-sm rounded-square"
                     title="System"
                   >
-                    🖥️
+                    <i class="bi bi-display"></i>
                   </button>
                 </li>
+              </div> -->
+              <div class="theme-switcher">
+                <button class="theme-btn" data-theme="light" title="Light">
+                  <i class="bi bi-sun"></i>
+                </button>
+                <button class="theme-btn active" data-theme="dark" title="Dark">
+                  <i class="bi bi-moon-fill"></i>
+                </button>
+                <button class="theme-btn" data-theme="system" title="System">
+                  <i class="bi bi-display"></i>
+                </button>
+                <div class="theme-indicator"></div>
               </div>
+
               <li><hr class="dropdown-divider" /></li>
               <li><a class="dropdown-item" href="#">Manage cookies</a></li>
               <li><a class="dropdown-item" href="#">Your profile</a></li>
@@ -406,6 +419,23 @@
             >
               View catalog
             </button>
+          </div>
+        </div>
+      </div>
+      <div class="chat">
+        <button class="btn btn-primary btn-anim" id="open-chat-btn">
+          💬 Technical support
+        </button>
+
+        <div id="chat-box">
+          <div id="chat-messages"></div>
+          <div id="chat-input">
+            <input
+              type="text"
+              id="user-message"
+              placeholder="Enter message..."
+            />
+            <button class="btn btn-primary" id="send-btn">➤</button>
           </div>
         </div>
       </div>

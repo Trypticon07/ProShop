@@ -1,12 +1,15 @@
 import fetch from "node-fetch";
 import readlineSync from "readline-sync";
+import fs from "fs/promises";
 
-const messages = [{ role: "system", content: "You are a friendly assistant" }];
+const systemInstructions = await fs.readFile("instructions.txt", "utf-8");
 
-async function sendMessage(userInput) {
+const messages = [{ role: "system", content: systemInstructions }];
+
+export async function sendMessage(userInput) {
   messages.push({ role: "user", content: userInput });
 
-  const response = await fetch("http://localhost:5000/chat", {
+  const response = await fetch("http://192.168.0.182:5000/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ messages }),
@@ -16,17 +19,18 @@ async function sendMessage(userInput) {
   const data = JSON.parse(raw);
 
   const modelReply = data.response.trim();
-  console.log("\nModel:\n" + modelReply);
+  //console.log("\nModel:\n" + modelReply);
 
   messages.push({ role: "assistant", content: modelReply });
+  return modelReply;
 }
 
-async function main() {
-  while (true) {
-    const input = readlineSync.question("\nYou: ");
-    if (input.toLowerCase() === "exit") break;
-    await sendMessage(input);
-  }
-}
+// async function main(input) {
+//   while (true) {
+//     //const input = readlineSync.question("\nYou: ");
+//     if (input.toLowerCase() === "exit") break;
+//     //await sendMessage(input);
+//   }
+// }
 
-main();
+// main();

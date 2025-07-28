@@ -6,6 +6,7 @@ import morgan from "morgan";
 import bcrypt from "bcrypt";
 import axios from "axios";
 import { checkEmailAndPassword, checkUsername } from "./validation.js";
+import { sendMessage } from "./model.js";
 import session from "express-session";
 import rateLimit from "express-rate-limit";
 
@@ -191,6 +192,113 @@ app.post("/logout", (req, res) => {
 app.get("/profile", requireAuth, async (req, res) => {
   res.send(`Welcome, ${req.session.user.username}!`);
 });
+app.get("/session", (req, res) => {
+  if (req.session.user) {
+    res.json({ loggedIn: true, user: req.session.user });
+  } else {
+    res.status(401).json({ loggedIn: false });
+  }
+});
+function extractCommandJson(text) {
+  // Searching for similar JSON with keys command and param
+  const match = text.match(/\{[^{}]*"command"[^{}]*"param"[^{}]*\}/);
+
+  if (match) {
+    try {
+      const json = JSON.parse(match[0]);
+      return json;
+    } catch (err) {
+      console.error("Unable to parse JSON:", err);
+    }
+  }
+
+  return null;
+}
+async function getOrCreateTicket(req) {
+  if (req.session.ticketId) {
+    console.log(req.session.ticketId);
+    return req.session.ticketId;
+  }
+  const userId = req.session.user.id;
+  const result = await connection.query(
+    "INSERT INTO tickets (user_id) VALUES ($1) RETURNING id",
+    [userId]
+  );
+  const ticketId = result.rows[0].id;
+  req.session.ticketId = ticketId;
+  return ticketId;
+}
+
+app.post("/chat", async (req, res) => {
+  const { message } = req.body;
+  console.log(message);
+  const user = req.session.user;
+
+  if (!message || message.trim() === "") {
+    return res.status(400).json({ error: "Message is empty" });
+  }
+
+  const sender = "user";
+  const userId = user?.id || null;
+
+  //const botReply = "Thank you! Our support will reply soon.";
+  const botReply = await sendMessage(message);
+  res.json({ reply: botReply });
+  if (!req.session.user) {
+    console.log("401");
+    return; //res.status(401).json({ reply: "Please log in." });
+  }
+  console.log("200");
+  const ticketId = await getOrCreateTicket(req);
+
+  connection.query(
+    "INSERT INTO chat_messages (ticket_id, sender, message) VALUES ($1, 'user', $2)",
+    [ticketId, message],
+    (err) => {
+      if (err) {
+        console.error("Error while saving chat: ", err);
+        return res.status(500).send("Error saving message");
+      }
+      console.log("Insert1");
+      connection.query(
+        "INSERT INTO chat_messages (ticket_id, sender, message) VALUES ($1, 'bot', $2)",
+        [ticketId, botReply],
+        (err2) => {
+          if (err2) {
+            console.error("Error while saving bot answer: ", err2);
+          }
+          console.log("Insert2");
+        }
+      );
+    }
+  );
+  // if (userMessage.toLowerCase().includes("bye")) {
+  //   botReply = "Goodbye! Your ticket is now closed.";
+  //   await connection.query(
+  //     `UPDATE tickets SET status='closed', closed_at=NOW()
+  //        WHERE id = $1`,
+  //     [ticketId]
+  //   );
+  //   delete req.session.ticketId;
+  // }
+});
+app.get("/chat/history", (req, res) => {
+  const userId = req.session.user?.id;
+  if (!userId) return res.status(401).send("Not authorized");
+
+  connection.query(
+    "SELECT * FROM chat_messages WHERE user_id = $1 ORDER BY created_at ASC",
+    [userId],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("Error while loading chat");
+      }
+      res.json(result.rows);
+    }
+  );
+});
+
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
