@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { Client } from "pg";
-import bodyParser, { json } from "body-parser";
+import bodyParser from "body-parser";
 import morgan from "morgan";
 import bcrypt from "bcrypt";
 import axios from "axios";
@@ -206,8 +206,6 @@ function extractCommandJson(text) {
   if (match) {
     try {
       const json = JSON.parse(match[0]);
-      console.log("1" + json.command);
-      console.log("2" + json.param);
       const cleanedText = text.replace(match[0], "").trim();
       return { cleanedText, json };
     } catch (err) {
@@ -215,19 +213,49 @@ function extractCommandJson(text) {
     }
   }
 
-  return null;
+  return text;
 }
+// async function getOrCreateTicket(req) {
+//   if (req.session.ticketId) {
+//     console.log(req.session.ticketId);
+//     return req.session.ticketId;
+//   }
+//   const userId = req.session.user.id;
+//   const result = await connection.query(
+//     "INSERT INTO tickets (user_id) VALUES ($1) RETURNING id",
+//     [userId]
+//   );
+//   const ticketId = result.rows[0].id;
+//   req.session.ticketId = ticketId;
+//   return ticketId;
+// }
 async function getOrCreateTicket(req) {
+  // Если тикет есть в сессии, используем его
   if (req.session.ticketId) {
-    console.log(req.session.ticketId);
     return req.session.ticketId;
   }
+
   const userId = req.session.user.id;
+
+  // Ищем открытый тикет в БД
   const result = await connection.query(
-    "INSERT INTO tickets (user_id) VALUES ($1) RETURNING id",
+    "SELECT id FROM tickets WHERE user_id = $1 AND status != 'closed' ORDER BY created_at DESC LIMIT 1",
     [userId]
   );
-  const ticketId = result.rows[0].id;
+
+  let ticketId;
+
+  if (result.rows.length > 0) {
+    ticketId = result.rows[0].id;
+  } else {
+    // Создаем новый, если не найден
+    const insertResult = await connection.query(
+      "INSERT INTO tickets (user_id) VALUES ($1) RETURNING id",
+      [userId]
+    );
+    ticketId = insertResult.rows[0].id;
+  }
+
   req.session.ticketId = ticketId;
   return ticketId;
 }
@@ -244,14 +272,17 @@ app.post("/chat", async (req, res) => {
   const userId = user?.id || null;
 
   //const botReply = "Thank you! Our support will reply soon.";
+  //const botReply = JSON.stringify({ command: "finish", param: "0" });
   const botReply = await sendMessage(message);
   const answer = extractCommandJson(botReply);
-  console.log(answer.json);
-  console.log("Команда:", answer.json.command);
-  console.log("Параметр:", answer.json.param);
-  res.json({ reply: answer.cleanedText });
-  if (answer.json && answer.json.command === "finish") {
-    console.log(`finished ${answer.json.param}`);
+  if (answer.json) {
+    if (answer.cleanedText === "") {
+      answer.cleanedText =
+        "Goodbye If you have any questions feel free to ask!";
+    }
+    res.json({ reply: answer.cleanedText });
+  } else {
+    res.json({ reply: answer });
   }
 
   if (!req.session.user) {
@@ -260,6 +291,15 @@ app.post("/chat", async (req, res) => {
   }
   console.log("200");
   const ticketId = await getOrCreateTicket(req);
+  if (answer.json && answer.json.command === "finish") {
+    console.log(`finished ${answer.json.param}`);
+    await connection.query(
+      `UPDATE tickets SET status='closed', closed_at=NOW()
+         WHERE id = $1`,
+      [ticketId]
+    );
+    delete req.session.ticketId;
+  }
 
   connection.query(
     "INSERT INTO chat_messages (ticket_id, sender, message) VALUES ($1, 'user', $2)",
@@ -280,31 +320,55 @@ app.post("/chat", async (req, res) => {
       );
     }
   );
-  // if (userMessage.toLowerCase().includes("bye")) {
-  //   botReply = "Goodbye! Your ticket is now closed.";
-  //   await connection.query(
-  //     `UPDATE tickets SET status='closed', closed_at=NOW()
-  //        WHERE id = $1`,
-  //     [ticketId]
-  //   );
-  //   delete req.session.ticketId;
-  // }
 });
-app.get("/chat/history", (req, res) => {
+// app.get("/chat/history", (req, res) => {
+//   const userId = req.session.user?.id;
+//   if (!userId) return res.status(401).send("Not authorized");
+
+//   connection.query(
+//     "SELECT * FROM chat_messages WHERE user_id = $1 ORDER BY created_at ASC",
+//     [userId],
+//     (err, result) => {
+//       if (err) {
+//         console.error(err);
+//         return res.status(500).send("Error while loading chat");
+//       }
+//       res.json(result.rows);
+//     }
+//   );
+// });
+app.get("/chat/history", async (req, res) => {
   const userId = req.session.user?.id;
   if (!userId) return res.status(401).send("Not authorized");
 
-  connection.query(
-    "SELECT * FROM chat_messages WHERE user_id = $1 ORDER BY created_at ASC",
-    [userId],
-    (err, result) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).send("Error while loading chat");
-      }
-      res.json(result.rows);
+  try {
+    // Ищем незакрытый тикет
+    const ticketResult = await connection.query(
+      `SELECT id FROM tickets WHERE user_id = $1 AND status != 'closed'
+       ORDER BY created_at DESC LIMIT 1`,
+      [userId]
+    );
+
+    if (ticketResult.rows.length === 0) {
+      return res.json([]); // нет активных тикетов
     }
-  );
+
+    const ticketId = ticketResult.rows[0].id;
+
+    // Загружаем сообщения по тикету
+    const chatResult = await connection.query(
+      `SELECT sender, message, created_at
+       FROM chat_messages
+       WHERE ticket_id = $1
+       ORDER BY created_at ASC`,
+      [ticketId]
+    );
+
+    res.json(chatResult.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error while loading chat");
+  }
 });
 
 app.listen(port, () => {

@@ -89,6 +89,27 @@
   margin-top: 0.125rem;
   margin-left: 1.25rem;
 }
+:root {
+  --bg-color: white;
+  --text-color: black;
+}
+
+body.light-theme {
+  --bg-color: white;
+  --text-color: black;
+}
+
+body.dark-theme {
+  --bg-color: #121212;
+  --text-color: white;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
 .sidebar-1 {
     width: 250px !important;
 }
