@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { Client } from "pg";
-import bodyParser from "body-parser";
+import bodyParser, { json } from "body-parser";
 import morgan from "morgan";
 import bcrypt from "bcrypt";
 import axios from "axios";
@@ -206,7 +206,10 @@ function extractCommandJson(text) {
   if (match) {
     try {
       const json = JSON.parse(match[0]);
-      return json;
+      console.log("1" + json.command);
+      console.log("2" + json.param);
+      const cleanedText = text.replace(match[0], "").trim();
+      return { cleanedText, json };
     } catch (err) {
       console.error("Unable to parse JSON:", err);
     }
@@ -231,7 +234,6 @@ async function getOrCreateTicket(req) {
 
 app.post("/chat", async (req, res) => {
   const { message } = req.body;
-  console.log(message);
   const user = req.session.user;
 
   if (!message || message.trim() === "") {
@@ -243,7 +245,15 @@ app.post("/chat", async (req, res) => {
 
   //const botReply = "Thank you! Our support will reply soon.";
   const botReply = await sendMessage(message);
-  res.json({ reply: botReply });
+  const answer = extractCommandJson(botReply);
+  console.log(answer.json);
+  console.log("Команда:", answer.json.command);
+  console.log("Параметр:", answer.json.param);
+  res.json({ reply: answer.cleanedText });
+  if (answer.json && answer.json.command === "finish") {
+    console.log(`finished ${answer.json.param}`);
+  }
+
   if (!req.session.user) {
     console.log("401");
     return; //res.status(401).json({ reply: "Please log in." });
@@ -259,7 +269,6 @@ app.post("/chat", async (req, res) => {
         console.error("Error while saving chat: ", err);
         return res.status(500).send("Error saving message");
       }
-      console.log("Insert1");
       connection.query(
         "INSERT INTO chat_messages (ticket_id, sender, message) VALUES ($1, 'bot', $2)",
         [ticketId, botReply],
@@ -267,7 +276,6 @@ app.post("/chat", async (req, res) => {
           if (err2) {
             console.error("Error while saving bot answer: ", err2);
           }
-          console.log("Insert2");
         }
       );
     }

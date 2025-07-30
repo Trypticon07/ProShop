@@ -1,3 +1,5 @@
+const sendBtn = document.getElementById("send-btn");
+let isProcessing = false;
 document.querySelector("#signUp").addEventListener("click", () => {
   window.location.href = "signUp.html";
 });
@@ -34,17 +36,17 @@ fetch("http://localhost:3000/session", {
     }
   })
   .catch((err) => {
-    console.error("Ошибка при получении сессии:", err);
-    window.location.href = "/client/logIn.html";
+    //alrert("Ошибка при получении сессии:", err);
+    //window.location.href = "/client/logIn.html";
   });
 
-document.getElementById("send-btn").addEventListener("click", () => {
+sendBtn.addEventListener("click", () => {
   sendMessage();
 });
 // Send message on Enter key press
 const userInput = document.querySelector("#user-message");
 userInput.addEventListener("keydown", function (event) {
-  if (event.key === "Enter") {
+  if (event.key === "Enter" && !isProcessing) {
     event.preventDefault(); // Prevent form submission or newline (if any)
     sendMessage();
   }
@@ -56,6 +58,8 @@ function sendMessage() {
 
   appendMessage("You", message);
   input.value = "";
+  sendBtn.disabled = true;
+  isProcessing = true;
 
   const typingElement = appendMessage("Bot", "Typing...");
 
@@ -70,6 +74,8 @@ function sendMessage() {
     .then((res) => res.json())
     .then((data) => {
       typingElement.innerHTML = `<strong>Bot:</strong> ${data.reply}`;
+      sendBtn.disabled = false;
+      isProcessing = false;
       //appendMessage("Bot", data.reply);
     })
     .catch((err) => {
