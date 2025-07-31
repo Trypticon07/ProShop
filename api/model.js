@@ -20,17 +20,7 @@ export async function sendMessage(userInput) {
 
   const modelReply = data.response.trim();
   //console.log("\nModel:\n" + modelReply);
-  console.log(messages);
+  //console.log(messages);
   messages.push({ role: "assistant", content: modelReply });
   return modelReply;
 }
-
-// async function main(input) {
-//   while (true) {
-//     //const input = readlineSync.question("\nYou: ");
-//     if (input.toLowerCase() === "exit") break;
-//     //await sendMessage(input);
-//   }
-// }
-
-// main();

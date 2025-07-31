@@ -8,6 +8,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
+    <meta http-equiv="Cache-Control" content="no-store" />
 
     <!-- Bootstrap CSS v5.2.1 -->
     <link
@@ -222,7 +223,7 @@
                         <li>
                           <a
                             href="#"
-                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded profileBtn"
                             >Profile</a
                           >
                         </li>
@@ -236,7 +237,7 @@
                         <li>
                           <a
                             href="#"
-                            class="link-body-emphasis d-inline-flex text-decoration-none rounded"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded logOut"
                             >Sign out</a
                           >
                         </li>
@@ -271,9 +272,7 @@
               >
             </li>
             <li>
-              <a
-                href="/client/pricing.html"
-                class="nav-link px-2 text-white me-3"
+              <a href="#" class="nav-link px-2 text-white me-3 catalogBtn"
                 >Catalog</a
               >
             </li>
@@ -375,10 +374,12 @@
               </div>
 
               <li><hr class="dropdown-divider" /></li>
-              <li><a class="dropdown-item" href="#">Your profile</a></li>
+              <li>
+                <a class="dropdown-item profileBtn" href="#">Your profile</a>
+              </li>
               <li><hr class="dropdown-divider" /></li>
               <li>
-                <a class="dropdown-item text-danger" href="#">Log out</a>
+                <a class="dropdown-item text-danger logOut" href="#">Log out</a>
               </li>
             </ul>
           </div>
@@ -404,13 +405,19 @@
           <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
             <button
               type="button"
-              class="btn btn-primary btn-anim btn-lg px-4 gap-3"
+              class="btn btn-primary btn-anim btn-lg px-4 gap-3 catalogBtn"
             >
               View catalog
             </button>
           </div>
         </div>
       </div>
+      <div class="d-flex justify-content-center align-items-center min-vh-100">
+        <div class="card-group w-75 flex-wrap" id="product-container">
+          <!-- cards will be inserted here -->
+        </div>
+      </div>
+
       <div class="chat">
         <button class="btn btn-primary btn-anim" id="open-chat-btn">
           💬 Technical support

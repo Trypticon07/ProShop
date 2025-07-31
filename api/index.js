@@ -46,6 +46,11 @@ app.use(
     },
   })
 );
+// app.use((req, res, next) => {
+//   console.log(`Incoming request: ${req.method} ${req.url}`);
+//   next();
+// });
+
 function requireAuth(req, res, next) {
   if (!req.session.user) {
     return res.status(401).send("Unauthorized");
@@ -215,20 +220,7 @@ function extractCommandJson(text) {
 
   return text;
 }
-// async function getOrCreateTicket(req) {
-//   if (req.session.ticketId) {
-//     console.log(req.session.ticketId);
-//     return req.session.ticketId;
-//   }
-//   const userId = req.session.user.id;
-//   const result = await connection.query(
-//     "INSERT INTO tickets (user_id) VALUES ($1) RETURNING id",
-//     [userId]
-//   );
-//   const ticketId = result.rows[0].id;
-//   req.session.ticketId = ticketId;
-//   return ticketId;
-// }
+
 async function getOrCreateTicket(req) {
   // Если тикет есть в сессии, используем его
   if (req.session.ticketId) {
@@ -259,6 +251,28 @@ async function getOrCreateTicket(req) {
   req.session.ticketId = ticketId;
   return ticketId;
 }
+app.get("/products", async (req, res) => {
+  try {
+    const result = await connection.query("SELECT * FROM products LIMIT 24");
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error loading products:", err);
+    res.status(500).send("Error loading products");
+  }
+});
+app.get("/product", async (req, res) => {
+  const id = req.query.id;
+  console.log(id);
+  try {
+    const result = await connection.query(
+      `SELECT * FROM products WHERE id=${id}`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error loading product:", err);
+    res.status(500).send("Error loading product");
+  }
+});
 
 app.post("/chat", async (req, res) => {
   const { message } = req.body;
@@ -268,8 +282,8 @@ app.post("/chat", async (req, res) => {
     return res.status(400).json({ error: "Message is empty" });
   }
 
-  const sender = "user";
-  const userId = user?.id || null;
+  // const sender = "user";
+  // const userId = user?.id || null;
 
   //const botReply = "Thank you! Our support will reply soon.";
   //const botReply = JSON.stringify({ command: "finish", param: "0" });
@@ -286,10 +300,8 @@ app.post("/chat", async (req, res) => {
   }
 
   if (!req.session.user) {
-    console.log("401");
     return; //res.status(401).json({ reply: "Please log in." });
   }
-  console.log("200");
   const ticketId = await getOrCreateTicket(req);
   if (answer.json && answer.json.command === "finish") {
     console.log(`finished ${answer.json.param}`);
@@ -321,22 +333,6 @@ app.post("/chat", async (req, res) => {
     }
   );
 });
-// app.get("/chat/history", (req, res) => {
-//   const userId = req.session.user?.id;
-//   if (!userId) return res.status(401).send("Not authorized");
-
-//   connection.query(
-//     "SELECT * FROM chat_messages WHERE user_id = $1 ORDER BY created_at ASC",
-//     [userId],
-//     (err, result) => {
-//       if (err) {
-//         console.error(err);
-//         return res.status(500).send("Error while loading chat");
-//       }
-//       res.json(result.rows);
-//     }
-//   );
-// });
 app.get("/chat/history", async (req, res) => {
   const userId = req.session.user?.id;
   if (!userId) return res.status(401).send("Not authorized");
