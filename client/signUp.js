@@ -12,6 +12,15 @@ const backendResponse = document.querySelector("#backend-response");
 let isValidEmail = false;
 let isValidPassword = false;
 let isValidUsername = false;
+document
+  .getElementById("togglePassword")
+  .addEventListener("click", function () {
+    const passwordInput = document.getElementById("password-input");
+    const icon = document.getElementById("toggleIcon");
+    const isHidden = passwordInput.type === "password";
+    passwordInput.type = isHidden ? "text" : "password";
+    icon.className = isHidden ? "bi bi-eye-slash-fill" : "bi bi-eye-fill";
+  });
 (() => {
   const forms = document.querySelectorAll(".needs-validation");
 

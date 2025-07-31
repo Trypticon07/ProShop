@@ -1,5 +1,6 @@
 const emailInput = document.querySelector("#email-input");
 const passwordInput = document.querySelector("#password-input");
+const rememberCheck = document.getElementById("rememberCheck");
 
 const emailFeedback = document.querySelector("#emailFeedback");
 const passwordFeedback = document.querySelector("#passwordFeedback");
@@ -7,8 +8,20 @@ const passwordFeedback = document.querySelector("#passwordFeedback");
 const captchaError = document.querySelector("#captchaFeedback");
 const checkForm = document.querySelector("#check-form");
 const backendResponse = document.querySelector("#backend-response");
+
 let isValidEmail = false;
 let isValidPassword = false;
+let includeCredentials = true;
+
+document
+  .getElementById("togglePassword")
+  .addEventListener("click", function () {
+    const passwordInput = document.getElementById("password-input");
+    const icon = document.getElementById("toggleIcon");
+    const isHidden = passwordInput.type === "password";
+    passwordInput.type = isHidden ? "text" : "password";
+    icon.className = isHidden ? "bi bi-eye-slash-fill" : "bi bi-eye-fill";
+  });
 
 (() => {
   const forms = document.querySelectorAll(".needs-validation");
@@ -56,6 +69,11 @@ let isValidPassword = false;
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       event.stopPropagation();
+      // if (rememberCheck.checked) {
+      //   includeCredentials = true;
+      // } else {
+      //   includeCredentials = false;
+      // }
 
       const captchaResponse = grecaptcha.getResponse();
       if (captchaResponse) {
@@ -71,12 +89,12 @@ let isValidPassword = false;
       if (!isValidEmail || !isValidPassword || !captchaResponse) return;
       checkForm.classList.remove("form-invalid");
       checkForm.classList.add("form-valid");
-      Submit(captchaResponse);
+      Submit(captchaResponse, includeCredentials);
     });
   });
 })();
 
-function Submit(captchaToken) {
+function Submit(captchaToken, includeCredentials) {
   axios
     .post(
       "http://localhost:3000/logIn",
@@ -86,7 +104,7 @@ function Submit(captchaToken) {
         captcha: captchaToken,
       },
       {
-        withCredentials: true,
+        withCredentials: includeCredentials,
       }
     )
     .then((response) => {

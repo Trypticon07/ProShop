@@ -89,30 +89,6 @@ function applyTheme(theme) {
 
   localStorage.setItem("theme", theme);
 }
-
-// function checkSession() {
-//   fetch("http://localhost:3000/session", {
-//     credentials: "include",
-//   })
-//     .then((res) => {
-//       if (!res.ok) {
-//         document.getElementById("logInButtons").classList.remove("d-none");
-//         return;
-//       }
-//       return res.json();
-//     })
-//     .then((data) => {
-//       if (data && data.loggedIn) {
-//         document.getElementById("logInButtons").classList.add("d-none");
-//         document.getElementById("profileDropdown").classList.remove("d-none");
-//       }
-//     })
-//     .catch((err) => {
-//       console.error("Session error:", err);
-//       window.location.href = "logIn.html";
-//     });
-// }
-
 fetch("http://localhost:3000/session", {
   credentials: "include",
 })
