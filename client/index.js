@@ -1,6 +1,5 @@
 const sendBtn = document.getElementById("send-btn");
 const userInput = document.querySelector("#user-message");
-let isProcessing = false;
 
 const lightBtn = document.getElementById("light-btn");
 const darkBtn = document.getElementById("dark-btn");
@@ -8,11 +7,12 @@ const systemBtn = document.getElementById("system-btn");
 
 const logOutButtons = document.querySelectorAll(".logOut");
 const profileButtons = document.querySelectorAll(".profileBtn");
-const catalogButtons = document.querySelectorAll(".catalogBtn");
 
 const form = document.getElementById("searchForm");
 const searchInput = document.getElementById("searchInput");
 const resultsDiv = document.getElementById("results");
+
+let isProcessing = false;
 
 logOutButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
@@ -25,13 +25,6 @@ profileButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     e.preventDefault();
     window.location.href = "profile.html";
-  });
-});
-
-catalogButtons.forEach((btn) => {
-  btn.addEventListener("click", (e) => {
-    e.preventDefault();
-    window.location.href = "catalog.html";
   });
 });
 
@@ -72,12 +65,6 @@ userInput.addEventListener("keydown", function (event) {
 sendBtn.addEventListener("click", () => {
   sendMessage();
 });
-// searchInput.addEventListener("keydown", function (event) {
-//   if (event.key === "Enter" && !isProcessing) {
-//     event.preventDefault();
-//     sendMessage();
-//   }
-// });
 
 lightBtn.addEventListener("click", () => applyTheme("light"));
 darkBtn.addEventListener("click", () => applyTheme("dark"));
@@ -128,6 +115,14 @@ fetch("http://localhost:3000/products")
   .then((products) => {
     const container = document.getElementById("product-container");
     products.forEach((product) => {
+      let image_src = "";
+      console.log(product.image_urls);
+      if (product.image_urls) {
+        const imageArray = product.image_urls.replace(/[{}]/g, "").split(",");
+        console.log("here1" + imageArray);
+        console.log("here2" + imageArray[0]);
+        image_src = "images/png/" + imageArray[0];
+      }
       const col = document.createElement("div");
       col.className = "col-12 col-sm-6 col-md-4 col-lg-3 mb-4";
 
@@ -136,7 +131,7 @@ fetch("http://localhost:3000/products")
 
       card.innerHTML = `
         <img src="${
-          product.image_url || "images/png/projectImage.png"
+          image_src || "images/png/projectImage.png"
         }" class="card-img-top" alt="images/png/projectImage.png">
         <div class="card-body">
           <a href="product.html?id=${
