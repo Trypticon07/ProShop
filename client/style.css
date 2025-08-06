@@ -125,7 +125,7 @@ body {
 #open-chat-btn {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  right: 10px;
   background: #007bff;
   color: white;
   border: none;
@@ -256,11 +256,11 @@ body {
   transform: translateY(-4px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-
+/* 
 .card-img-top {
   height: 150px;
   object-fit: cover;
-}
+} */
 
 .card-body {
   font-size: 0.9rem;
@@ -286,38 +286,6 @@ body {
   margin-left: 2px;
   vertical-align: top;
 }
-
-/* #togglePassword:active {
-  border: none;
-}
-#togglePassword:focus {
-  border: none;
-}
-#togglePassword:target {
-  border: none;
-} */
-
-/* #togglePassword {
-  transition: none;
-}
-
-.password-wrapper {
-  position: relative;
-}
-.toggle-password {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem; 
-  top: 50%;
-  right: 1rem;
-  transform: translateY(-48%);
-  margin-right: 15px;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  z-index: 2;
-} */
 
 .password-wrapper {
   position: relative;

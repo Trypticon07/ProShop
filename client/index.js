@@ -10,6 +10,10 @@ const logOutButtons = document.querySelectorAll(".logOut");
 const profileButtons = document.querySelectorAll(".profileBtn");
 const catalogButtons = document.querySelectorAll(".catalogBtn");
 
+const form = document.getElementById("searchForm");
+const searchInput = document.getElementById("searchInput");
+const resultsDiv = document.getElementById("results");
+
 logOutButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -68,6 +72,12 @@ userInput.addEventListener("keydown", function (event) {
 sendBtn.addEventListener("click", () => {
   sendMessage();
 });
+// searchInput.addEventListener("keydown", function (event) {
+//   if (event.key === "Enter" && !isProcessing) {
+//     event.preventDefault();
+//     sendMessage();
+//   }
+// });
 
 lightBtn.addEventListener("click", () => applyTheme("light"));
 darkBtn.addEventListener("click", () => applyTheme("dark"));
@@ -125,9 +135,15 @@ fetch("http://localhost:3000/products")
       card.className = "card h-100";
 
       card.innerHTML = `
-        <img src="${product.image_url}" class="card-img-top" alt="${product.name}">
+        <img src="${
+          product.image_url || "images/png/projectImage.png"
+        }" class="card-img-top" alt="images/png/projectImage.png">
         <div class="card-body">
-          <a href="product.html?id=${product.id}" class="text-decoration-none"><h5 class="card-title">${product.name}</h5></a>
+          <a href="product.html?id=${
+            product.id
+          }" class="text-decoration-none"><h5 class="card-title">${
+        product.name
+      }</h5></a>
           <p class="card-text">${product.description}</p>
         </div>
         <div class="card-footer d-flex justify-content-between align-items-center">
@@ -158,6 +174,48 @@ fetch("http://localhost:3000/products")
   .catch((err) => {
     console.error("Error loading products:", err);
   });
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault(); // prevent page reload on form submit
+  const query = searchInput.value.trim();
+  if (!query) {
+    resultsDiv.innerHTML = "<p>Please enter a search query.</p>";
+    return;
+  }
+
+  try {
+    // call backend search API
+    const response = await fetch(
+      `http://localhost:3000/products/search?q=${encodeURIComponent(query)}`
+    );
+    if (!response.ok) {
+      resultsDiv.innerHTML = `<p>Error: ${response.statusText}</p>`;
+      return;
+    }
+    const products = await response.json();
+
+    if (products.length === 0) {
+      resultsDiv.innerHTML = "<p>No products found.</p>";
+      return;
+    }
+
+    // display results
+    resultsDiv.innerHTML = products
+      .map(
+        (product) => `
+          <div style="border:1px solid #ccc; margin-bottom: 10px; padding: 10px;">
+            <h3>${product.name}</h3>
+            <p>${product.description || "No description"}</p>
+            <p>Price: ${product.price}</p>
+            <p>Stock: ${product.stock}</p>
+          </div>
+        `
+      )
+      .join("");
+  } catch (error) {
+    resultsDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+  }
+});
 
 function getChatHistory() {
   fetch("http://localhost:3000/chat/history", {

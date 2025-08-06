@@ -42,10 +42,30 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: false,
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
+      //maxAge: 1000 * 60 * 60 * 24, // 1 day
     },
   })
 );
+
+const sessionMiddleware = (req, res, next) => {
+  const rememberMe = req.rememberMe;
+
+  session({
+    secret:
+      "YOUR_SESSION_SECRET_KEY",
+    // node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      maxAge: rememberMe
+        ? 1000 * 60 * 60 * 24 * 30 // 30 days
+        : null, // Session cookie (deleted on browser close)
+    },
+  })(req, res, next);
+};
+
 // app.use((req, res, next) => {
 //   console.log(`Incoming request: ${req.method} ${req.url}`);
 //   next();
@@ -176,6 +196,11 @@ app.post("/logIn", loginLimiter, async (req, res) => {
       email: user.email,
       username: user.username,
     };
+    if (req.body.rememberMe) {
+      req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 30; // 30 days
+    } else {
+      req.session.cookie.expires = false;
+    }
 
     res.status(200).send("You have successfully logged in!");
   } catch (err) {
@@ -253,7 +278,7 @@ async function getOrCreateTicket(req) {
 }
 app.get("/products", async (req, res) => {
   try {
-    const result = await connection.query("SELECT * FROM products LIMIT 24");
+    const result = await connection.query("SELECT * FROM products LIMIT 40");
     res.json(result.rows);
   } catch (err) {
     console.error("Error loading products:", err);
@@ -366,7 +391,33 @@ app.get("/chat/history", async (req, res) => {
     res.status(500).send("Error while loading chat");
   }
 });
+app.get("/products/search", async (req, res) => {
+  const searchTerm = req.query.q;
 
+  if (!searchTerm) {
+    return res
+      .status(400)
+      .json({ error: 'Search query parameter "q" is required' });
+  }
+
+  try {
+    const query = `
+      SELECT * FROM products 
+      WHERE name ILIKE $1 OR description ILIKE $1
+      ORDER BY id
+      LIMIT 20
+    `;
+
+    const values = [`%${searchTerm}%`];
+
+    const result = await connection.query(query, values);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Search error:", error); // <-- add this line
+    res.status(500).json({ error: error.message });
+  }
+});
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });

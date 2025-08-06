@@ -11,7 +11,6 @@ const backendResponse = document.querySelector("#backend-response");
 
 let isValidEmail = false;
 let isValidPassword = false;
-let includeCredentials = true;
 
 document
   .getElementById("togglePassword")
@@ -87,14 +86,15 @@ document
       //let captchaResponse = true;
 
       if (!isValidEmail || !isValidPassword || !captchaResponse) return;
+
       checkForm.classList.remove("form-invalid");
       checkForm.classList.add("form-valid");
-      Submit(captchaResponse, includeCredentials);
+      Submit(captchaResponse);
     });
   });
 })();
 
-function Submit(captchaToken, includeCredentials) {
+function Submit(captchaToken) {
   axios
     .post(
       "http://localhost:3000/logIn",
@@ -102,9 +102,10 @@ function Submit(captchaToken, includeCredentials) {
         password: document.querySelector("#password-input").value,
         email: document.querySelector("#email-input").value,
         captcha: captchaToken,
+        rememberMe: rememberCheck.checked,
       },
       {
-        withCredentials: includeCredentials,
+        withCredentials: true,
       }
     )
     .then((response) => {

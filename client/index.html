@@ -289,13 +289,14 @@
 
           <form
             class="col-12 col-lg-auto d-flex flex-grow-1 ms-lg-3 mb-3 mb-lg-0 me-lg-3"
-            width="60"
+            id="searchForm"
           >
             <input
               type="search"
               class="form-control form-control-dark"
               placeholder="Search..."
               aria-label="Search"
+              id="searchInput"
             />
           </form>
 
@@ -416,10 +417,10 @@
           <!-- cards will be inserted here -->
         </div>
       </div>
-
+      <div id="results"></div>
       <div class="chat">
         <button class="btn btn-primary btn-anim" id="open-chat-btn">
-          💬 Technical support
+          <i class="bi bi-chat-dots"></i> Technical support
         </button>
 
         <div id="chat-box">

@@ -11,6 +11,8 @@ if (productId) {
   fetch(`http://localhost:3000/product?id=${productId}`)
     .then((res) => res.json())
     .then((data) => {
+      console.log(data);
+      console.log(data[0]);
       productImage.src = `${
         data[0].image_url || "images/png/projectImage.png"
       }`;
