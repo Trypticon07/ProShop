@@ -3,7 +3,7 @@ fetch("http://localhost:3000/profile", {
 })
   .then((res) => {
     if (!res.ok) {
-      window.location.href = "/logIn.html";
+      window.location.href = "/client/logIn.html";
       return;
     }
     return res.text();
@@ -14,6 +14,6 @@ fetch("http://localhost:3000/profile", {
     }
   })
   .catch((err) => {
-    console.error("Ошибка при получении профиля:", err);
-    window.location.href = "/logIn.html";
+    console.error("Error while getting profile info:", err);
+    window.location.href = "/client/logIn.html";
   });

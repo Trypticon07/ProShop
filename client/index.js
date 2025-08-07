@@ -116,11 +116,8 @@ fetch("http://localhost:3000/products")
     const container = document.getElementById("product-container");
     products.forEach((product) => {
       let image_src = "";
-      console.log(product.image_urls);
       if (product.image_urls) {
         const imageArray = product.image_urls.replace(/[{}]/g, "").split(",");
-        console.log("here1" + imageArray);
-        console.log("here2" + imageArray[0]);
         image_src = "images/png/" + imageArray[0];
       }
       const col = document.createElement("div");
@@ -142,7 +139,7 @@ fetch("http://localhost:3000/products")
           <p class="card-text">${product.description}</p>
         </div>
         <div class="card-footer d-flex justify-content-between align-items-center">
-        <div class="product-price text-dark"></div>
+        <div class="product-price"></div>
           <button class="btn btn-primary btn-sm d-flex align-items-center buyBtn">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart2 me-1" viewBox="0 0 16 16">
               <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l1.25 5h8.22l1.25-5zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"/>
