@@ -1,4 +1,3 @@
-# TODO: Transfer this to another computer!
 from gpt4all import GPT4All
 from flask import Flask, request, jsonify
 
@@ -12,7 +11,7 @@ def chat():
     data = request.get_json()
     messages = data.get("messages", [])
 
-    # Creating ChatML с <|im_start|> / <|im_end|>
+    # Creating ChatML with <|im_start|> / <|im_end|>
     prompt = ""
     for msg in messages:
         role = msg["role"]

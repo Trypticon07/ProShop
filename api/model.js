@@ -1,5 +1,4 @@
 import fetch from "node-fetch";
-import readlineSync from "readline-sync";
 import fs from "fs/promises";
 
 const systemInstructions = await fs.readFile("instructions.txt", "utf-8");

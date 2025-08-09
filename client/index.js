@@ -7,10 +7,15 @@ const systemBtn = document.getElementById("system-btn");
 
 const logOutButtons = document.querySelectorAll(".logOut");
 const profileButtons = document.querySelectorAll(".profileBtn");
+const catalogButtons = document.querySelectorAll(".catalogBtn");
 
-const form = document.getElementById("searchForm");
+const searchForm = document.getElementById("searchForm");
 const searchInput = document.getElementById("searchInput");
-const resultsDiv = document.getElementById("results");
+
+const container = document.getElementById("product-container");
+
+const chatBtn = document.getElementById("open-chat-btn");
+const footer = document.getElementById("footer-container");
 
 let isProcessing = false;
 
@@ -27,6 +32,13 @@ profileButtons.forEach((btn) => {
     window.location.href = "profile.html";
   });
 });
+catalogButtons.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    getProducts();
+    window.location.href = "#product-container";
+  });
+});
 
 document.querySelector("#signUp").addEventListener("click", () => {
   window.location.href = "signUp.html";
@@ -35,8 +47,11 @@ document.querySelector("#signUp").addEventListener("click", () => {
 document.querySelector("#logIn").addEventListener("click", () => {
   window.location.href = "logIn.html";
 });
+document.getElementById("close-chat").addEventListener("click", () => {
+  document.getElementById("chat-box").style.display = "none";
+});
 
-document.getElementById("open-chat-btn").addEventListener("click", () => {
+chatBtn.addEventListener("click", () => {
   getChatHistory();
   const chatBox = document.getElementById("chat-box");
   chatBox.style.display = chatBox.style.display === "flex" ? "none" : "flex";
@@ -52,6 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  getProducts();
   const savedTheme = localStorage.getItem("theme") || "system";
   applyTheme(savedTheme);
 });
@@ -64,6 +80,17 @@ userInput.addEventListener("keydown", function (event) {
 });
 sendBtn.addEventListener("click", () => {
   sendMessage();
+});
+
+window.addEventListener("scroll", () => {
+  const footerRect = footer.getBoundingClientRect();
+  const overlap = window.innerHeight - footerRect.top;
+
+  if (overlap > 0) {
+    chatBtn.style.bottom = `${1 + overlap}px`;
+  } else {
+    chatBtn.style.bottom = "20px";
+  }
 });
 
 lightBtn.addEventListener("click", () => applyTheme("light"));
@@ -110,23 +137,78 @@ fetch("http://localhost:3000/session", {
     document.getElementById("profileDropdown").classList.add("d-none");
   });
 
-fetch("http://localhost:3000/products")
-  .then((res) => res.json())
-  .then((products) => {
-    const container = document.getElementById("product-container");
-    products.forEach((product) => {
-      let image_src = "";
-      if (product.image_urls) {
-        const imageArray = product.image_urls.replace(/[{}]/g, "").split(",");
-        image_src = "images/png/" + imageArray[0];
-      }
-      const col = document.createElement("div");
-      col.className = "col-12 col-sm-6 col-md-4 col-lg-3 mb-4";
+function getProducts() {
+  fetch("http://localhost:3000/products")
+    .then((res) => res.json())
+    .then((products) => {
+      appendProduct(products);
+    })
+    .catch((err) => {
+      console.error("Error loading products:", err);
+    });
+}
 
-      const card = document.createElement("div");
-      card.className = "card h-100";
+searchForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const query = searchInput.value.trim();
+  if (!query) {
+    return;
+  }
 
-      card.innerHTML = `
+  try {
+    const response = await fetch(
+      `http://localhost:3000/products/search?q=${encodeURIComponent(query)}`
+    );
+    if (!response.ok) {
+      container.innerHTML = `<p>Error: ${response.statusText}</p>`;
+      return;
+    }
+    const products = await response.json();
+
+    if (products.length === 0) {
+      container.innerHTML = `<div
+            class="d-flex flex-column align-items-center text-center py-5 w-100"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="200"
+              height="200"
+              fill="currentColor"
+              class="bi bi-search"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"
+              />
+            </svg>
+            <h2 class="fs-3">
+              Oops! nothing was found! Please, rephrase your request and try
+              again
+            </h2>
+          </div>`;
+      return;
+    }
+    appendProduct(products);
+  } catch (error) {
+    container.innerHTML = `<p>Error: ${error.message}</p>`;
+  }
+});
+
+function appendProduct(products) {
+  container.innerHTML = "";
+  products.forEach((product) => {
+    let image_src = "";
+    if (product.image_urls) {
+      const imageArray = product.image_urls.replace(/[{}]/g, "").split(",");
+      image_src = "images/png/" + imageArray[0];
+    }
+    const col = document.createElement("div");
+    col.className = "col-12 col-sm-6 col-md-4 col-lg-3 mb-4";
+
+    const card = document.createElement("div");
+    card.className = "card h-100";
+
+    card.innerHTML = `
         <img src="${
           image_src || "images/png/projectImage.png"
         }" class="card-img-top" alt="images/png/projectImage.png">
@@ -134,8 +216,8 @@ fetch("http://localhost:3000/products")
           <a href="product.html?id=${
             product.id
           }" class="text-decoration-none"><h5 class="card-title">${
-        product.name
-      }</h5></a>
+      product.name
+    }</h5></a>
           <p class="card-text">${product.description}</p>
         </div>
         <div class="card-footer d-flex justify-content-between align-items-center">
@@ -148,66 +230,21 @@ fetch("http://localhost:3000/products")
           </button>
         </div>
       `;
-      const price = parseFloat(product.price);
-      const [dollars, cents] = isNaN(price)
-        ? ["0", "00"]
-        : price.toFixed(2).split(".");
+    const price = parseFloat(product.price);
+    const [dollars, cents] = isNaN(price)
+      ? ["0", "00"]
+      : price.toFixed(2).split(".");
 
-      card.querySelector(".product-price").innerHTML = `
+    card.querySelector(".product-price").innerHTML = `
       <span class="dollar-sign align-self-start">$</span>
       <span class="main-price">${dollars}</span>
       <span class="cents align-self-start">${cents}</span>
       `;
 
-      col.appendChild(card);
-      container.appendChild(col);
-    });
-  })
-  .catch((err) => {
-    console.error("Error loading products:", err);
+    col.appendChild(card);
+    container.appendChild(col);
   });
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault(); // prevent page reload on form submit
-  const query = searchInput.value.trim();
-  if (!query) {
-    resultsDiv.innerHTML = "<p>Please enter a search query.</p>";
-    return;
-  }
-
-  try {
-    // call backend search API
-    const response = await fetch(
-      `http://localhost:3000/products/search?q=${encodeURIComponent(query)}`
-    );
-    if (!response.ok) {
-      resultsDiv.innerHTML = `<p>Error: ${response.statusText}</p>`;
-      return;
-    }
-    const products = await response.json();
-
-    if (products.length === 0) {
-      resultsDiv.innerHTML = "<p>No products found.</p>";
-      return;
-    }
-
-    // display results
-    resultsDiv.innerHTML = products
-      .map(
-        (product) => `
-          <div style="border:1px solid #ccc; margin-bottom: 10px; padding: 10px;">
-            <h3>${product.name}</h3>
-            <p>${product.description || "No description"}</p>
-            <p>Price: ${product.price}</p>
-            <p>Stock: ${product.stock}</p>
-          </div>
-        `
-      )
-      .join("");
-  } catch (error) {
-    resultsDiv.innerHTML = `<p>Error: ${error.message}</p>`;
-  }
-});
+}
 
 function getChatHistory() {
   fetch("http://localhost:3000/chat/history", {
@@ -280,7 +317,6 @@ function appendMessage(sender, text) {
   const div = document.createElement("div");
   div.classList.add("chat-message", sender.toLowerCase());
   div.innerHTML = `<strong>${sender}:</strong> ${text}`;
-  //div.textContent = `${sender}: ${text}`;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
   return div;

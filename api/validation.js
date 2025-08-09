@@ -1,11 +1,3 @@
-import express from "express";
-import cors from "cors";
-import { Client } from "pg";
-import bodyParser from "body-parser";
-import morgan from "morgan";
-import bcrypt from "bcrypt";
-import axios from "axios";
-let isInvalid = false;
 export function checkEmailAndPassword(emailInput, passwordInput) {
   if (emailInput.length < 6 || emailInput.length > 100) {
     return {

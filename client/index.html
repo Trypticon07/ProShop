@@ -208,24 +208,9 @@
           >
             <li>
               <a
-                href="/client/contactUs.html"
-                class="nav-link px-2 text-white me-3"
-                >Contact us</a
-              >
-            </li>
-            <li>
-              <a href="#product-container" class="nav-link px-2 text-white me-3"
+                href=""
+                class="nav-link px-2 text-white me-3 rounded catalogBtn header-li-item"
                 >Catalog</a
-              >
-            </li>
-            <li>
-              <a href="/client/faqs.html" class="nav-link px-2 text-white me-3"
-                >FAQs</a
-              >
-            </li>
-            <li>
-              <a href="/client/about.html" class="nav-link px-2 text-white me-3"
-                >About</a
               >
             </li>
           </ul>
@@ -288,7 +273,7 @@
             <ul class="dropdown-menu">
               <li class="px-3 py-2">
                 <strong>AlxPav Chr</strong><br />
-                <small class="text-muted">alx.pav2106@gmail.com</small>
+                <small class="dropdown-text">alx.pav2106@gmail.com</small>
               </li>
               <div class="btn-holder-1">
                 <li class="px-3 py-2 d-flex gap-2 justify-content-center li-1">
@@ -348,26 +333,31 @@
           <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
             <a
               type="button"
-              class="btn btn-primary btn-anim btn-lg px-4 gap-3"
-              href="#product-container"
+              class="btn btn-primary btn-anim btn-lg px-4 gap-3 catalogBtn"
+              href=""
               >View catalog</a
             >
           </div>
         </div>
       </div>
-      <div class="d-flex justify-content-center align-items-center min-vh-100">
+
+      <div class="d-flex justify-content-center align-items-center">
         <div class="card-group w-75 flex-wrap" id="product-container">
           <!-- cards will be inserted here -->
         </div>
       </div>
-      <!-- TODO: rework this -->
-      <div id="results"></div>
       <div class="chat">
         <button class="btn btn-primary btn-anim" id="open-chat-btn">
           <i class="bi bi-chat-dots"></i> Technical support
         </button>
 
         <div id="chat-box">
+          <button
+            type="button"
+            class="btn-close"
+            id="close-chat"
+            aria-label="Close"
+          ></button>
           <div id="chat-messages"></div>
           <div id="chat-input">
             <input
@@ -381,9 +371,50 @@
       </div>
     </main>
     <footer>
-      <!-- place footer here -->
+      <div class="container" id="footer-container">
+        <footer
+          class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
+        >
+          <p class="col-md-4 mb-0 text-body-secondary">© 2025 Company, Inc</p>
+          <a
+            href="/client/index.html"
+            class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
+            aria-label="Bootstrap"
+          >
+            <img
+              class="d-block"
+              src="images/png/projectImage.png"
+              alt=""
+              width="40"
+              height="40"
+            />
+          </a>
+          <ul class="nav col-md-4 justify-content-end">
+            <li class="nav-item">
+              <a
+                href="/client/contactUs.html"
+                class="nav-link px-2 text-body-secondary"
+                >Contact us</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                href="/client/faqs.html"
+                class="nav-link px-2 text-body-secondary"
+                >FAQs</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                href="/client/about.html"
+                class="nav-link px-2 text-body-secondary"
+                >About Pro Shop</a
+              >
+            </li>
+          </ul>
+        </footer>
+      </div>
     </footer>
-    <!-- Bootstrap JavaScript Libraries -->
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
       integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"

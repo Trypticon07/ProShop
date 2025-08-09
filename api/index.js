@@ -414,7 +414,7 @@ app.get("/products/search", async (req, res) => {
 
     res.json(result.rows);
   } catch (error) {
-    console.error("Search error:", error); // <-- add this line
+    console.error("Search error:", error);
     res.status(500).json({ error: error.message });
   }
 });
