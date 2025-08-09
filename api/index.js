@@ -77,6 +77,7 @@ function requireAuth(req, res, next) {
   }
   next();
 }
+
 const registerLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 mins
   max: 2,
@@ -88,6 +89,7 @@ const registerLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
 const loginLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 mins
   max: 5,
@@ -151,6 +153,7 @@ app.post("/register", registerLimiter, async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
 app.post("/logIn", loginLimiter, async (req, res) => {
   const password = req.body.password;
   const email = req.body.email;
@@ -209,6 +212,7 @@ app.post("/logIn", loginLimiter, async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
 app.post("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -222,6 +226,7 @@ app.post("/logout", (req, res) => {
 app.get("/profile", requireAuth, async (req, res) => {
   res.send(`Welcome, ${req.session.user.username}!`);
 });
+
 app.get("/session", (req, res) => {
   if (req.session.user) {
     res.json({ loggedIn: true, user: req.session.user });
@@ -229,6 +234,7 @@ app.get("/session", (req, res) => {
     res.status(401).json({ loggedIn: false });
   }
 });
+
 function extractCommandJson(text) {
   // Searching for similar JSON with keys command and param
   const match = text.match(/\{[^{}]*"command"[^{}]*"param"[^{}]*\}/);
@@ -276,6 +282,7 @@ async function getOrCreateTicket(req) {
   req.session.ticketId = ticketId;
   return ticketId;
 }
+
 app.get("/products", async (req, res) => {
   try {
     const result = await connection.query("SELECT * FROM products LIMIT 40");
@@ -285,6 +292,7 @@ app.get("/products", async (req, res) => {
     res.status(500).send("Error loading products");
   }
 });
+
 app.get("/product", async (req, res) => {
   const id = req.query.id;
   console.log(id);
@@ -307,11 +315,6 @@ app.post("/chat", async (req, res) => {
     return res.status(400).json({ error: "Message is empty" });
   }
 
-  // const sender = "user";
-  // const userId = user?.id || null;
-
-  //const botReply = "Thank you! Our support will reply soon.";
-  //const botReply = JSON.stringify({ command: "finish", param: "0" });
   const botReply = await sendMessage(message);
   const answer = extractCommandJson(botReply);
   if (answer.json) {
@@ -325,7 +328,7 @@ app.post("/chat", async (req, res) => {
   }
 
   if (!req.session.user) {
-    return; //res.status(401).json({ reply: "Please log in." });
+    return;
   }
   const ticketId = await getOrCreateTicket(req);
   if (answer.json && answer.json.command === "finish") {
@@ -358,12 +361,12 @@ app.post("/chat", async (req, res) => {
     }
   );
 });
+
 app.get("/chat/history", async (req, res) => {
   const userId = req.session.user?.id;
   if (!userId) return res.status(401).send("Not authorized");
 
   try {
-    // Ищем незакрытый тикет
     const ticketResult = await connection.query(
       `SELECT id FROM tickets WHERE user_id = $1 AND status != 'closed'
        ORDER BY created_at DESC LIMIT 1`,
@@ -371,12 +374,11 @@ app.get("/chat/history", async (req, res) => {
     );
 
     if (ticketResult.rows.length === 0) {
-      return res.json([]); // нет активных тикетов
+      return res.json([]);
     }
 
     const ticketId = ticketResult.rows[0].id;
 
-    // Загружаем сообщения по тикету
     const chatResult = await connection.query(
       `SELECT sender, message, created_at
        FROM chat_messages
@@ -391,6 +393,7 @@ app.get("/chat/history", async (req, res) => {
     res.status(500).send("Error while loading chat");
   }
 });
+
 app.get("/products/search", async (req, res) => {
   const searchTerm = req.query.q;
 
@@ -418,6 +421,39 @@ app.get("/products/search", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+app.post("/cart/add", async (req, res) => {
+  try {
+    const userId = req.session.user?.id;
+    console.log(userId);
+    if (!userId) return res.status(401).send("Not authorized");
+    const productId = req.body.product_id;
+    const quantity = req.body.quantity;
+
+    if (!productId || !quantity) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const query = `
+      INSERT INTO cart_items (user_id, product_id, quantity, added_at)
+      VALUES ($1, $2, $3, NOW())
+      RETURNING *;
+    `;
+
+    const values = [userId, productId, quantity];
+
+    const result = await connection.query(query, values);
+
+    res.status(201).json({
+      message: "Item added to cart successfully",
+      cart_item: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error adding item to cart:", error);
+    res.status(500).send("Error while adding products to cart");
+  }
+});
+
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });

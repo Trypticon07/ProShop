@@ -9,6 +9,19 @@ const logOutButtons = document.querySelectorAll(".logOut");
 const profileButtons = document.querySelectorAll(".profileBtn");
 const catalogButtons = document.querySelectorAll(".catalogBtn");
 
+const logInButtons = document.getElementById("logInButtons");
+const profileDropdown = document.getElementById("profileDropdown");
+
+const openCartBtn = document.getElementById("open-cart");
+
+const amountInCart = document.getElementById("amount-in-cart");
+
+const cartModal = document.getElementById("cart-modal");
+const closeCartBtn = document.getElementById("close-cart");
+const cartItemsTable = document.getElementById("cart-items");
+const cartTotal = document.getElementById("cart-total");
+const clearCartBtn = document.getElementById("clear-cart-btn");
+
 const searchForm = document.getElementById("searchForm");
 const searchInput = document.getElementById("searchInput");
 
@@ -16,6 +29,15 @@ const container = document.getElementById("product-container");
 
 const chatBtn = document.getElementById("open-chat-btn");
 const footer = document.getElementById("footer-container");
+
+const popoverTriggerList = document.querySelectorAll(
+  '[data-bs-toggle="popover"]'
+);
+const popoverList = [...popoverTriggerList].map(
+  (popoverTriggerEl) => new bootstrap.Popover(popoverTriggerEl)
+);
+
+let products_amount = 0;
 
 let isProcessing = false;
 
@@ -78,9 +100,68 @@ userInput.addEventListener("keydown", function (event) {
     sendMessage();
   }
 });
+
 sendBtn.addEventListener("click", () => {
   sendMessage();
 });
+
+openCartBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  loadCartItems();
+  cartModal.classList.remove("hidden");
+});
+
+closeCartBtn.addEventListener("click", () => {
+  cartModal.classList.add("hidden");
+});
+
+cartModal.addEventListener("click", (e) => {
+  if (e.target === cartModal) {
+    cartModal.classList.add("hidden");
+  }
+});
+
+clearCartBtn.addEventListener("click", () => {
+  if (confirm("Are you sure you want to clear the cart?")) {
+    localStorage.removeItem("cart");
+    loadCartItems();
+  }
+});
+
+function loadCartItems() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cartItemsTable.innerHTML = "";
+  let totalPrice = 0;
+
+  if (cart.length === 0) {
+    cartItemsTable.innerHTML = `<tr><td colspan="5" class="text-center">Cart is empty</td></tr>`;
+    cartTotal.textContent = "Total: $0.00";
+    return;
+  }
+
+  cart.forEach((item, index) => {
+    const productId = item.product_id;
+    console.log(item.product_id);
+    const productName = item.productName;
+
+    const price = Number(item.productPrice);
+    const itemTotal = price * item.quantity;
+    totalPrice += itemTotal;
+
+    const row = `
+      <tr>
+        <td>${productId}</td>
+        <td>${productName}</td>
+        <td>${item.quantity}</td>
+        <td>$${price.toFixed(2)}</td>
+        <td>$${itemTotal.toFixed(2)}</td>
+      </tr>
+    `;
+    cartItemsTable.insertAdjacentHTML("beforeend", row);
+  });
+
+  cartTotal.textContent = `Total: $${totalPrice.toFixed(2)}`;
+}
 
 window.addEventListener("scroll", () => {
   const footerRect = footer.getBoundingClientRect();
@@ -118,23 +199,25 @@ fetch("http://localhost:3000/session", {
 })
   .then((res) => {
     if (!res.ok) {
-      document.getElementById("logInButtons").classList.remove("d-none");
-      document.getElementById("profileDropdown").classList.add("d-none");
+      logInButtons.classList.remove("d-none");
+      profileDropdown.classList.add("d-none");
+      openCartBtn.classList.add("d-none");
       return null;
     }
     return res.json();
   })
   .then((data) => {
     if (data && data.loggedIn) {
-      document.getElementById("logInButtons").classList.add("d-none");
-      document.getElementById("profileDropdown").classList.remove("d-none");
+      logInButtons.classList.add("d-none");
+      profileDropdown.classList.remove("d-none");
+      openCartBtn.classList.remove("d-none");
     }
   })
   .catch((err) => {
-    console.log("error: " + err);
     console.error("Session error:", err);
-    document.getElementById("logInButtons").classList.remove("d-none");
-    document.getElementById("profileDropdown").classList.add("d-none");
+    logInButtons.classList.remove("d-none");
+    profileDropdown.classList.add("d-none");
+    openCartBtn.classList.add("d-none");
   });
 
 function getProducts() {
@@ -222,7 +305,7 @@ function appendProduct(products) {
         </div>
         <div class="card-footer d-flex justify-content-between align-items-center">
         <div class="product-price"></div>
-          <button class="btn btn-primary btn-sm d-flex align-items-center buyBtn">
+          <button class="btn btn-primary btn-sm d-flex align-items-center buy-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart2 me-1" viewBox="0 0 16 16">
               <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l1.25 5h8.22l1.25-5zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"/>
             </svg>
@@ -244,6 +327,72 @@ function appendProduct(products) {
     col.appendChild(card);
     container.appendChild(col);
   });
+  updateButtons();
+}
+
+function updateButtons() {
+  const buyButtons = document.querySelectorAll(".buy-btn");
+  buyButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".card");
+      const link = card.querySelector("a[href*='product.html?id=']");
+      const url = new URL(link.href);
+      const productId = url.searchParams.get("id");
+      let productName;
+      let productPrice;
+
+      console.log("Product ID:", productId);
+      fetch(`http://localhost:3000/product?id=${productId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          //productName.textContent = data[0].name;
+          console.log(data[0].name);
+          productName = data[0].name;
+          productPrice = data[0].price;
+
+          let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+          const existing = cart.find((item) => item.product_id == productId);
+
+          if (existing) {
+            existing.quantity++;
+          } else {
+            cart.push({
+              product_id: productId,
+              productName,
+              productPrice,
+              quantity: 1,
+            });
+          }
+          localStorage.setItem("cart", JSON.stringify(cart));
+          alert("Товар добавлен в корзину!");
+          products_amount += 1;
+          amountInCart.textContent = products_amount;
+        })
+        .catch((err) => console.error("Error loading product:", err));
+      //addToCart(productId);
+    });
+  });
+}
+
+function addToCart(productId) {
+  fetch("http://localhost:3000/cart/add", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      product_id: productId,
+      quantity: 2,
+    }),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        return null;
+      }
+      return res.json();
+    })
+    .then((data) => console.log(data))
+    .catch((err) => console.error(err));
 }
 
 function getChatHistory() {
