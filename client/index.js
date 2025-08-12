@@ -20,7 +20,6 @@ const cartModal = document.getElementById("cart-modal");
 const closeCartBtn = document.getElementById("close-cart");
 const cartItemsTable = document.getElementById("cart-items");
 const cartTotal = document.getElementById("cart-total");
-const clearCartBtn = document.getElementById("clear-cart-btn");
 
 const searchForm = document.getElementById("searchForm");
 const searchInput = document.getElementById("searchInput");
@@ -30,16 +29,43 @@ const container = document.getElementById("product-container");
 const chatBtn = document.getElementById("open-chat-btn");
 const footer = document.getElementById("footer-container");
 
+const alertContainer = document.getElementById("alert-container");
+
+let isProcessing = false;
+
+const cart = JSON.parse(localStorage.getItem("cart")) || [];
+let totalProducts = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+if (totalProducts > 0) {
+  console.log(totalProducts);
+  amountInCart.classList.remove("d-none");
+  amountInCart.textContent = totalProducts;
+}
+
 const popoverTriggerList = document.querySelectorAll(
   '[data-bs-toggle="popover"]'
 );
-const popoverList = [...popoverTriggerList].map(
-  (popoverTriggerEl) => new bootstrap.Popover(popoverTriggerEl)
-);
+const popoverList = [...popoverTriggerList].map((popoverTriggerEl) => {
+  const popover = new bootstrap.Popover(popoverTriggerEl, {
+    container: "body",
+    html: true,
+    placement: "left",
+    content:
+      "<a class='text-decoration-none' id='clear-cart' target='_blank'>Clear cart</a>",
+  });
 
-let products_amount = 0;
+  popoverTriggerEl.addEventListener("shown.bs.popover", () => {
+    const clearCart = document.getElementById("clear-cart");
+    clearCart.addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem("cart");
+      loadCartItems();
+      amountInCart.textContent = "0";
+      amountInCart.classList.add("d-none");
+    });
+  });
 
-let isProcessing = false;
+  return popover;
+});
 
 logOutButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
@@ -110,7 +136,6 @@ openCartBtn.addEventListener("click", (e) => {
   loadCartItems();
   cartModal.classList.remove("hidden");
 });
-
 closeCartBtn.addEventListener("click", () => {
   cartModal.classList.add("hidden");
 });
@@ -121,13 +146,40 @@ cartModal.addEventListener("click", (e) => {
   }
 });
 
-clearCartBtn.addEventListener("click", () => {
-  if (confirm("Are you sure you want to clear the cart?")) {
-    localStorage.removeItem("cart");
-    loadCartItems();
-  }
-});
+// function loadCartItems() {
+//   const cart = JSON.parse(localStorage.getItem("cart")) || [];
+//   cartItemsTable.innerHTML = "";
+//   let totalPrice = 0;
 
+//   if (cart.length === 0) {
+//     cartItemsTable.innerHTML = `<tr><td colspan="5" class="text-center">Cart is empty</td></tr>`;
+//     cartTotal.textContent = "Total: $0.00";
+//     return;
+//   }
+
+//   cart.forEach((item, index) => {
+//     const productId = item.product_id;
+//     console.log(item.product_id);
+//     const productName = item.productName;
+
+//     const price = Number(item.productPrice);
+//     const itemTotal = price * item.quantity;
+//     totalPrice += itemTotal;
+
+//     const row = `
+//       <tr>
+//         <td>${productId}</td>
+//         <td>${productName}</td>
+//         <td>${item.quantity}</td>
+//         <td>$${price.toFixed(2)}</td>
+//         <td>$${itemTotal.toFixed(2)}</td>
+//       </tr>
+//     `;
+//     cartItemsTable.insertAdjacentHTML("beforeend", row);
+//   });
+
+//   cartTotal.textContent = `Total: $${totalPrice.toFixed(2)}`;
+// }
 function loadCartItems() {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   cartItemsTable.innerHTML = "";
@@ -141,9 +193,7 @@ function loadCartItems() {
 
   cart.forEach((item, index) => {
     const productId = item.product_id;
-    console.log(item.product_id);
     const productName = item.productName;
-
     const price = Number(item.productPrice);
     const itemTotal = price * item.quantity;
     totalPrice += itemTotal;
@@ -152,7 +202,13 @@ function loadCartItems() {
       <tr>
         <td>${productId}</td>
         <td>${productName}</td>
-        <td>${item.quantity}</td>
+        <td class="text-center">
+          <div class="d-flex align-items-center justify-content-center gap-2">
+            <button class="btn btn-outline-secondary btn-sm square-btn quantity-decrease" data-id="${productId}">-</button>
+            <span class="fw-bold">${item.quantity}</span>
+            <button class="btn btn-outline-secondary btn-sm square-btn quantity-increase" data-id="${productId}">+</button>
+          </div>
+        </td>
         <td>$${price.toFixed(2)}</td>
         <td>$${itemTotal.toFixed(2)}</td>
       </tr>
@@ -161,6 +217,32 @@ function loadCartItems() {
   });
 
   cartTotal.textContent = `Total: $${totalPrice.toFixed(2)}`;
+
+  document.querySelectorAll(".quantity-increase").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      updateQuantity(btn.dataset.id, 1);
+    });
+  });
+
+  document.querySelectorAll(".quantity-decrease").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      updateQuantity(btn.dataset.id, -1);
+    });
+  });
+}
+
+function updateQuantity(productId, change) {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const item = cart.find((p) => p.product_id === productId);
+  if (!item) return;
+
+  item.quantity += change;
+  if (item.quantity <= 0) {
+    cart = cart.filter((p) => p.product_id !== productId);
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+  loadCartItems();
 }
 
 window.addEventListener("scroll", () => {
@@ -334,6 +416,28 @@ function updateButtons() {
   const buyButtons = document.querySelectorAll(".buy-btn");
   buyButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
+      // Adding message
+      const alert = document.createElement("div");
+      alert.className = "alert alert-success alert-dismissible fade show mb-2";
+      alert.setAttribute("role", "alert");
+      alert.innerHTML = `Product added to cart.
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      `;
+
+      alertContainer.appendChild(alert);
+
+      // If more than 2 messages deliting the old one
+      const alerts = alertContainer.querySelectorAll(".alert");
+      if (alerts.length > 2) {
+        alerts[0].remove();
+      }
+      setTimeout(() => {
+        alert.classList.remove("show");
+        alert.classList.add("fade");
+        setTimeout(() => alert.remove(), 150);
+      }, 2000);
+
+      // Cart logic
       const card = btn.closest(".card");
       const link = card.querySelector("a[href*='product.html?id=']");
       const url = new URL(link.href);
@@ -341,12 +445,9 @@ function updateButtons() {
       let productName;
       let productPrice;
 
-      console.log("Product ID:", productId);
       fetch(`http://localhost:3000/product?id=${productId}`)
         .then((res) => res.json())
         .then((data) => {
-          //productName.textContent = data[0].name;
-          console.log(data[0].name);
           productName = data[0].name;
           productPrice = data[0].price;
 
@@ -365,9 +466,11 @@ function updateButtons() {
             });
           }
           localStorage.setItem("cart", JSON.stringify(cart));
-          alert("Товар добавлен в корзину!");
-          products_amount += 1;
-          amountInCart.textContent = products_amount;
+          amountInCart.textContent = cart.reduce(
+            (sum, item) => sum + (item.quantity || 0),
+            0
+          );
+          amountInCart.classList.remove("d-none");
         })
         .catch((err) => console.error("Error loading product:", err));
       //addToCart(productId);

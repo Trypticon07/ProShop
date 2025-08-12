@@ -500,6 +500,25 @@ body.dark-theme .btn-close {
 .hidden {
   display: none;
 }
+.popover,
+.bs-popover {
+  z-index: 10001 !important;
+}
+#clear-cart {
+  cursor: pointer;
+}
+#clear-cart:hover {
+  color: #ff4d4d;
+}
+
+.square-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .cart-content {
   background: #fff;
@@ -517,6 +536,16 @@ body.dark-theme .btn-close {
   right: 12px;
   font-size: 22px;
   cursor: pointer;
+}
+/* alert container */
+
+#alert-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 11000;
+  width: 400px;
 }
 
 /* animations */
