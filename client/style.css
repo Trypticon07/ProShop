@@ -537,8 +537,8 @@ body.dark-theme .btn-close {
   font-size: 22px;
   cursor: pointer;
 }
-/* alert container */
 
+/* alert container */
 #alert-container {
   position: fixed;
   bottom: 20px;
@@ -546,6 +546,40 @@ body.dark-theme .btn-close {
   transform: translateX(-50%);
   z-index: 11000;
   width: 400px;
+}
+
+/* landing page */
+@media (min-width: 576px) {
+  #main-email-input {
+    min-width: 300px;
+  }
+}
+
+#subscribe-btn {
+  max-height: 58px;
+}
+
+/* Advantages Section Background */
+.advantages-section {
+  background-color: #f8f9fa;
+}
+
+.advantages-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 0.75rem;
+  background-color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.advantages-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.advantages-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
 }
 
 /* animations */

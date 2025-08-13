@@ -47,24 +47,24 @@ app.use(
   })
 );
 
-const sessionMiddleware = (req, res, next) => {
-  const rememberMe = req.rememberMe;
+// const sessionMiddleware = (req, res, next) => {
+//   const rememberMe = req.rememberMe;
 
-  session({
-    secret:
-      "YOUR_SESSION_SECRET_KEY",
-    // node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-      maxAge: rememberMe
-        ? 1000 * 60 * 60 * 24 * 30 // 30 days
-        : null, // Session cookie (deleted on browser close)
-    },
-  })(req, res, next);
-};
+//   session({
+//     secret:
+//       "YOUR_SESSION_SECRET_KEY",
+//     // node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//       httpOnly: true,
+//       secure: false,
+//       maxAge: rememberMe
+//         ? 1000 * 60 * 60 * 24 * 30 // 30 days
+//         : null, // Session cookie (deleted on browser close)
+//     },
+//   })(req, res, next);
+// };
 
 // app.use((req, res, next) => {
 //   console.log(`Incoming request: ${req.method} ${req.url}`);
@@ -97,6 +97,18 @@ const loginLimiter = rateLimit({
     isInvalid: true,
     field: "rateLimit",
     error: "Too many log in attempts. Please try again after 10 minutes.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const subscriptionLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 mins
+  max: 3,
+  message: {
+    isInvalid: true,
+    field: "rateLimit",
+    error: "Too many subscription attempts. Please try again after 10 minutes.",
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -213,6 +225,39 @@ app.post("/logIn", loginLimiter, async (req, res) => {
   }
 });
 
+app.post("/subscribe", subscriptionLimiter, async (req, res) => {
+  const email = req.body.email;
+  try {
+    if (email.length < 6 || email.length > 100) {
+      return {
+        isInvalid: true,
+        field: "email",
+        error: "Email must be between 6 and 100 characters.",
+      };
+    } else if (
+      !email.includes("@") ||
+      !email.includes(".") ||
+      email.indexOf("@") === 0 ||
+      email.lastIndexOf(".") < email.indexOf("@")
+    ) {
+      return res.status(400).json({
+        isInvalid: true,
+        field: "email",
+        error: "Email is invalid.",
+      });
+    }
+
+    await connection.query("INSERT INTO mailing_list (email) VALUES ($1)", [
+      email,
+    ]);
+
+    res.status(200).send("You have successfully subscribed!");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
 app.post("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -295,7 +340,6 @@ app.get("/products", async (req, res) => {
 
 app.get("/product", async (req, res) => {
   const id = req.query.id;
-  console.log(id);
   try {
     const result = await connection.query(
       `SELECT * FROM products WHERE id=${id}`
@@ -332,7 +376,6 @@ app.post("/chat", async (req, res) => {
   }
   const ticketId = await getOrCreateTicket(req);
   if (answer.json && answer.json.command === "finish") {
-    console.log(`finished ${answer.json.param}`);
     await connection.query(
       `UPDATE tickets SET status='closed', closed_at=NOW()
          WHERE id = $1`,

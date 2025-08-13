@@ -31,7 +31,13 @@ const footer = document.getElementById("footer-container");
 
 const alertContainer = document.getElementById("alert-container");
 
+const emailInput = document.querySelector("#main-email-input");
+const emailFeedback = document.querySelector("#emailFeedback");
+const backendResponse = document.querySelector(".backend-response");
+
 let isProcessing = false;
+
+let isValidEmail = false;
 
 const cart = JSON.parse(localStorage.getItem("cart")) || [];
 let totalProducts = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
@@ -39,6 +45,79 @@ if (totalProducts > 0) {
   console.log(totalProducts);
   amountInCart.classList.remove("d-none");
   amountInCart.textContent = totalProducts;
+}
+
+(() => {
+  const forms = document.querySelectorAll(".needs-validation");
+
+  emailInput.classList.remove("is-invalid");
+
+  emailInput.addEventListener("input", () => {
+    const email = emailInput.value.trim();
+
+    isValidEmail =
+      email.length >= 6 &&
+      email.length <= 64 &&
+      email.includes("@") &&
+      email.includes(".") &&
+      email.indexOf("@") !== 0 &&
+      email.lastIndexOf(".") > email.indexOf("@");
+
+    if (!isValidEmail) {
+      emailInput.classList.remove("is-valid");
+      emailInput.classList.add("is-invalid");
+      emailFeedback.textContent = "Please enter a valid email address.";
+    } else {
+      emailInput.classList.remove("is-invalid");
+      emailInput.classList.add("is-valid");
+      emailFeedback.textContent = "";
+    }
+  });
+  Array.from(forms).forEach((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (!isValidEmail) return;
+      Submit();
+    });
+  });
+})();
+
+function Submit() {
+  axios
+    .post("http://localhost:3000/subscribe", {
+      email: document.querySelector("#main-email-input").value,
+    })
+    .then((response) => {
+      backendResponse.textContent = "Successfully added email!";
+    })
+    .catch((err) => {
+      const res = err.response.data;
+      const status = err.response?.status;
+      if (status === 400) {
+        if (res?.isInvalid) {
+          if (res.field === "email") {
+            emailInput.classList.add("is-invalid");
+            emailFeedback.textContent = res.error;
+          }
+        }
+      } else if (err.response?.status === 429) {
+        if (res?.isInvalid) {
+          if (res.field === "rateLimit") {
+            backendResponse.textContent = res.error;
+            backendResponse.classList.remove("d-none");
+            backendResponse.classList.add("d-block");
+          }
+        }
+      } else {
+        console.log("Error while waiting for server response: " + err);
+        alert(
+          "There was an error while trying to subscribe. If this keeps happening, inform the site owner with this info: " +
+            err
+        );
+      }
+    });
 }
 
 const popoverTriggerList = document.querySelectorAll(
@@ -242,6 +321,12 @@ function updateQuantity(productId, change) {
   }
 
   localStorage.setItem("cart", JSON.stringify(cart));
+  totalProducts = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  if (totalProducts > 0) {
+    console.log(totalProducts);
+    amountInCart.classList.remove("d-none");
+    amountInCart.textContent = totalProducts;
+  }
   loadCartItems();
 }
 

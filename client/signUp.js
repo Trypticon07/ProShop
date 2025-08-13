@@ -122,10 +122,6 @@ function Submit(captchaToken) {
     .catch((err) => {
       const res = err.response.data;
       const status = err.response?.status;
-      console.log(res);
-      console.log(status);
-      console.log(res.field);
-      console.log(res.error);
       if (status === 400) {
         if (res?.isInvalid) {
           if (res.field === "email") {
