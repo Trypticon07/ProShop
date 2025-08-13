@@ -47,24 +47,24 @@ app.use(
   })
 );
 
-// const sessionMiddleware = (req, res, next) => {
-//   const rememberMe = req.rememberMe;
+const sessionMiddleware = (req, res, next) => {
+  const rememberMe = req.rememberMe;
 
-//   session({
-//     secret:
-//       "YOUR_SESSION_SECRET_KEY",
-//     // node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-//     resave: false,
-//     saveUninitialized: false,
-//     cookie: {
-//       httpOnly: true,
-//       secure: false,
-//       maxAge: rememberMe
-//         ? 1000 * 60 * 60 * 24 * 30 // 30 days
-//         : null, // Session cookie (deleted on browser close)
-//     },
-//   })(req, res, next);
-// };
+  session({
+    secret:
+      "YOUR_SESSION_SECRET_KEY",
+    // node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      maxAge: rememberMe
+        ? 1000 * 60 * 60 * 24 * 30 // 30 days
+        : null, // Session cookie (deleted on browser close)
+    },
+  })(req, res, next);
+};
 
 // app.use((req, res, next) => {
 //   console.log(`Incoming request: ${req.method} ${req.url}`);
@@ -154,10 +154,20 @@ app.post("/register", registerLimiter, async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    await connection.query(
-      "INSERT INTO users (username, password, email) VALUES ($1, $2, $3)",
+    const insertedUser = await connection.query(
+      "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id, username, email",
       [username, hashedPassword, email]
     );
+
+    const newUser = insertedUser.rows[0];
+    req.session.user = {
+      id: newUser.id,
+      email: newUser.email,
+      username: newUser.username,
+    };
+
+    // Session cookie — expires on browser close
+    req.session.cookie.expires = false;
 
     res.status(201).send("User created");
   } catch (err) {
@@ -468,10 +478,10 @@ app.get("/products/search", async (req, res) => {
 app.post("/cart/add", async (req, res) => {
   try {
     const userId = req.session.user?.id;
-    console.log(userId);
     if (!userId) return res.status(401).send("Not authorized");
+
     const productId = req.body.product_id;
-    const quantity = req.body.quantity;
+    const quantity = Number(req.body.quantity);
 
     if (!productId || !quantity) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -480,20 +490,68 @@ app.post("/cart/add", async (req, res) => {
     const query = `
       INSERT INTO cart_items (user_id, product_id, quantity, added_at)
       VALUES ($1, $2, $3, NOW())
+      ON CONFLICT (user_id, product_id)
+      DO UPDATE SET quantity = EXCLUDED.quantity, added_at = NOW()
       RETURNING *;
     `;
-
     const values = [userId, productId, quantity];
 
     const result = await connection.query(query, values);
 
     res.status(201).json({
-      message: "Item added to cart successfully",
+      message: "Item added/updated in cart successfully",
       cart_item: result.rows[0],
     });
   } catch (error) {
-    console.error("Error adding item to cart:", error);
+    console.error("Error adding/updating item in cart:", error);
     res.status(500).send("Error while adding products to cart");
+  }
+});
+app.post("/cart/clear", async (req, res) => {
+  try {
+    const userId = req.session.user?.id;
+    if (!userId) return res.status(401).send("Not authorized");
+
+    const query = `
+      DELETE FROM cart_items
+      WHERE user_id = $1
+      RETURNING *;
+    `;
+    const values = [userId];
+
+    const result = await connection.query(query, values);
+
+    res.status(200).json({
+      message: "Cart cleared successfully",
+      cleared_items: result.rows.length,
+    });
+  } catch (error) {
+    console.error("Error clearing cart:", error);
+    res.status(500).send("Error while clearing cart");
+  }
+});
+app.get("/cart/history", async (req, res) => {
+  try {
+    const userId = req.session.user?.id;
+    if (!userId) return res.status(401).send("Not authorized");
+    const query = `
+      SELECT ci.id, ci.product_id, ci.quantity, ci.added_at,
+             p.name AS product_name, p.price AS product_price
+      FROM cart_items ci
+      JOIN products p ON ci.product_id = p.id
+      WHERE ci.user_id = $1
+      ORDER BY ci.added_at DESC;
+    `;
+
+    const values = [userId];
+    const result = await connection.query(query, values);
+
+    res.status(200).json({
+      cart_items: result.rows,
+    });
+  } catch (error) {
+    console.error("Error fetching cart history:", error);
+    res.status(500).send("Error while fetching cart history");
   }
 });
 

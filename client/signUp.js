@@ -109,12 +109,18 @@ document
 
 function Submit(captchaToken) {
   axios
-    .post("http://localhost:3000/register", {
-      username: document.querySelector("#username-input").value,
-      password: document.querySelector("#password-input").value,
-      email: document.querySelector("#email-input").value,
-      captcha: captchaToken,
-    })
+    .post(
+      "http://localhost:3000/register",
+      {
+        username: document.querySelector("#username-input").value,
+        password: document.querySelector("#password-input").value,
+        email: document.querySelector("#email-input").value,
+        captcha: captchaToken,
+      },
+      {
+        withCredentials: true,
+      }
+    )
     .then((response) => {
       console.log(response.data);
       window.location.href = "index.html";

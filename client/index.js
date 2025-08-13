@@ -8,6 +8,7 @@ const systemBtn = document.getElementById("system-btn");
 const logOutButtons = document.querySelectorAll(".logOut");
 const profileButtons = document.querySelectorAll(".profileBtn");
 const catalogButtons = document.querySelectorAll(".catalogBtn");
+const newAccountButtons = document.querySelectorAll(".new-account-btn");
 
 const logInButtons = document.getElementById("logInButtons");
 const profileDropdown = document.getElementById("profileDropdown");
@@ -39,7 +40,10 @@ let isProcessing = false;
 
 let isValidEmail = false;
 
+cartHistory();
+
 const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
 let totalProducts = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
 if (totalProducts > 0) {
   console.log(totalProducts);
@@ -133,13 +137,10 @@ const popoverList = [...popoverTriggerList].map((popoverTriggerEl) => {
   });
 
   popoverTriggerEl.addEventListener("shown.bs.popover", () => {
-    const clearCart = document.getElementById("clear-cart");
-    clearCart.addEventListener("click", (e) => {
+    const clearCartElement = document.getElementById("clear-cart");
+    clearCartElement.addEventListener("click", (e) => {
       e.preventDefault();
-      localStorage.removeItem("cart");
-      loadCartItems();
-      amountInCart.textContent = "0";
-      amountInCart.classList.add("d-none");
+      clearCart();
     });
   });
 
@@ -161,9 +162,32 @@ profileButtons.forEach((btn) => {
 });
 catalogButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
+    // e.preventDefault();
+    // getProducts();
+    window.location.href = "./index.html#product-container";
+  });
+});
+newAccountButtons.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
     e.preventDefault();
-    getProducts();
-    window.location.href = "#product-container";
+    fetch(
+      "http://localhost:3000/logout",
+      {
+        method: "POST",
+        credentials: "include",
+      },
+      {
+        withCredentials: true,
+      }
+    )
+      .then((res) => {
+        if (res.ok) {
+          window.location.href = "signUp.html";
+        }
+      })
+      .catch((err) => {
+        console.error("logout error:", err);
+      });
   });
 });
 
@@ -225,41 +249,8 @@ cartModal.addEventListener("click", (e) => {
   }
 });
 
-// function loadCartItems() {
-//   const cart = JSON.parse(localStorage.getItem("cart")) || [];
-//   cartItemsTable.innerHTML = "";
-//   let totalPrice = 0;
-
-//   if (cart.length === 0) {
-//     cartItemsTable.innerHTML = `<tr><td colspan="5" class="text-center">Cart is empty</td></tr>`;
-//     cartTotal.textContent = "Total: $0.00";
-//     return;
-//   }
-
-//   cart.forEach((item, index) => {
-//     const productId = item.product_id;
-//     console.log(item.product_id);
-//     const productName = item.productName;
-
-//     const price = Number(item.productPrice);
-//     const itemTotal = price * item.quantity;
-//     totalPrice += itemTotal;
-
-//     const row = `
-//       <tr>
-//         <td>${productId}</td>
-//         <td>${productName}</td>
-//         <td>${item.quantity}</td>
-//         <td>$${price.toFixed(2)}</td>
-//         <td>$${itemTotal.toFixed(2)}</td>
-//       </tr>
-//     `;
-//     cartItemsTable.insertAdjacentHTML("beforeend", row);
-//   });
-
-//   cartTotal.textContent = `Total: $${totalPrice.toFixed(2)}`;
-// }
 function loadCartItems() {
+  cartHistory();
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   cartItemsTable.innerHTML = "";
   let totalPrice = 0;
@@ -293,6 +284,8 @@ function loadCartItems() {
       </tr>
     `;
     cartItemsTable.insertAdjacentHTML("beforeend", row);
+
+    addToCart(productId, item.quantity);
   });
 
   cartTotal.textContent = `Total: $${totalPrice.toFixed(2)}`;
@@ -368,7 +361,6 @@ fetch("http://localhost:3000/session", {
     if (!res.ok) {
       logInButtons.classList.remove("d-none");
       profileDropdown.classList.add("d-none");
-      openCartBtn.classList.add("d-none");
       return null;
     }
     return res.json();
@@ -377,14 +369,12 @@ fetch("http://localhost:3000/session", {
     if (data && data.loggedIn) {
       logInButtons.classList.add("d-none");
       profileDropdown.classList.remove("d-none");
-      openCartBtn.classList.remove("d-none");
     }
   })
   .catch((err) => {
     console.error("Session error:", err);
     logInButtons.classList.remove("d-none");
     profileDropdown.classList.add("d-none");
-    openCartBtn.classList.add("d-none");
   });
 
 function getProducts() {
@@ -529,6 +519,7 @@ function updateButtons() {
       const productId = url.searchParams.get("id");
       let productName;
       let productPrice;
+      let quantity = 1;
 
       fetch(`http://localhost:3000/product?id=${productId}`)
         .then((res) => res.json())
@@ -542,12 +533,13 @@ function updateButtons() {
 
           if (existing) {
             existing.quantity++;
+            quantity = existing.quantity;
           } else {
             cart.push({
               product_id: productId,
               productName,
               productPrice,
-              quantity: 1,
+              quantity,
             });
           }
           localStorage.setItem("cart", JSON.stringify(cart));
@@ -556,30 +548,101 @@ function updateButtons() {
             0
           );
           amountInCart.classList.remove("d-none");
+          addToCart(productId, quantity);
         })
         .catch((err) => console.error("Error loading product:", err));
-      //addToCart(productId);
     });
   });
 }
 
-function addToCart(productId) {
+function addToCart(productId, quantity) {
   fetch("http://localhost:3000/cart/add", {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       product_id: productId,
-      quantity: 2,
+      quantity,
     }),
   })
     .then((res) => {
       if (!res.ok) {
-        return null;
+        return res.text().then((text) => {
+          throw new Error(text || "Server error");
+        });
       }
       return res.json();
     })
-    .then((data) => console.log(data))
+    .catch((err) => console.error(err));
+}
+function clearCart() {
+  fetch("http://localhost:3000/cart/clear", {
+    method: "POST",
+    credentials: "include",
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to clear cart");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      localStorage.removeItem("cart");
+      loadCartItems();
+      amountInCart.textContent = "0";
+      amountInCart.classList.add("d-none");
+    })
+    .catch((err) => console.error(err));
+}
+async function cartHistory() {
+  fetch("http://localhost:3000/cart/history", {
+    method: "GET",
+    credentials: "include",
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Failed to load cart history");
+      return res.json();
+    })
+    .then((data) => {
+      if (!data.cart_items || !Array.isArray(data.cart_items)) return;
+
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+      const fetchPromises = data.cart_items.map((cartItem) => {
+        return fetch(`http://localhost:3000/product?id=${cartItem.product_id}`)
+          .then((res) => res.json())
+          .then((productData) => {
+            if (!productData || !productData[0]) return;
+
+            const product = productData[0];
+            const existing = cart.find(
+              (item) => item.product_id == cartItem.product_id
+            );
+
+            if (existing) {
+              existing.quantity = cartItem.quantity;
+            } else {
+              cart.push({
+                product_id: cartItem.product_id,
+                productName: product.name,
+                productPrice: product.price,
+                quantity: cartItem.quantity,
+              });
+            }
+          })
+          .catch((err) => console.error("Error loading product:", err));
+      });
+
+      Promise.all(fetchPromises).then(() => {
+        localStorage.setItem("cart", JSON.stringify(cart));
+
+        amountInCart.textContent = cart.reduce(
+          (sum, item) => sum + (item.quantity || 0),
+          0
+        );
+        amountInCart.classList.toggle("d-none", cart.length === 0);
+      });
+    })
     .catch((err) => console.error(err));
 }
 

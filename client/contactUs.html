@@ -17,15 +17,165 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
     <header>
       <!-- place navbar here -->
     </header>
-    <main></main>
+    <main>
+      <div>
+        <div class="bd-example-snippet bd-code-snippet">
+          <div class="bd-example m-0 border-0">
+            <form class="row g-3">
+              <div class="col-md-4">
+                <label for="validationServer01" class="form-label"
+                  >First name</label
+                >
+                <input
+                  type="text"
+                  class="form-control is-valid"
+                  id="validationServer01"
+                  value="Mark"
+                  required=""
+                />
+                <div class="valid-feedback">Looks good!</div>
+              </div>
+              <div class="col-md-4">
+                <label for="validationServer02" class="form-label"
+                  >Last name</label
+                >
+                <input
+                  type="text"
+                  class="form-control is-valid"
+                  id="validationServer02"
+                  value="Otto"
+                  required=""
+                />
+                <div class="valid-feedback">Looks good!</div>
+              </div>
+              <div class="col-md-4">
+                <label for="validationServerUsername" class="form-label"
+                  >Username</label
+                >
+                <div class="input-group has-validation">
+                  <span class="input-group-text" id="inputGroupPrepend3"
+                    >@</span
+                  >
+                  <input
+                    type="text"
+                    class="form-control is-invalid"
+                    id="validationServerUsername"
+                    aria-describedby="inputGroupPrepend3"
+                    required=""
+                  />
+                  <div class="invalid-feedback">Please choose a username.</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="validationServer03" class="form-label">City</label>
+                <input
+                  type="text"
+                  class="form-control is-invalid"
+                  id="validationServer03"
+                  required=""
+                />
+                <div class="invalid-feedback">Please provide a valid city.</div>
+              </div>
+              <div class="col-md-3">
+                <label for="validationServer04" class="form-label">State</label>
+                <select
+                  class="form-select is-invalid"
+                  id="validationServer04"
+                  required=""
+                >
+                  <option selected="" disabled="" value="">Choose...</option>
+                  <option>...</option>
+                </select>
+                <div class="invalid-feedback">Please select a valid state.</div>
+              </div>
+              <div class="col-md-3">
+                <label for="validationServer05" class="form-label">Zip</label>
+                <input
+                  type="text"
+                  class="form-control is-invalid"
+                  id="validationServer05"
+                  required=""
+                />
+                <div class="invalid-feedback">Please provide a valid zip.</div>
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input
+                    class="form-check-input is-invalid"
+                    type="checkbox"
+                    value=""
+                    id="invalidCheck3"
+                    required=""
+                  />
+                  <label class="form-check-label" for="invalidCheck3">
+                    Agree to terms and conditions
+                  </label>
+                  <div class="invalid-feedback">
+                    You must agree before submitting.
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <button class="btn btn-primary" type="submit">
+                  Submit form
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
     <footer>
-      <!-- place footer here -->
+      <div class="container" id="footer-container">
+        <footer
+          class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
+        >
+          <p class="col-md-4 mb-0 text-body-secondary">© 2025 Company, Inc</p>
+          <a
+            href="/client/index.html"
+            class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
+            aria-label="Bootstrap"
+          >
+            <img
+              class="d-block"
+              src="images/png/projectImage.png"
+              alt=""
+              width="40"
+              height="40"
+            />
+          </a>
+          <ul class="nav col-md-4 justify-content-end">
+            <li class="nav-item">
+              <a
+                href="/client/contactUs.html"
+                class="nav-link px-2 text-body-secondary"
+                >Contact us</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                href="/client/faqs.html"
+                class="nav-link px-2 text-body-secondary"
+                >FAQs</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                href="/client/about.html"
+                class="nav-link px-2 text-body-secondary"
+                >About Pro Shop</a
+              >
+            </li>
+          </ul>
+        </footer>
+      </div>
     </footer>
     <!-- Bootstrap JavaScript Libraries -->
     <script
