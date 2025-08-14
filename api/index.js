@@ -114,6 +114,18 @@ const subscriptionLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const supportLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 mins
+  max: 3,
+  message: {
+    isInvalid: true,
+    field: "rateLimit",
+    error: "Too many subscription attempts. Please try again after 10 minutes.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.post("/register", registerLimiter, async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
@@ -262,6 +274,59 @@ app.post("/subscribe", subscriptionLimiter, async (req, res) => {
     ]);
 
     res.status(200).send("You have successfully subscribed!");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
+app.post("/support", async (req, res) => {
+  const firstName = req.body.firstName;
+  const lastName = req.body.lastName;
+  const email = req.body.email;
+  const problem_description = req.body.problem_description;
+  console.log(problem_description);
+  console.log(req.body.problem_description);
+  try {
+    if (email.length < 6 || email.length > 100) {
+      return {
+        isInvalid: true,
+        field: "email",
+        error: "Email must be between 6 and 100 characters.",
+      };
+    } else if (
+      !email.includes("@") ||
+      !email.includes(".") ||
+      email.indexOf("@") === 0 ||
+      email.lastIndexOf(".") < email.indexOf("@")
+    ) {
+      return res.status(400).json({
+        isInvalid: true,
+        field: "email",
+        error: "Email is invalid.",
+      });
+    }
+    if (firstName.length < 1 || firstName.length > 30) {
+      return {
+        isInvalid: true,
+        field: "firstName",
+        error: "First name must be between 1 and 30 characters.",
+      };
+    }
+    if (lastName.length < 1 || lastName.length > 30) {
+      return {
+        isInvalid: true,
+        field: "lastName",
+        error: "Last name must be between 1 and 30 characters.",
+      };
+    }
+
+    await connection.query(
+      "INSERT INTO support_messages (first_name, last_name, email, problem_description) VALUES ($1, $2, $3, $4)",
+      [firstName, lastName, email, problem_description]
+    );
+
+    res.status(200).send("You have successfully asked a question!");
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");

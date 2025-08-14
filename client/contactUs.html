@@ -17,6 +17,10 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
     <link rel="stylesheet" href="style.css" />
   </head>
 
@@ -301,85 +305,111 @@
       </header>
     </header>
     <main>
-      <div class="py-5 text-center">
-        <img
-          class="d-block mx-auto mb-4"
-          src="images/png/projectImage.png"
-          alt=""
-          width="57"
-          height="57"
-        />
-        <h1 class="h2">
-          A problem arose? Don't worry! Our team is always here to help!
-        </h1>
+      <div class="first-slide">
+        <div class="py-5 text-center">
+          <img
+            class="d-block mx-auto mb-4"
+            src="images/png/projectImage.png"
+            alt=""
+            width="57"
+            height="57"
+          />
+          <h1 class="h2">
+            A problem arose? Don't worry! Our team is always here to help!
+          </h1>
+        </div>
+
+        <div class="d-flex justify-content-center">
+          <div class="bd-example-snippet bd-code-snippet w-50">
+            <div class="bd-example m-0 border-0">
+              <form class="row g-3 needs-validation" id="check-form" novalidate>
+                <!-- Name and Last name in one row -->
+                <div class="col-md-6">
+                  <label for="" class="form-label">First name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="first-name-input"
+                    value=""
+                    required
+                  />
+                  <div class="invalid-feedback" id="firstNameFeedback"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="" class="form-label">Last name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="last-name-input"
+                    value=""
+                    required
+                  />
+                  <div class="invalid-feedback" id="lastNameFeedback"></div>
+                </div>
+
+                <!-- Email under names -->
+                <div class="col-12">
+                  <label for="" class="form-label">Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="contact-email-input"
+                    placeholder="you@example.com"
+                    required
+                  />
+                  <div class="invalid-feedback" id="emailFeedback"></div>
+                </div>
+
+                <!-- Problem description -->
+                <div class="col-12">
+                  <label for="problem-description" class="form-label"
+                    >Describe your problem</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="problem-description"
+                    rows="6"
+                    style="resize: vertical; overflow-y: auto"
+                    placeholder="Please describe the issue in detail..."
+                    required
+                  ></textarea>
+                  <div class="invalid-feedback" id="problemFeedback"></div>
+                </div>
+
+                <div class="col-12 d-flex">
+                  <p id="backend-response" class="d-none"></p>
+                </div>
+
+                <!-- Submit button aligned to bottom right -->
+                <div class="col-12 d-flex justify-content-end">
+                  <button class="btn btn-primary" type="submit">
+                    Submit form
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="d-flex justify-content-center">
-        <div class="bd-example-snippet bd-code-snippet w-50">
-          <div class="bd-example m-0 border-0">
-            <form class="row g-3 needs-validation" novalidate>
-              <!-- Name and Last name in one row -->
-              <div class="col-md-6">
-                <label for="" class="form-label">First name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="first-name-input"
-                  value=""
-                  required
-                />
-                <div class="invalid-feedback" id="firstNameFeedback"></div>
-              </div>
-
-              <div class="col-md-6">
-                <label for="" class="form-label">Last name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="last-name-input"
-                  value=""
-                  required
-                />
-                <div class="invalid-feedback" id="lastNameFeedback"></div>
-              </div>
-
-              <!-- Email under names -->
-              <div class="col-12">
-                <label for="validationServer03" class="form-label">Email</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  id="contact-email-input"
-                  placeholder="you@example.com"
-                  required
-                />
-                <div class="invalid-feedback" id="emailFeedback"></div>
-              </div>
-
-              <!-- Problem description -->
-              <div class="col-12">
-                <label for="problemDescription" class="form-label"
-                  >Describe your problem</label
-                >
-                <textarea
-                  class="form-control"
-                  id="problemDescription"
-                  rows="6"
-                  style="resize: vertical; overflow-y: auto"
-                  placeholder="Please describe the issue in detail..."
-                  required
-                ></textarea>
-                <div class="invalid-feedback" id="problemFeedback"></div>
-              </div>
-
-              <!-- Submit button aligned to bottom right -->
-              <div class="col-12 d-flex justify-content-end">
-                <button class="btn btn-primary" type="submit">
-                  Submit form
-                </button>
-              </div>
-            </form>
-          </div>
+      <div class="second-slide d-none">
+        <div class="py-5 text-center">
+          <img
+            class="d-block mx-auto mb-4"
+            src="images/png/projectImage.png"
+            alt=""
+            width="57"
+            height="57"
+          />
+          <h1 class="h2">Thank you for your message!</h1>
+          <p class="lead mb-4">
+            We are very sorry that there was a problem, our team will contact
+            you as soon as possible.
+          </p>
+          <button id="to-home-page" class="btn btn-primary" type="button">
+            Back to main page
+          </button>
         </div>
       </div>
 
@@ -474,13 +504,6 @@
             </li>
             <li class="nav-item">
               <a
-                href="/client/faqs.html"
-                class="nav-link px-2 text-body-secondary"
-                >FAQs</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
                 href="/client/about.html"
                 class="nav-link px-2 text-body-secondary"
                 >About Pro Shop</a
@@ -501,6 +524,12 @@
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
       integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
       crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.10.0/axios.min.js"
+      integrity="sha512-WkZrEcQ5LMyNy6Y2PQf+Tu3vMcsmKKRKuPXtJSTHQJ3mpuvLRlA5dlDDhrrcXfyWr6Z/y3wIMfjfqVFO/gDZYQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
     ></script>
     <script src="common.js"></script>
     <script src="contactUs.js"></script>

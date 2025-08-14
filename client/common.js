@@ -18,6 +18,7 @@ const cartModal = document.getElementById("cart-modal");
 const closeCartBtn = document.getElementById("close-cart");
 const cartItemsTable = document.getElementById("cart-items");
 const cartTotal = document.getElementById("cart-total");
+const checkoutButtons = document.querySelectorAll("#checkout-btn");
 
 const searchForm = document.getElementById("searchForm");
 const searchInput = document.getElementById("searchInput");
@@ -69,8 +70,8 @@ profileButtons.forEach((btn) => {
 
 catalogButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
-    // e.preventDefault();
-    window.location.href = "./index.html#product-container";
+    e.preventDefault();
+    window.location.href = "./index.html";
   });
 });
 
@@ -96,6 +97,14 @@ newAccountButtons.forEach((btn) => {
         console.error("logout error:", err);
       });
   });
+});
+
+searchForm.addEventListener("submit", function (e) {
+  e.preventDefault();
+  const query = document.getElementById("searchInput").value.trim();
+  if (query) {
+    window.location.href = `index.html?search=${encodeURIComponent(query)}`;
+  }
 });
 
 document.querySelector("#signUp").addEventListener("click", () => {
@@ -189,11 +198,12 @@ systemBtn.addEventListener("click", () => applyTheme("system"));
 
 function applyTheme(theme) {
   document.body.classList.remove("light-theme", "dark-theme");
-
   if (theme === "light") {
     document.body.classList.add("light-theme");
+    document.body.setAttribute("data-bs-theme", "light");
   } else if (theme === "dark") {
     document.body.classList.add("dark-theme");
+    document.body.setAttribute("data-bs-theme", "dark");
   } else if (theme === "system") {
     const prefersDark = window.matchMedia(
       "(prefers-color-scheme: dark)"

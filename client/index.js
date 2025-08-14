@@ -120,6 +120,12 @@ window.addEventListener("scroll", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   getProducts();
+  const params = new URLSearchParams(window.location.search);
+  const searchQuery = params.get("search");
+
+  if (searchQuery) {
+    search(searchQuery);
+  }
 });
 
 function getProducts() {
@@ -133,10 +139,7 @@ function getProducts() {
     });
 }
 
-// TODO: refactor this
-searchForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const query = searchInput.value.trim();
+async function search(query) {
   if (!query) {
     return;
   }
@@ -178,7 +181,7 @@ searchForm.addEventListener("submit", async (event) => {
   } catch (error) {
     container.innerHTML = `<p>Error: ${error.message}</p>`;
   }
-});
+}
 
 function appendProduct(products) {
   container.innerHTML = "";
