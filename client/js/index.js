@@ -119,13 +119,15 @@ window.addEventListener("scroll", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  getProducts();
   const params = new URLSearchParams(window.location.search);
   const searchQuery = params.get("search");
 
   if (searchQuery) {
+    searchInput.value = searchQuery.trim();
     search(searchQuery);
+    return;
   }
+  getProducts();
 });
 
 function getProducts() {
@@ -141,6 +143,7 @@ function getProducts() {
 
 async function search(query) {
   if (!query) {
+    console.log(query);
     return;
   }
 
@@ -155,6 +158,7 @@ async function search(query) {
     const products = await response.json();
 
     if (products.length === 0) {
+      console.log("here1");
       container.innerHTML = `<div
             class="d-flex flex-column align-items-center text-center py-5 w-100"
           >

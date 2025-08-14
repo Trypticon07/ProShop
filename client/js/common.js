@@ -101,7 +101,7 @@ newAccountButtons.forEach((btn) => {
 
 searchForm.addEventListener("submit", function (e) {
   e.preventDefault();
-  const query = document.getElementById("searchInput").value.trim();
+  const query = searchInput.value.trim();
   if (query) {
     window.location.href = `index.html?search=${encodeURIComponent(query)}`;
   }
@@ -118,15 +118,6 @@ document.querySelector("#logIn").addEventListener("click", () => {
 document.addEventListener("DOMContentLoaded", () => {
   const savedTheme = localStorage.getItem("theme") || "system";
   applyTheme(savedTheme);
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  const btnHolder = document.querySelector(".btn-holder-1");
-  if (btnHolder) {
-    btnHolder.addEventListener("click", function (e) {
-      e.stopPropagation();
-    });
-  }
 });
 
 // cart event listeners
@@ -209,6 +200,11 @@ function applyTheme(theme) {
       "(prefers-color-scheme: dark)"
     ).matches;
     document.body.classList.add(prefersDark ? "dark-theme" : "light-theme");
+    if (prefersDark) {
+      document.body.setAttribute("data-bs-theme", "dark");
+    } else {
+      document.body.setAttribute("data-bs-theme", "light");
+    }
   }
 
   localStorage.setItem("theme", theme);

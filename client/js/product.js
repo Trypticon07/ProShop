@@ -9,6 +9,12 @@ const productDescription = document.getElementById("productDescription");
 const productPrice = document.getElementById("productPrice");
 
 const buyButton = document.querySelector(".buy-btn");
+const buyAndCheckOutBtn = document.querySelector(".buy-and-checkout-btn");
+
+buyAndCheckOutBtn.addEventListener("click", () => {
+  Buy();
+  window.location.href = "/client/checkout.html";
+});
 
 buyButton.addEventListener("click", () => {
   Buy();
