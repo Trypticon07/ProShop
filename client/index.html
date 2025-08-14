@@ -95,8 +95,6 @@
                     </div>
                   </li>
 
-                  <hr class="sidebar-divider" />
-
                   <li class="mb-1">
                     <button
                       class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed sidebar-item"
@@ -133,6 +131,22 @@
                         </li>
                       </ul>
                     </div>
+                  </li>
+
+                  <hr class="sidebar-divider" />
+                  <li class="mb-3">
+                    <a
+                      href="/client/contactUs.html"
+                      class="nav-link px-2 text-body-secondary"
+                      >Contact us</a
+                    >
+                  </li>
+                  <li class="mb-3">
+                    <a
+                      href="/client/about.html"
+                      class="nav-link px-2 text-body-secondary"
+                      >About Pro Shop</a
+                    >
                   </li>
                 </ul>
               </div>
@@ -478,11 +492,17 @@
           </div>
         </div>
       </div>
+      <!-- Alert container -->
+      <div id="alert-container">
+        <!-- Messages will be inserted here -->
+      </div>
+      <!-- Products -->
       <div class="d-flex justify-content-center align-items-center">
         <div class="card-group w-75 flex-wrap" id="product-container">
           <!-- Cards will be inserted here -->
         </div>
       </div>
+      <!-- Chat -->
       <div class="chat">
         <button class="btn btn-primary btn-anim" id="open-chat-btn">
           <i class="bi bi-chat-dots"></i> Technical support
@@ -505,9 +525,6 @@
             <button class="btn btn-primary" id="send-btn">➤</button>
           </div>
         </div>
-      </div>
-      <div id="alert-container">
-        <!-- Messages will be inserted here -->
       </div>
     </main>
     <footer>
@@ -567,6 +584,8 @@
       crossorigin="anonymous"
     ></script>
     <script src="index.js"></script>
+    <script src="common.js"></script>
+
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.10.0/axios.min.js"
       integrity="sha512-WkZrEcQ5LMyNy6Y2PQf+Tu3vMcsmKKRKuPXtJSTHQJ3mpuvLRlA5dlDDhrrcXfyWr6Z/y3wIMfjfqVFO/gDZYQ=="

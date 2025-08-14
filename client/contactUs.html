@@ -22,107 +22,358 @@
 
   <body>
     <header>
-      <!-- place navbar here -->
+      <header class="p-3 bg-dark text-white sticky-top" id="main-header">
+        <div class="container">
+          <div
+            class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"
+          >
+            <button
+              class="btn btn-outline-light me-3"
+              type="button"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#sidebarMenu"
+              aria-controls="sidebarmenu"
+            >
+              ☰
+            </button>
+            <!-- Sidebar -->
+            <div
+              class="offcanvas offcanvas-start sidebar-1"
+              tabindex="-1"
+              id="sidebarMenu"
+              aria-labelledby="sidebarMenuLabel"
+            >
+              <div class="offcanvas-header">
+                <img
+                  class="d-block"
+                  src="images/png/projectImage.png"
+                  alt=""
+                  width="40"
+                  height="40"
+                />
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="offcanvas"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="offcanvas-body p-0">
+                <div class="p-3" style="width: 100%">
+                  <ul class="list-unstyled ps-0">
+                    <li class="mb-1">
+                      <button
+                        class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed sidebar-item"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#home-collapse"
+                        aria-expanded="false"
+                      >
+                        Home
+                      </button>
+                      <div class="collapse" id="home-collapse">
+                        <ul
+                          class="btn-toggle-nav list-unstyled fw-normal pb-1 small"
+                        >
+                          <li>
+                            <a
+                              href="index.html"
+                              class="link-body-emphasis d-inline-flex text-decoration-none rounded sidebar-li-item"
+                              >Main page</a
+                            >
+                          </li>
+                          <li>
+                            <a
+                              href="#"
+                              class="link-body-emphasis d-inline-flex text-decoration-none rounded sidebar-li-item"
+                              >Catalog</a
+                            >
+                          </li>
+                        </ul>
+                      </div>
+                    </li>
+
+                    <li class="mb-1">
+                      <button
+                        class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed sidebar-item"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#account-collapse"
+                        aria-expanded="false"
+                      >
+                        Account
+                      </button>
+                      <div class="collapse" id="account-collapse">
+                        <ul
+                          class="btn-toggle-nav list-unstyled fw-normal pb-1 small"
+                        >
+                          <li>
+                            <a
+                              href=""
+                              class="link-body-emphasis d-inline-flex text-decoration-none rounded sidebar-li-item new-account-btn"
+                              >New...</a
+                            >
+                          </li>
+                          <li>
+                            <a
+                              href=""
+                              class="link-body-emphasis d-inline-flex text-decoration-none rounded profileBtn sidebar-li-item"
+                              >Profile</a
+                            >
+                          </li>
+                          <li>
+                            <a
+                              href=""
+                              class="link-body-emphasis d-inline-flex text-decoration-none rounded logOut sidebar-li-item"
+                              >Sign out</a
+                            >
+                          </li>
+                        </ul>
+                      </div>
+                    </li>
+
+                    <hr class="sidebar-divider" />
+                    <li class="mb-3">
+                      <a
+                        href="/client/contactUs.html"
+                        class="nav-link px-2 text-body-secondary"
+                        >Contact us</a
+                      >
+                    </li>
+                    <li class="mb-3">
+                      <a
+                        href="/client/about.html"
+                        class="nav-link px-2 text-body-secondary"
+                        >About Pro Shop</a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <a
+              href="/client/index.html"
+              class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none me-3"
+            >
+              <img
+                class="d-block"
+                src="images/png/projectImage.png"
+                alt=""
+                width="40"
+                height="40"
+              />
+            </a>
+
+            <ul
+              class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
+            >
+              <li>
+                <a
+                  href=""
+                  class="nav-link px-2 text-white me-3 rounded catalogBtn header-li-item"
+                  >Catalog</a
+                >
+              </li>
+            </ul>
+
+            <form
+              class="col-12 col-lg-auto d-flex flex-grow-1 ms-lg-3 mb-3 mb-lg-0 me-lg-3"
+              id="searchForm"
+            >
+              <input
+                type="search"
+                class="form-control form-control-dark"
+                placeholder="Search..."
+                aria-label="Search"
+                id="searchInput"
+              />
+            </form>
+
+            <div class="text-end d-none" id="logInButtons">
+              <button
+                type="button"
+                class="btn btn-outline-light btn-anim me-2"
+                id="logIn"
+              >
+                Log in
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary btn-anim"
+                btn-anim
+                id="signUp"
+              >
+                Sign up
+              </button>
+            </div>
+            <div
+              class="dropdown d-inline-block ms-3 d-none"
+              id="profileDropdown"
+            >
+              <button
+                class="btn p-0 border-0 bg-transparent text-decoration-none rounded header-li-item"
+                type="button"
+                id="dropdownMenuButton"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                style="color: rgb(255, 255, 255); width: 30px"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="30"
+                  height="30"
+                  fill="currentColor"
+                  class="bi bi-person-circle"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"></path>
+                  <path
+                    fill-rule="evenodd"
+                    d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 
+               4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"
+                  ></path>
+                </svg>
+              </button>
+              <ul class="dropdown-menu">
+                <li class="px-3 py-2">
+                  <strong>AlxPav Chr</strong><br />
+                  <small class="dropdown-text">alx.pav2106@gmail.com</small>
+                </li>
+                <div class="btn-holder-1">
+                  <li
+                    class="px-3 py-2 d-flex gap-2 justify-content-center li-1"
+                  >
+                    <button
+                      id="light-btn"
+                      class="btn btn-outline-dark btn-sm rounded-square"
+                      title="Light"
+                    >
+                      <i class="bi bi-sun"></i>
+                    </button>
+                    <button
+                      id="dark-btn"
+                      class="btn btn-outline-dark btn-sm rounded-square"
+                      title="Dark"
+                    >
+                      <i class="bi bi-moon-fill"></i>
+                    </button>
+                    <button
+                      id="system-btn"
+                      class="btn btn-outline-dark btn-sm rounded-square"
+                      title="System"
+                    >
+                      <i class="bi bi-display"></i>
+                    </button>
+                  </li>
+                </div>
+
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item profileBtn" href="#">Your profile</a>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item text-danger logOut" href="#"
+                    >Log out</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <a
+              href=""
+              class="d-flex align-items-center mb-1 text-white text-decoration-none ms-4 rounded position-relative header-li-item"
+              id="open-cart"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="30"
+                height="30"
+                fill="#28A745"
+                class="bi bi-cart2"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l1.25 5h8.22l1.25-5zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"
+                />
+              </svg>
+              <span class="d-none" id="amount-in-cart"> 0 </span>
+            </a>
+          </div>
+        </div>
+      </header>
     </header>
     <main>
-      <div>
-        <div class="bd-example-snippet bd-code-snippet">
+      <div class="py-5 text-center">
+        <img
+          class="d-block mx-auto mb-4"
+          src="images/png/projectImage.png"
+          alt=""
+          width="57"
+          height="57"
+        />
+        <h1 class="h2">
+          A problem arose? Don't worry! Our team is always here to help!
+        </h1>
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <div class="bd-example-snippet bd-code-snippet w-50">
           <div class="bd-example m-0 border-0">
-            <form class="row g-3">
-              <div class="col-md-4">
-                <label for="validationServer01" class="form-label"
-                  >First name</label
-                >
-                <input
-                  type="text"
-                  class="form-control is-valid"
-                  id="validationServer01"
-                  value="Mark"
-                  required=""
-                />
-                <div class="valid-feedback">Looks good!</div>
-              </div>
-              <div class="col-md-4">
-                <label for="validationServer02" class="form-label"
-                  >Last name</label
-                >
-                <input
-                  type="text"
-                  class="form-control is-valid"
-                  id="validationServer02"
-                  value="Otto"
-                  required=""
-                />
-                <div class="valid-feedback">Looks good!</div>
-              </div>
-              <div class="col-md-4">
-                <label for="validationServerUsername" class="form-label"
-                  >Username</label
-                >
-                <div class="input-group has-validation">
-                  <span class="input-group-text" id="inputGroupPrepend3"
-                    >@</span
-                  >
-                  <input
-                    type="text"
-                    class="form-control is-invalid"
-                    id="validationServerUsername"
-                    aria-describedby="inputGroupPrepend3"
-                    required=""
-                  />
-                  <div class="invalid-feedback">Please choose a username.</div>
-                </div>
-              </div>
+            <form class="row g-3 needs-validation" novalidate>
+              <!-- Name and Last name in one row -->
               <div class="col-md-6">
-                <label for="validationServer03" class="form-label">City</label>
+                <label for="" class="form-label">First name</label>
                 <input
                   type="text"
-                  class="form-control is-invalid"
-                  id="validationServer03"
-                  required=""
+                  class="form-control"
+                  id="first-name-input"
+                  value=""
+                  required
                 />
-                <div class="invalid-feedback">Please provide a valid city.</div>
+                <div class="invalid-feedback" id="firstNameFeedback"></div>
               </div>
-              <div class="col-md-3">
-                <label for="validationServer04" class="form-label">State</label>
-                <select
-                  class="form-select is-invalid"
-                  id="validationServer04"
-                  required=""
+
+              <div class="col-md-6">
+                <label for="" class="form-label">Last name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="last-name-input"
+                  value=""
+                  required
+                />
+                <div class="invalid-feedback" id="lastNameFeedback"></div>
+              </div>
+
+              <!-- Email under names -->
+              <div class="col-12">
+                <label for="validationServer03" class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="contact-email-input"
+                  placeholder="you@example.com"
+                  required
+                />
+                <div class="invalid-feedback" id="emailFeedback"></div>
+              </div>
+
+              <!-- Problem description -->
+              <div class="col-12">
+                <label for="problemDescription" class="form-label"
+                  >Describe your problem</label
                 >
-                  <option selected="" disabled="" value="">Choose...</option>
-                  <option>...</option>
-                </select>
-                <div class="invalid-feedback">Please select a valid state.</div>
+                <textarea
+                  class="form-control"
+                  id="problemDescription"
+                  rows="6"
+                  style="resize: vertical; overflow-y: auto"
+                  placeholder="Please describe the issue in detail..."
+                  required
+                ></textarea>
+                <div class="invalid-feedback" id="problemFeedback"></div>
               </div>
-              <div class="col-md-3">
-                <label for="validationServer05" class="form-label">Zip</label>
-                <input
-                  type="text"
-                  class="form-control is-invalid"
-                  id="validationServer05"
-                  required=""
-                />
-                <div class="invalid-feedback">Please provide a valid zip.</div>
-              </div>
-              <div class="col-12">
-                <div class="form-check">
-                  <input
-                    class="form-check-input is-invalid"
-                    type="checkbox"
-                    value=""
-                    id="invalidCheck3"
-                    required=""
-                  />
-                  <label class="form-check-label" for="invalidCheck3">
-                    Agree to terms and conditions
-                  </label>
-                  <div class="invalid-feedback">
-                    You must agree before submitting.
-                  </div>
-                </div>
-              </div>
-              <div class="col-12">
+
+              <!-- Submit button aligned to bottom right -->
+              <div class="col-12 d-flex justify-content-end">
                 <button class="btn btn-primary" type="submit">
                   Submit form
                 </button>
@@ -130,6 +381,68 @@
             </form>
           </div>
         </div>
+      </div>
+
+      <!-- Cart modal -->
+      <div id="cart-modal" class="cart-modal hidden">
+        <div class="cart-content">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>Your Cart</h4>
+            <button
+              type="button"
+              class="btn-close"
+              id="close-cart"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Product</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody id="cart-items"></tbody>
+            </table>
+          </div>
+
+          <div class="text-end mt-2">
+            <strong id="cart-total">Total: $0.00</strong>
+          </div>
+
+          <div class="text-end mt-3">
+            <button
+              class="btn btn-danger me-2"
+              type="button"
+              data-bs-toggle="popover"
+              data-bs-trigger="focus"
+              data-bs-placement="left"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="15"
+                height="15"
+                fill="currentColor"
+                class="bi bi-trash3 mb-1"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"
+                />
+              </svg>
+            </button>
+            <button id="checkout-btn" class="btn btn-primary">Checkout</button>
+          </div>
+        </div>
+      </div>
+      <!-- Alert container -->
+      <div id="alert-container">
+        <!-- Messages will be inserted here -->
       </div>
     </main>
     <footer>
@@ -189,5 +502,7 @@
       integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
       crossorigin="anonymous"
     ></script>
+    <script src="common.js"></script>
+    <script src="contactUs.js"></script>
   </body>
 </html>
