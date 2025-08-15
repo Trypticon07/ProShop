@@ -572,6 +572,36 @@ app.post("/cart/add", async (req, res) => {
     res.status(500).send("Error while adding products to cart");
   }
 });
+
+app.post("/cart/remove", async (req, res) => {
+  try {
+    const userId = req.session.user?.id;
+    if (!userId) return res.status(401).send("Not authorized");
+
+    const productId = req.body.product_id;
+
+    if (!productId) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const query = `
+      DELETE FROM cart_items
+      WHERE user_id = $1 AND product_id = $2;
+    `;
+    const values = [userId, productId];
+
+    const result = await connection.query(query, values);
+
+    res.status(201).json({
+      message: "Item removed from cart successfully",
+      cart_item: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error adding/updating item in cart:", error);
+    res.status(500).send("Error while adding products to cart");
+  }
+});
+
 app.post("/cart/clear", async (req, res) => {
   try {
     const userId = req.session.user?.id;
@@ -595,6 +625,7 @@ app.post("/cart/clear", async (req, res) => {
     res.status(500).send("Error while clearing cart");
   }
 });
+
 app.get("/cart/history", async (req, res) => {
   try {
     const userId = req.session.user?.id;
@@ -617,6 +648,41 @@ app.get("/cart/history", async (req, res) => {
   } catch (error) {
     console.error("Error fetching cart history:", error);
     res.status(500).send("Error while fetching cart history");
+  }
+});
+
+app.post("/order/add", async (req, res) => {
+  try {
+    const userId = req.session.user?.id;
+    if (!userId) return res.status(401).send("Not authorized");
+    const total_amount = req.session.total_amount;
+    const status = "created";
+
+    const productId = req.body.product_id;
+    const quantity = Number(req.body.quantity);
+
+    if (!productId || !quantity) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const query = `
+      INSERT INTO cart_items (user_id, product_id, quantity, added_at)
+      VALUES ($1, $2, $3, NOW())
+      ON CONFLICT (user_id, product_id)
+      DO UPDATE SET quantity = EXCLUDED.quantity, added_at = NOW()
+      RETURNING *;
+    `;
+    const values = [userId, productId, quantity];
+
+    const result = await connection.query(query, values);
+
+    res.status(201).json({
+      message: "Item added/updated in cart successfully",
+      cart_item: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error adding/updating item in cart:", error);
+    res.status(500).send("Error while adding products to cart");
   }
 });
 

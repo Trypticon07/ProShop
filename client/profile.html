@@ -24,138 +24,28 @@
   </head>
 
   <body>
-    <header>
-      <header class="p-3 bg-dark text-white sticky-top" id="main-header">
-        <div class="container">
-          <div
-            class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"
+    <header class="p-3 bg-dark text-white sticky-top" id="main-header">
+      <div class="container">
+        <div
+          class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"
+        >
+          <button
+            class="btn btn-outline-light me-3"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#sidebarMenu"
+            aria-controls="sidebarmenu"
           >
-            <button
-              class="btn btn-outline-light me-3"
-              type="button"
-              data-bs-toggle="offcanvas"
-              data-bs-target="#sidebarMenu"
-              aria-controls="sidebarmenu"
-            >
-              ☰
-            </button>
-            <!-- Sidebar -->
-            <div
-              class="offcanvas offcanvas-start sidebar-1"
-              tabindex="-1"
-              id="sidebarMenu"
-              aria-labelledby="sidebarMenuLabel"
-            >
-              <div class="offcanvas-header">
-                <img
-                  class="d-block"
-                  src="images/png/projectImage.png"
-                  alt=""
-                  width="40"
-                  height="40"
-                />
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="offcanvas"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div class="offcanvas-body p-0">
-                <div class="p-3" style="width: 100%">
-                  <ul class="list-unstyled ps-0">
-                    <li class="mb-1">
-                      <button
-                        class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed sidebar-item"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#home-collapse"
-                        aria-expanded="false"
-                      >
-                        Home
-                      </button>
-                      <div class="collapse" id="home-collapse">
-                        <ul
-                          class="btn-toggle-nav list-unstyled fw-normal pb-1 small"
-                        >
-                          <li>
-                            <a
-                              href="index.html"
-                              class="link-body-emphasis d-inline-flex text-decoration-none rounded sidebar-li-item"
-                              >Main page</a
-                            >
-                          </li>
-                          <li>
-                            <a
-                              href="#"
-                              class="link-body-emphasis d-inline-flex text-decoration-none rounded sidebar-li-item"
-                              >Catalog</a
-                            >
-                          </li>
-                        </ul>
-                      </div>
-                    </li>
-
-                    <li class="mb-1">
-                      <button
-                        class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed sidebar-item"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#account-collapse"
-                        aria-expanded="false"
-                      >
-                        Account
-                      </button>
-                      <div class="collapse" id="account-collapse">
-                        <ul
-                          class="btn-toggle-nav list-unstyled fw-normal pb-1 small"
-                        >
-                          <li>
-                            <a
-                              href=""
-                              class="link-body-emphasis d-inline-flex text-decoration-none rounded sidebar-li-item new-account-btn"
-                              >New...</a
-                            >
-                          </li>
-                          <li>
-                            <a
-                              href=""
-                              class="link-body-emphasis d-inline-flex text-decoration-none rounded profileBtn sidebar-li-item"
-                              >Profile</a
-                            >
-                          </li>
-                          <li>
-                            <a
-                              href=""
-                              class="link-body-emphasis d-inline-flex text-decoration-none rounded logOut sidebar-li-item"
-                              >Sign out</a
-                            >
-                          </li>
-                        </ul>
-                      </div>
-                    </li>
-
-                    <hr class="sidebar-divider" />
-                    <li class="mb-3">
-                      <a
-                        href="/client/contactUs.html"
-                        class="nav-link px-2 text-body-secondary"
-                        >Contact us</a
-                      >
-                    </li>
-                    <li class="mb-3">
-                      <a
-                        href="/client/about.html"
-                        class="nav-link px-2 text-body-secondary"
-                        >About Pro Shop</a
-                      >
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <a
-              href="/client/index.html"
-              class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none me-3"
-            >
+            ☰
+          </button>
+          <!-- Sidebar -->
+          <div
+            class="offcanvas offcanvas-start sidebar-1"
+            tabindex="-1"
+            id="sidebarMenu"
+            aria-labelledby="sidebarMenuLabel"
+          >
+            <div class="offcanvas-header">
               <img
                 class="d-block"
                 src="images/png/projectImage.png"
@@ -163,145 +53,249 @@
                 width="40"
                 height="40"
               />
-            </a>
-
-            <ul
-              class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
-            >
-              <li>
-                <a
-                  href=""
-                  class="nav-link px-2 text-white me-3 rounded catalogBtn header-li-item"
-                  >Catalog</a
-                >
-              </li>
-            </ul>
-
-            <form
-              class="col-12 col-lg-auto d-flex flex-grow-1 ms-lg-3 mb-3 mb-lg-0 me-lg-3"
-              id="searchForm"
-            >
-              <input
-                type="search"
-                class="form-control form-control-dark"
-                placeholder="Search..."
-                aria-label="Search"
-                id="searchInput"
-              />
-            </form>
-
-            <div class="text-end d-none" id="logInButtons">
               <button
                 type="button"
-                class="btn btn-outline-light btn-anim me-2"
-                id="logIn"
-              >
-                Log in
-              </button>
-              <button
-                type="button"
-                class="btn btn-primary btn-anim"
-                btn-anim
-                id="signUp"
-              >
-                Sign up
-              </button>
+                class="btn-close"
+                data-bs-dismiss="offcanvas"
+                aria-label="Close"
+              ></button>
             </div>
-            <div
-              class="dropdown d-inline-block ms-3 d-none"
-              id="profileDropdown"
-            >
-              <button
-                class="btn p-0 border-0 bg-transparent text-decoration-none rounded header-li-item"
-                type="button"
-                id="dropdownMenuButton"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                style="color: rgb(255, 255, 255); width: 30px"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="30"
-                  height="30"
-                  fill="currentColor"
-                  class="bi bi-person-circle"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"></path>
-                  <path
-                    fill-rule="evenodd"
-                    d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 
-               4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"
-                  ></path>
-                </svg>
-              </button>
-              <ul class="dropdown-menu">
-                <li class="px-3 py-2">
-                  <strong>AlxPav Chr</strong><br />
-                  <small class="dropdown-text">alx.pav2106@gmail.com</small>
-                </li>
-                <div class="btn-holder-1">
-                  <li
-                    class="px-3 py-2 d-flex gap-2 justify-content-center li-1"
-                  >
+            <div class="offcanvas-body p-0">
+              <div class="p-3" style="width: 100%">
+                <ul class="list-unstyled ps-0">
+                  <li class="mb-1">
                     <button
-                      id="light-btn"
-                      class="btn btn-outline-dark btn-sm rounded-square"
-                      title="Light"
+                      class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed sidebar-item"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#home-collapse"
+                      aria-expanded="false"
                     >
-                      <i class="bi bi-sun"></i>
+                      Home
                     </button>
-                    <button
-                      id="dark-btn"
-                      class="btn btn-outline-dark btn-sm rounded-square"
-                      title="Dark"
-                    >
-                      <i class="bi bi-moon-fill"></i>
-                    </button>
-                    <button
-                      id="system-btn"
-                      class="btn btn-outline-dark btn-sm rounded-square"
-                      title="System"
-                    >
-                      <i class="bi bi-display"></i>
-                    </button>
+                    <div class="collapse" id="home-collapse">
+                      <ul
+                        class="btn-toggle-nav list-unstyled fw-normal pb-1 small"
+                      >
+                        <li>
+                          <a
+                            href="index.html"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded sidebar-li-item"
+                            >Main page</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded sidebar-li-item"
+                            >Catalog</a
+                          >
+                        </li>
+                      </ul>
+                    </div>
                   </li>
-                </div>
 
-                <li><hr class="dropdown-divider" /></li>
-                <li>
-                  <a class="dropdown-item profileBtn" href="#">Your profile</a>
-                </li>
-                <li><hr class="dropdown-divider" /></li>
-                <li>
-                  <a class="dropdown-item text-danger logOut" href="#"
-                    >Log out</a
-                  >
-                </li>
-              </ul>
+                  <li class="mb-1">
+                    <button
+                      class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed sidebar-item"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#account-collapse"
+                      aria-expanded="false"
+                    >
+                      Account
+                    </button>
+                    <div class="collapse" id="account-collapse">
+                      <ul
+                        class="btn-toggle-nav list-unstyled fw-normal pb-1 small"
+                      >
+                        <li>
+                          <a
+                            href=""
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded sidebar-li-item new-account-btn"
+                            >New...</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href=""
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded profileBtn sidebar-li-item"
+                            >Profile</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href=""
+                            class="link-body-emphasis d-inline-flex text-decoration-none rounded logOut sidebar-li-item"
+                            >Sign out</a
+                          >
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+
+                  <hr class="sidebar-divider" />
+                  <li class="mb-3">
+                    <a
+                      href="/client/contactUs.html"
+                      class="nav-link px-2 text-body-secondary"
+                      >Contact us</a
+                    >
+                  </li>
+                  <li class="mb-3">
+                    <a
+                      href="/client/about.html"
+                      class="nav-link px-2 text-body-secondary"
+                      >About Pro Shop</a
+                    >
+                  </li>
+                </ul>
+              </div>
             </div>
-            <a
-              href=""
-              class="d-flex align-items-center mb-1 text-white text-decoration-none ms-4 rounded position-relative header-li-item"
-              id="open-cart"
+          </div>
+          <a
+            href="/client/index.html"
+            class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none me-3"
+          >
+            <img
+              class="d-block"
+              src="images/png/projectImage.png"
+              alt=""
+              width="40"
+              height="40"
+            />
+          </a>
+
+          <ul
+            class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
+          >
+            <li>
+              <a
+                href=""
+                class="nav-link px-2 text-white me-3 rounded catalogBtn header-li-item"
+                >Catalog</a
+              >
+            </li>
+          </ul>
+
+          <form
+            class="col-12 col-lg-auto d-flex flex-grow-1 ms-lg-3 mb-3 mb-lg-0 me-lg-3"
+            id="searchForm"
+          >
+            <input
+              type="search"
+              class="form-control form-control-dark"
+              placeholder="Search..."
+              aria-label="Search"
+              id="searchInput"
+            />
+          </form>
+
+          <div class="text-end d-none" id="logInButtons">
+            <button
+              type="button"
+              class="btn btn-outline-light btn-anim me-2"
+              id="logIn"
+            >
+              Log in
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary btn-anim"
+              btn-anim
+              id="signUp"
+            >
+              Sign up
+            </button>
+          </div>
+          <div class="dropdown d-inline-block ms-3 d-none" id="profileDropdown">
+            <button
+              class="btn p-0 border-0 bg-transparent text-decoration-none rounded header-li-item"
+              type="button"
+              id="dropdownMenuButton"
+              data-bs-toggle="dropdown"
+              data-bs-auto-close="outside"
+              aria-expanded="false"
+              style="color: rgb(255, 255, 255); width: 30px"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="30"
                 height="30"
-                fill="#28A745"
-                class="bi bi-cart2"
+                fill="currentColor"
+                class="bi bi-person-circle"
                 viewBox="0 0 16 16"
               >
+                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"></path>
                 <path
-                  d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l1.25 5h8.22l1.25-5zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"
-                />
+                  fill-rule="evenodd"
+                  d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 
+               4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"
+                ></path>
               </svg>
-              <span class="d-none" id="amount-in-cart"> 0 </span>
-            </a>
+            </button>
+            <ul class="dropdown-menu">
+              <li class="px-3 py-2">
+                <strong id="profile-username"></strong><br />
+                <small class="dropdown-text" id="profile-email"></small>
+              </li>
+              <ul class="px-3 py-2">
+                <div
+                  class="px-3 py-2 d-flex gap-2 justify-content-center li-1 btn-holder-1"
+                >
+                  <button
+                    id="light-btn"
+                    class="btn btn-outline-dark btn-sm rounded-square"
+                    title="Light"
+                  >
+                    <i class="bi bi-sun"></i>
+                  </button>
+                  <button
+                    id="dark-btn"
+                    class="btn btn-outline-dark btn-sm rounded-square"
+                    title="Dark"
+                  >
+                    <i class="bi bi-moon-fill"></i>
+                  </button>
+                  <button
+                    id="system-btn"
+                    class="btn btn-outline-dark btn-sm rounded-square"
+                    title="System"
+                  >
+                    <i class="bi bi-display"></i>
+                  </button>
+                </div>
+              </ul>
+
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a class="dropdown-item profileBtn" href="#">Your profile</a>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a class="dropdown-item text-danger logOut" href="#">Log out</a>
+              </li>
+            </ul>
           </div>
+          <a
+            href=""
+            class="d-flex align-items-center mb-1 text-white text-decoration-none ms-4 rounded position-relative header-li-item"
+            id="open-cart"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="30"
+              height="30"
+              fill="#28A745"
+              class="bi bi-cart2"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l1.25 5h8.22l1.25-5zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"
+              />
+            </svg>
+            <span class="d-none" id="amount-in-cart"> 0 </span>
+          </a>
         </div>
-      </header>
+      </div>
     </header>
     <main>
       <div class="container">

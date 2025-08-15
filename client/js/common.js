@@ -10,6 +10,9 @@ const newAccountButtons = document.querySelectorAll(".new-account-btn");
 const logInButtons = document.getElementById("logInButtons");
 const profileDropdown = document.getElementById("profileDropdown");
 
+const profileUsername = document.getElementById("profile-username");
+const profileEmail = document.getElementById("profile-email");
+
 const openCartBtn = document.getElementById("open-cart");
 
 const amountInCart = document.getElementById("amount-in-cart");
@@ -154,6 +157,8 @@ fetch("http://localhost:3000/session", {
     if (data && data.loggedIn) {
       logInButtons.classList.add("d-none");
       profileDropdown.classList.remove("d-none");
+      profileUsername.textContent = data.user.username;
+      profileEmail.textContent = data.user.email;
       session = true;
       cartHistory();
     }
@@ -256,6 +261,7 @@ function loadCartItems() {
     `;
     cartItemsTable.insertAdjacentHTML("beforeend", row);
     if (session) {
+      console.log("loaded " + productId, item.quantity);
       addToCart(productId, item.quantity);
     }
   });
@@ -275,7 +281,7 @@ function loadCartItems() {
   });
 }
 
-function addToCart(productId, quantity) {
+async function addToCart(productId, quantity) {
   fetch("http://localhost:3000/cart/add", {
     method: "POST",
     credentials: "include",
@@ -306,6 +312,28 @@ function updateQuantity(productId, change) {
   item.quantity += change;
   if (item.quantity <= 0) {
     cart = cart.filter((p) => p.product_id !== productId);
+    console.log(productId);
+    console.log(cart);
+    if (session) {
+      fetch("http://localhost:3000/cart/remove", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          product_id: productId,
+        }),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Failed to remove an item from cart");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          console.log("removed " + data);
+        })
+        .catch((err) => console.log(err));
+    }
   }
 
   localStorage.setItem("cart", JSON.stringify(cart));

@@ -11,8 +11,10 @@ const productPrice = document.getElementById("productPrice");
 const buyButton = document.querySelector(".buy-btn");
 const buyAndCheckOutBtn = document.querySelector(".buy-and-checkout-btn");
 
-buyAndCheckOutBtn.addEventListener("click", () => {
-  Buy();
+let checkout = false;
+
+buyAndCheckOutBtn.addEventListener("click", async () => {
+  await Buy();
   window.location.href = "/client/checkout.html";
 });
 
@@ -41,7 +43,7 @@ if (productId) {
     .catch((err) => console.error("Error loading product:", err));
 }
 
-function Buy() {
+async function Buy() {
   // Adding message
   const alert = document.createElement("div");
   alert.className = "alert alert-success alert-dismissible fade show mb-2";
@@ -70,7 +72,7 @@ function Buy() {
 
   fetch(`http://localhost:3000/product?id=${productId}`)
     .then((res) => res.json())
-    .then((data) => {
+    .then(async (data) => {
       productName = data[0].name;
       productPrice = data[0].price;
 
@@ -96,7 +98,8 @@ function Buy() {
       );
       amountInCart.classList.remove("d-none");
       if (session) {
-        addToCart(productId, quantity);
+        console.log("adding-to-back " + productId, quantity);
+        await addToCart(productId, quantity);
       }
     })
     .catch((err) => console.error("Error loading product:", err));
