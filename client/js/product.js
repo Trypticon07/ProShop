@@ -11,8 +11,6 @@ const productPrice = document.getElementById("productPrice");
 const buyButton = document.querySelector(".buy-btn");
 const buyAndCheckOutBtn = document.querySelector(".buy-and-checkout-btn");
 
-let checkout = false;
-
 buyAndCheckOutBtn.addEventListener("click", async () => {
   await Buy();
   window.location.href = "/client/checkout.html";
@@ -98,7 +96,6 @@ async function Buy() {
       );
       amountInCart.classList.remove("d-none");
       if (session) {
-        console.log("adding-to-back " + productId, quantity);
         await addToCart(productId, quantity);
       }
     })

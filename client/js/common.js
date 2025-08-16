@@ -21,7 +21,7 @@ const cartModal = document.getElementById("cart-modal");
 const closeCartBtn = document.getElementById("close-cart");
 const cartItemsTable = document.getElementById("cart-items");
 const cartTotal = document.getElementById("cart-total");
-const checkoutButtons = document.querySelectorAll("#checkout-btn");
+const checkoutBtn = document.getElementById("checkout-btn");
 
 const searchForm = document.getElementById("searchForm");
 const searchInput = document.getElementById("searchInput");
@@ -31,6 +31,7 @@ const footer = document.getElementById("footer-container");
 const alertContainer = document.getElementById("alert-container");
 
 let session = false;
+var checkout;
 
 // Popover
 const popoverTriggerList = document.querySelectorAll(
@@ -140,6 +141,10 @@ cartModal.addEventListener("click", (e) => {
   }
 });
 
+checkoutBtn.addEventListener("click", (e) => {
+  window.location.href = "/client/checkout.html";
+});
+
 // session
 fetch("http://localhost:3000/session", {
   credentials: "include",
@@ -226,7 +231,7 @@ if (totalProducts > 0) {
   amountInCart.textContent = totalProducts;
 }
 
-function loadCartItems() {
+async function loadCartItems() {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   cartItemsTable.innerHTML = "";
   let totalPrice = 0;
@@ -237,7 +242,7 @@ function loadCartItems() {
     return;
   }
 
-  cart.forEach((item, index) => {
+  cart.forEach(async (item, index) => {
     const productId = item.product_id;
     const productName = item.productName;
     const price = Number(item.productPrice);
@@ -261,8 +266,7 @@ function loadCartItems() {
     `;
     cartItemsTable.insertAdjacentHTML("beforeend", row);
     if (session) {
-      console.log("loaded " + productId, item.quantity);
-      addToCart(productId, item.quantity);
+      await addToCart(productId, item.quantity);
     }
   });
 
@@ -312,8 +316,6 @@ function updateQuantity(productId, change) {
   item.quantity += change;
   if (item.quantity <= 0) {
     cart = cart.filter((p) => p.product_id !== productId);
-    console.log(productId);
-    console.log(cart);
     if (session) {
       fetch("http://localhost:3000/cart/remove", {
         method: "POST",
@@ -329,18 +331,29 @@ function updateQuantity(productId, change) {
           }
           return res.json();
         })
-        .then((data) => {
-          console.log("removed " + data);
-        })
+        .then((data) => {})
         .catch((err) => console.log(err));
+    }
+  } else {
+    if (session) {
+      fetch("http://localhost:3000/cart/add", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          product_id: productId,
+          quantity: item.quantity,
+        }),
+      }).catch((err) => console.log(err));
     }
   }
 
   localStorage.setItem("cart", JSON.stringify(cart));
   totalProducts = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
-  if (totalProducts > 0) {
-    amountInCart.classList.remove("d-none");
-    amountInCart.textContent = totalProducts;
+  amountInCart.classList.remove("d-none");
+  amountInCart.textContent = totalProducts;
+  if (totalProducts <= 0) {
+    amountInCart.classList.add("d-none");
   }
   loadCartItems();
 }

@@ -33,6 +33,9 @@ const cardCVVCodeFeedback = document.querySelector("#CVVFeedback");
 const backendResponse = document.querySelector("#backend-response");
 
 const cartTable = document.querySelector("#cart-table");
+const totalInCart = document.querySelector("#total-in-cart");
+
+const totalPriceInCartText = document.querySelector("#total-price");
 
 let isValidEmail = false;
 
@@ -53,7 +56,30 @@ let isValidCardNumber = false;
 let isValidCardExpiration = false;
 let isValidCVVCode = false;
 
+let previousCart = JSON.parse(localStorage.getItem("cart")) || [];
+function hasQuantityChanged(oldCart, newCart) {
+  if (oldCart.length !== newCart.length) return true;
+  for (let i = 0; i < oldCart.length; i++) {
+    if (
+      oldCart[i].product_id !== newCart[i].product_id ||
+      oldCart[i].quantity !== newCart[i].quantity
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+setInterval(() => {
+  const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
+  if (hasQuantityChanged(previousCart, currentCart)) {
+    previousCart = currentCart;
+    loadCart();
+  }
+}, 300);
+
 (() => {
+  checkout = true;
   loadCart();
   const forms = document.querySelectorAll(".needs-validation");
 
@@ -364,6 +390,17 @@ function checkCardExpiration(expiration) {
 }
 
 async function loadCart() {
+  cartTable.innerHTML = "";
+  let totalPriceInCart = 0;
+  totalPriceInCartText.textContent = totalPriceInCart;
+
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  if (cart.length === 0) {
+    totalInCart.textContent = 0;
+    totalPriceInCartText.textContent = 0;
+    cartTable.innerHTML = `<li class="list-group-item text-center">Cart is empty</li>`;
+    return;
+  }
   fetch("http://localhost:3000/cart/history", {
     method: "GET",
     credentials: "include",
@@ -374,14 +411,11 @@ async function loadCart() {
     })
     .then((data) => {
       if (!data.cart_items || !Array.isArray(data.cart_items)) return;
-      //console.log(data.cart_items);
       const cart = data.cart_items;
-      //console.log(cart[0].product_id);
       cart.forEach((cartItem) => {
-        //console.log(cartItem);
-        //const product = productData[0];
-        //console.log("qty" + cartItem.quantity);
-
+        let productPrice = cartItem.product_price * cartItem.quantity;
+        totalPriceInCart += productPrice;
+        totalPriceInCartText.textContent = totalPriceInCart;
         const li = document.createElement("li");
         li.className = "list-group-item d-flex justify-content-between lh-sm";
 
@@ -389,39 +423,17 @@ async function loadCart() {
               <div>
                 <h6 class="my-0">${cartItem.product_name}</h6>
               </div>
-              <span class="text-body-secondary">$${
-                cartItem.product_price * cartItem.quantity
-              }</span>
+              <span class="text-body-secondary">$${productPrice}</span>
             `;
 
         cartTable.appendChild(li);
-        fetch(`http://localhost:3000/product?id=${cartItem.product_id}`)
-          .then((res) => res.json())
-          .then((productData) => {
-            if (!productData || !productData[0]) return;
-            //console.log(productData[0]);
-
-            // const product = productData[0];
-            // console.log(product.quantity);
-
-            // const li = document.createElement("li");
-            // li.className =
-            //   "list-group-item d-flex justify-content-between lh-sm";
-
-            // li.innerHTML = `
-            //   <div>
-            //     <h6 class="my-0">${product.name}</h6>
-            //   </div>
-            //   <span class="text-body-secondary">$${
-            //     product.price * product.quantity
-            //   }</span>
-            // `;
-
-            // cartTable.appendChild(li);
-          });
       });
     })
     .catch((err) => console.error(err));
+  let totalProducts = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  if (totalProducts > 0) {
+    totalInCart.textContent = totalProducts;
+  }
 }
 
 function Submit() {
