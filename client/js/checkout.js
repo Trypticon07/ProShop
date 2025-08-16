@@ -39,6 +39,9 @@ const totalPriceInCartText = document.querySelector("#total-price");
 
 const submitCheckoutBtn = document.getElementById("submit-checkout");
 
+const screen1 = document.getElementById("screen-1");
+const screen2 = document.getElementById("screen-2");
+
 let isValidEmail = false;
 
 let isValidFirstName = false;
@@ -357,7 +360,6 @@ setInterval(() => {
       ) {
         return;
       }
-      submitCheckoutBtn.classList.remove("disabled");
 
       Submit();
     });
@@ -486,7 +488,8 @@ function Submit() {
       if (response.data) {
         clearCart();
       }
-      console.log(response.data);
+      screen1.classList.add("d-none");
+      screen2.classList.remove("d-none");
     })
     .catch((err) => {
       const res = err.response.data;

@@ -108,7 +108,7 @@ newAccountButtons.forEach((btn) => {
 
 searchForm.addEventListener("submit", function (e) {
   e.preventDefault();
-  const query = searchInput.value.trim();
+  const query = searchInput.value;
   if (query) {
     window.location.href = `index.html?search=${encodeURIComponent(query)}`;
   }

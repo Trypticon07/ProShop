@@ -1,4 +1,34 @@
-export function checkEmailAndPassword(emailInput, passwordInput) {
+// export function checkEmailAndPassword(emailInput, passwordInput) {
+//   if (emailInput.length < 6 || emailInput.length > 100) {
+//     return {
+//       isInvalid: true,
+//       field: "email",
+//       error: "Email must be between 6 and 100 characters.",
+//     };
+//   } else if (
+//     !emailInput.includes("@") ||
+//     !emailInput.includes(".") ||
+//     emailInput.indexOf("@") === 0 ||
+//     emailInput.lastIndexOf(".") < emailInput.indexOf("@")
+//   ) {
+//     return {
+//       isInvalid: true,
+//       field: "email",
+//       error: "Email is invalid.",
+//     };
+//   }
+//   if (passwordInput.length < 8 || passwordInput.length > 100) {
+//     return {
+//       isInvalid: true,
+//       field: "password",
+//       error: "Password must be between 8 and 100 characters.",
+//     };
+//   } else {
+//     return { isInvalid: false };
+//   }
+// }
+
+export function checkEmail(emailInput) {
   if (emailInput.length < 6 || emailInput.length > 100) {
     return {
       isInvalid: true,
@@ -16,7 +46,12 @@ export function checkEmailAndPassword(emailInput, passwordInput) {
       field: "email",
       error: "Email is invalid.",
     };
+  } else {
+    return { isInvalid: false };
   }
+}
+
+export function checkPassword(passwordInput) {
   if (passwordInput.length < 8 || passwordInput.length > 100) {
     return {
       isInvalid: true,
@@ -27,6 +62,7 @@ export function checkEmailAndPassword(emailInput, passwordInput) {
     return { isInvalid: false };
   }
 }
+
 export function checkUsername(username) {
   if (username.length < 3 || username.length > 50) {
     return {

@@ -6,7 +6,11 @@ const container = document.getElementById("product-container");
 const chatBtn = document.getElementById("open-chat-btn");
 
 const emailInput = document.querySelector("#main-email-input");
+
+const subscribeBtn = document.getElementById("subscribe-btn");
+
 const emailFeedback = document.querySelector("#emailFeedback");
+const validEmailFeedback = document.getElementById("validEmailFeedback");
 const backendResponse = document.querySelector(".backend-response");
 
 let isProcessing = false;
@@ -56,7 +60,9 @@ function Submit() {
       email: document.querySelector("#main-email-input").value,
     })
     .then((response) => {
-      backendResponse.textContent = "Successfully added email!";
+      emailInput.disabled = true;
+      subscribeBtn.classList.add("disabled");
+      validEmailFeedback.classList.remove("d-none");
     })
     .catch((err) => {
       const res = err.response.data;
@@ -125,7 +131,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (searchQuery) {
     searchInput.value = searchQuery.trim();
-    search(searchQuery);
+    await search(searchQuery);
+    const productContainer = document.getElementById("product-container");
+    if (productContainer) {
+      productContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
     return;
   }
 
@@ -190,7 +200,7 @@ async function search(query) {
           </div>`;
       return;
     }
-    appendProduct(products);
+    await appendProduct(products);
   } catch (error) {
     container.innerHTML = `<p>Error: ${error.message}</p>`;
   }

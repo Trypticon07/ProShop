@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import bcrypt from "bcrypt";
 import axios from "axios";
-import { checkEmailAndPassword, checkUsername } from "./validation.js";
+import { checkEmail, checkUsername, checkPassword } from "./validation.js";
 import { sendMessage } from "./model.js";
 import session from "express-session";
 import rateLimit from "express-rate-limit";
@@ -121,13 +121,17 @@ app.post("/register", registerLimiter, async (req, res) => {
         error: "Please confirm that you are not a robot.",
       });
     }
-    const checkResult = checkEmailAndPassword(email, password);
+    const emailCheck = checkEmail(email);
+    const passwordCheck = checkPassword(password);
     const usernameCheck = checkUsername(username);
-    if (checkResult.isInvalid) {
-      return res.status(400).json(checkResult);
+    if (emailCheck.isInvalid) {
+      return res.status(400).json(emailCheck);
     }
     if (usernameCheck.isInvalid) {
       return res.status(400).json(usernameCheck);
+    }
+    if (passwordCheck.isInvalid) {
+      return res.status(400).json(passwordCheck);
     }
 
     const DBresult = await connection.query(
@@ -183,9 +187,13 @@ app.post("/logIn", loginLimiter, async (req, res) => {
       });
     }
 
-    const checkResult = checkEmailAndPassword(email, password);
-    if (checkResult.isInvalid) {
-      return res.status(400).json(checkResult);
+    const emailCheck = checkEmail(email);
+    const passwordCheck = checkPassword(password);
+    if (emailCheck.isInvalid) {
+      return res.status(400).json(emailCheck);
+    }
+    if (passwordCheck.isInvalid) {
+      return res.status(400).json(passwordCheck);
     }
 
     const result = await connection.query(
@@ -226,24 +234,10 @@ app.post("/logIn", loginLimiter, async (req, res) => {
 app.post("/subscribe", subscriptionLimiter, async (req, res) => {
   const email = req.body.email;
   try {
-    if (email.length < 6 || email.length > 100) {
-      return {
-        isInvalid: true,
-        field: "email",
-        error: "Email must be between 6 and 100 characters.",
-      };
-    } else if (
-      !email.includes("@") ||
-      !email.includes(".") ||
-      email.indexOf("@") === 0 ||
-      email.lastIndexOf(".") < email.indexOf("@")
-    ) {
-      return res.status(400).json({
-        isInvalid: true,
-        field: "email",
-        error: "Email is invalid.",
-      });
-    }
+    const emailCheck = checkEmail(email);
+    // if (emailCheck.isInvalid) {
+    //   return res.status(400).json(emailCheck);
+    // }
 
     await connection.query("INSERT INTO mailing_list (email) VALUES ($1)", [
       email,
