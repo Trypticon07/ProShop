@@ -30,6 +30,8 @@ const footer = document.getElementById("footer-container");
 
 const alertContainer = document.getElementById("alert-container");
 
+const openPopoverBtn = document.querySelector(".btn-danger");
+
 let session = false;
 var checkout;
 
@@ -75,7 +77,8 @@ profileButtons.forEach((btn) => {
 catalogButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     e.preventDefault();
-    window.location.href = "./index.html";
+    catalog = true;
+    window.location.href = `index.html?catalog=${encodeURIComponent(catalog)}`;
   });
 });
 
@@ -229,6 +232,9 @@ let totalProducts = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
 if (totalProducts > 0) {
   amountInCart.classList.remove("d-none");
   amountInCart.textContent = totalProducts;
+  cartTotal.classList.remove("d-none");
+  openPopoverBtn.classList.remove("d-none");
+  checkoutBtn.classList.remove("d-none");
 }
 
 async function loadCartItems() {
@@ -239,6 +245,9 @@ async function loadCartItems() {
   if (cart.length === 0) {
     cartItemsTable.innerHTML = `<tr><td colspan="5" class="text-center">Cart is empty</td></tr>`;
     cartTotal.textContent = "Total: $0.00";
+    cartTotal.classList.add("d-none");
+    openPopoverBtn.classList.add("d-none");
+    checkoutBtn.classList.add("d-none");
     return;
   }
 

@@ -118,23 +118,34 @@ window.addEventListener("scroll", () => {
   }
 });
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
   const searchQuery = params.get("search");
+  const catalog = params.get("catalog");
 
   if (searchQuery) {
     searchInput.value = searchQuery.trim();
     search(searchQuery);
     return;
   }
+
+  if (catalog) {
+    await getProducts();
+    const productContainer = document.getElementById("product-container");
+    if (productContainer) {
+      productContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    return;
+  }
+
   getProducts();
 });
 
-function getProducts() {
-  fetch("http://localhost:3000/products")
+async function getProducts() {
+  await fetch("http://localhost:3000/products")
     .then((res) => res.json())
-    .then((products) => {
-      appendProduct(products);
+    .then(async (products) => {
+      await appendProduct(products);
     })
     .catch((err) => {
       console.error("Error loading products:", err);
@@ -143,7 +154,6 @@ function getProducts() {
 
 async function search(query) {
   if (!query) {
-    console.log(query);
     return;
   }
 
@@ -158,7 +168,6 @@ async function search(query) {
     const products = await response.json();
 
     if (products.length === 0) {
-      console.log("here1");
       container.innerHTML = `<div
             class="d-flex flex-column align-items-center text-center py-5 w-100"
           >
@@ -187,7 +196,7 @@ async function search(query) {
   }
 }
 
-function appendProduct(products) {
+async function appendProduct(products) {
   container.innerHTML = "";
   products.forEach((product) => {
     let image_src = "";
@@ -307,6 +316,9 @@ function Buy(btn) {
         0
       );
       amountInCart.classList.remove("d-none");
+      cartTotal.classList.remove("d-none");
+      openPopoverBtn.classList.remove("d-none");
+      checkoutBtn.classList.remove("d-none");
       if (session) {
         addToCart(productId, quantity);
       }

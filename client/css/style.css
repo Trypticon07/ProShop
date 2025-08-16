@@ -635,7 +635,7 @@ body.dark-theme .btn-outline-secondary:hover {
 }
 
 /* cart page */
-.text-primary {
+.checkout-text-primary {
   color: var(--primary-color) !important;
 }
 .bg-primary {

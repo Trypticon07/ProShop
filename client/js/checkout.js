@@ -37,6 +37,8 @@ const totalInCart = document.querySelector("#total-in-cart");
 
 const totalPriceInCartText = document.querySelector("#total-price");
 
+const submitCheckoutBtn = document.getElementById("submit-checkout");
+
 let isValidEmail = false;
 
 let isValidFirstName = false;
@@ -55,6 +57,21 @@ let isValidNameOnCard = false;
 let isValidCardNumber = false;
 let isValidCardExpiration = false;
 let isValidCVVCode = false;
+
+fetch("http://localhost:3000/session", {
+  credentials: "include",
+})
+  .then((res) => {
+    if (!res.ok) {
+      window.location.href = "/client/logIn.html";
+      return;
+    }
+    return res.text();
+  })
+  .catch((err) => {
+    console.error("Session error:", err);
+    window.location.href = "/client/logIn.html";
+  });
 
 let previousCart = JSON.parse(localStorage.getItem("cart")) || [];
 function hasQuantityChanged(oldCart, newCart) {
@@ -79,8 +96,8 @@ setInterval(() => {
 }, 300);
 
 (() => {
-  checkout = true;
   loadCart();
+  checkout = true;
   const forms = document.querySelectorAll(".needs-validation");
 
   emailInput.classList.remove("is-invalid");
@@ -340,6 +357,7 @@ setInterval(() => {
       ) {
         return;
       }
+      submitCheckoutBtn.classList.remove("disabled");
 
       Submit();
     });
@@ -399,6 +417,7 @@ async function loadCart() {
     totalInCart.textContent = 0;
     totalPriceInCartText.textContent = 0;
     cartTable.innerHTML = `<li class="list-group-item text-center">Cart is empty</li>`;
+    submitCheckoutBtn.classList.add("disabled");
     return;
   }
   fetch("http://localhost:3000/cart/history", {
@@ -415,7 +434,7 @@ async function loadCart() {
       cart.forEach((cartItem) => {
         let productPrice = cartItem.product_price * cartItem.quantity;
         totalPriceInCart += productPrice;
-        totalPriceInCartText.textContent = totalPriceInCart;
+        totalPriceInCartText.textContent = "$" + totalPriceInCart;
         const li = document.createElement("li");
         li.className = "list-group-item d-flex justify-content-between lh-sm";
 
@@ -440,8 +459,7 @@ function Submit() {
   const selected = document.querySelector(
     'input[name="paymentMethod"]:checked'
   );
-  console.log(selected);
-  console.log(selected.id);
+
   axios
     .post(
       "http://localhost:3000/order/add",
@@ -458,15 +476,17 @@ function Submit() {
         nameOnCard: document.querySelector("#name-on-card-input").value,
         cardNumber: document.querySelector("#card-number-input").value,
         expiration: document.querySelector("#card-expiration-input").value,
-        cvv: document.querySelector("#card-cvv-code"),
+        cvv: document.querySelector("#card-cvv-code").value,
       },
       {
         withCredentials: true,
       }
     )
     .then((response) => {
+      if (response.data) {
+        clearCart();
+      }
       console.log(response.data);
-      window.location.href = "index.html";
     })
     .catch((err) => {
       const res = err.response.data;

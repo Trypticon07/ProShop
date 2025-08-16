@@ -47,30 +47,6 @@ app.use(
   })
 );
 
-const sessionMiddleware = (req, res, next) => {
-  const rememberMe = req.rememberMe;
-
-  session({
-    secret:
-      "YOUR_SESSION_SECRET_KEY",
-    // node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-      maxAge: rememberMe
-        ? 1000 * 60 * 60 * 24 * 30 // 30 days
-        : null, // Session cookie (deleted on browser close)
-    },
-  })(req, res, next);
-};
-
-// app.use((req, res, next) => {
-//   console.log(`Incoming request: ${req.method} ${req.url}`);
-//   next();
-// });
-
 function requireAuth(req, res, next) {
   if (!req.session.user) {
     return res.status(401).send("Unauthorized");
@@ -557,7 +533,7 @@ app.post("/cart/add", async (req, res) => {
       VALUES ($1, $2, $3, NOW())
       ON CONFLICT (user_id, product_id)
       DO UPDATE SET quantity = EXCLUDED.quantity, added_at = NOW()
-      RETURNING *;
+      RETURNING id;
     `;
     const values = [userId, productId, quantity];
 
@@ -655,36 +631,122 @@ app.post("/order/add", async (req, res) => {
   try {
     const userId = req.session.user?.id;
     if (!userId) return res.status(401).send("Not authorized");
-    const total_amount = req.session.total_amount;
-    const status = "created";
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const email = req.body.email;
+    const address = req.body.address;
+    const address2 = req.body.address2;
+    const country = req.body.country;
+    const city = req.body.city;
+    const zip = req.body.zip;
+    const paymentMethod = req.body.paymentMethod;
 
-    const productId = req.body.product_id;
-    const quantity = Number(req.body.quantity);
+    // card data
+    const cardExpirationDate = req.body.expiration;
+    const nameOnCard = req.body.nameOnCard;
 
-    if (!productId || !quantity) {
+    const status = "pending";
+
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !address ||
+      !address2 ||
+      !country ||
+      !city ||
+      !zip ||
+      !paymentMethod ||
+      !cardExpirationDate ||
+      !nameOnCard ||
+      !req.body.cardNumber ||
+      !req.body.cvv
+    ) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const query = `
-      INSERT INTO cart_items (user_id, product_id, quantity, added_at)
-      VALUES ($1, $2, $3, NOW())
-      ON CONFLICT (user_id, product_id)
-      DO UPDATE SET quantity = EXCLUDED.quantity, added_at = NOW()
+    const query1 = `
+      INSERT INTO orders (user_id, first_name, last_name, email, address, address2, country, city, zip, payment_method, status, created_at)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
+      RETURNING ID;
+    `;
+    const values1 = [
+      userId,
+      firstName,
+      lastName,
+      email,
+      address,
+      address2,
+      country,
+      city,
+      zip,
+      paymentMethod,
+      status,
+    ];
+
+    const result1 = await connection.query(query1, values1);
+    const orderId = result1.rows[0].id;
+    const query2 = `  INSERT INTO order_items (user_id, order_id, product_id, quantity, created_at)
+      SELECT user_id, $1 AS order_id, product_id, quantity, NOW()
+      FROM cart_items
+      WHERE user_id = $2;
+      `;
+    const values2 = [orderId, userId];
+    const result2 = await connection.query(query2, values2);
+
+    console.log(req.body.cardNumber);
+    console.log(req.body.cvv);
+    if (
+      processPayment(
+        nameOnCard,
+        cardExpirationDate,
+        req.body.cardNumber,
+        req.body.cvv
+      )
+    ) {
+      const updateQuery = `
+      UPDATE orders SET status = 'paid' WHERE user_id = $1 AND id = $2`;
+      const updateValues = [userId, orderId];
+      await connection.query(updateQuery, updateValues);
+
+      req.body.cardNumber = null;
+      req.body.cvv = null;
+    } else {
+      const updateQuery = `
+      UPDATE orders SET status = 'failed' WHERE user_id = $1 AND id = $2`;
+      const updateValues = [userId, orderId];
+      await connection.query(updateQuery, updateValues);
+      return res.status(402).json({ error: "Payment failed." });
+    }
+
+    const clearCartQuery = `
+      DELETE FROM cart_items
+      WHERE user_id = $1
       RETURNING *;
     `;
-    const values = [userId, productId, quantity];
+    const clearCartValues = [userId];
 
-    const result = await connection.query(query, values);
+    await connection.query(clearCartQuery, clearCartValues);
 
     res.status(201).json({
-      message: "Item added/updated in cart successfully",
-      cart_item: result.rows[0],
+      message: "Order created successfully",
+      order: result1.rows[0],
+      order_items: result2.rows,
     });
   } catch (error) {
-    console.error("Error adding/updating item in cart:", error);
-    res.status(500).send("Error while adding products to cart");
+    console.error("Error creating order:", error);
+    res.status(500).send("Error creating order");
   }
 });
+
+function processPayment(nameOnCard, cardExpirationDate, cardNumber, cvvCode) {
+  // Here you can put payment processing code.
+  if (nameOnCard && cardExpirationDate && cardNumber && cvvCode) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
