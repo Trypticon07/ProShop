@@ -33,6 +33,146 @@ const passwordBackendResponse = document.querySelector(
 changePasswordBtn.addEventListener("click", () => {
   changePassword();
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const sidebarLinks = document.querySelectorAll(
+    ".nav-pills .nav-link[data-target]"
+  );
+  const sections = document.querySelectorAll(".section");
+
+  sidebarLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      // hide all sections
+      sections.forEach((section) => section.classList.add("d-none"));
+
+      // reset links
+      sidebarLinks.forEach((l) => {
+        l.classList.remove("active");
+        l.classList.add("link-body-emphasis");
+      });
+
+      // activate clicked link
+      link.classList.add("active");
+      link.classList.remove("link-body-emphasis");
+
+      // show correct section
+      const targetId = link.getAttribute("data-target");
+      const targetSection = document.querySelector(targetId);
+      if (targetSection) {
+        targetSection.classList.remove("d-none");
+
+        if (targetId === "#profileSection") {
+          const defaultTab = document.querySelector(
+            '#profileSection a[href="#overview"]'
+          );
+          if (defaultTab) {
+            const tab = new bootstrap.Tab(defaultTab);
+            tab.show();
+          }
+        }
+      }
+    });
+  });
+});
+
+fetch("http://localhost:3000/order/items", {
+  method: "POST",
+  credentials: "include",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    orderId: 9,
+  }),
+})
+  .then((res) => {
+    if (!res.ok) {
+      return res.text();
+    }
+    return res.json();
+  })
+  .then((response) => {
+    const orderItems = response.order_items;
+    console.log(orderItems);
+    console.log(orderItems[0]);
+    console.log(orderItems[0].product_name);
+    console.log(orderItems[1]);
+    console.log(orderItems[1].product_name);
+  })
+  .catch((err) => {
+    if (err.response?.status === 401) {
+      console.log("err" + err);
+    }
+  });
+
+// Example: mock data
+const orders = [
+  { id: 101, date: "2025-07-18", status: "Delivered", total: "$120.50" },
+  { id: 102, date: "2025-08-01", status: "Pending", total: "$85.00" },
+  { id: 103, date: "2025-08-12", status: "Shipped", total: "$45.30" },
+];
+
+function renderOrders() {
+  fetch("http://localhost:3000/orders/history", {
+    credentials: "include",
+  })
+    .then((res) => {
+      if (!res.ok) {
+        return res.text();
+      }
+      return res.json();
+    })
+    .then((response) => {
+      const orders = response.orders;
+      console.log(orders);
+      console.log(orders[0]);
+      console.log(orders[0].product_name);
+      console.log(orders[1]);
+      console.log(orders[1].product_name);
+    })
+    .catch((err) => {
+      if (err.response?.status === 401) {
+        console.log("err" + err);
+      }
+    });
+
+  const tableBody = document.getElementById("ordersTableBody");
+  tableBody.innerHTML = "";
+
+  orders.forEach((order) => {
+    const row = `
+        <tr>
+          <td>${order.id}</td>
+          <td>${new Date(order.date).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}</td>
+          <td>
+            <span class="badge ${
+              order.status === "Delivered"
+                ? "bg-success"
+                : order.status === "Pending"
+                ? "bg-warning text-dark"
+                : "bg-info text-dark"
+            }">${order.status}</span>
+          </td>
+          <td>${order.total}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary view-details" data-id="${
+              order.id
+            }">
+              View
+            </button>
+          </td>
+        </tr>
+      `;
+    tableBody.insertAdjacentHTML("beforeend", row);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", renderOrders);
+
 (() => {
   const forms = document.querySelectorAll(".needs-validation");
 
@@ -248,7 +388,6 @@ fetch("http://localhost:3000/profile", {
   .then((response) => {
     if (response) {
       const user = JSON.parse(response);
-      console.log(user);
       usernameField.textContent = user[0].username;
       emailField.textContent = user[0].email;
       memberSinceField.textContent = formatDate(user[0].created_at);

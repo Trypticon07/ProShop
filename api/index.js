@@ -486,14 +486,12 @@ function extractCommandJson(text) {
 }
 
 async function getOrCreateTicket(req) {
-  // Если тикет есть в сессии, используем его
   if (req.session.ticketId) {
     return req.session.ticketId;
   }
 
   const userId = req.session.user.id;
 
-  // Ищем открытый тикет в БД
   const result = await connection.query(
     "SELECT id FROM tickets WHERE user_id = $1 AND status != 'closed' ORDER BY created_at DESC LIMIT 1",
     [userId]
@@ -504,7 +502,6 @@ async function getOrCreateTicket(req) {
   if (result.rows.length > 0) {
     ticketId = result.rows[0].id;
   } else {
-    // Создаем новый, если не найден
     const insertResult = await connection.query(
       "INSERT INTO tickets (user_id) VALUES ($1) RETURNING id",
       [userId]
@@ -871,6 +868,56 @@ app.post("/order/add", async (req, res) => {
   } catch (error) {
     console.error("Error creating order:", error);
     res.status(500).send("Error creating order");
+  }
+});
+
+app.get("/orders/history", async (req, res) => {
+  try {
+    const userId = req.session.user?.id;
+    if (!userId) return res.status(401).send("Not authorized");
+
+    const query = `
+      SELECT * FROM orders WHERE user_id = $1
+      `;
+
+    const values = [userId];
+    const result = await connection.query(query, values);
+
+    res.status(200).json({
+      orders: result.rows,
+    });
+  } catch (error) {
+    console.error("Error fetching orders history:", error);
+    res.status(500).send("Error while fetching orders history");
+  }
+});
+
+app.post("/order/items", async (req, res) => {
+  try {
+    const userId = req.session.user?.id;
+    if (!userId) return res.status(401).send("Not authorized");
+
+    const orderId = req.body.orderId;
+
+    const query = `
+      SELECT oi.id, oi.user_id, oi.order_id, oi.product_id, oi.quantity, oi.created_at,
+             p.name AS product_name, p.description AS product_description,
+             p.price AS product_price, p.image_urls AS product_images
+      FROM order_items oi
+      JOIN products p ON oi.product_id = p.id
+      WHERE oi.user_id = $1 AND oi.order_id = $2
+      ORDER BY oi.created_at DESC;
+    `;
+
+    const values = [userId, orderId];
+    const result = await connection.query(query, values);
+
+    res.status(200).json({
+      order_items: result.rows,
+    });
+  } catch (error) {
+    console.error("Error fetching order items history:", error);
+    res.status(500).send("Error while fetching order items history");
   }
 });
 
