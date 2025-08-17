@@ -68,11 +68,6 @@ document
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       event.stopPropagation();
-      // if (rememberCheck.checked) {
-      //   includeCredentials = true;
-      // } else {
-      //   includeCredentials = false;
-      // }
 
       const captchaResponse = grecaptcha.getResponse();
       if (captchaResponse) {
@@ -83,7 +78,6 @@ document
         captchaError.classList.remove("d-none");
         captchaError.classList.add("d-block");
       }
-      //let captchaResponse = true;
 
       if (!isValidEmail || !isValidPassword || !captchaResponse) return;
 

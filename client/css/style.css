@@ -430,6 +430,11 @@ body.dark-theme .btn-outline-secondary:hover {
   box-shadow: none;
 }
 
+/* motivator */
+#motivator {
+  color: #fd7e14;
+}
+
 /* card */
 
 .card {
@@ -640,6 +645,19 @@ body.dark-theme .btn-outline-secondary:hover {
 }
 .bg-primary {
   background-color: var(--primary-color) !important;
+}
+
+/* profile page */
+.no-hover:hover {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  color: inherit !important;
+}
+.border-sides {
+  border-left: var(--bs-border-width) var(--bs-border-style)
+    var(--bs-border-color) !important;
+  border-right: var(--bs-border-width) var(--bs-border-style)
+    var(--bs-border-color) !important;
 }
 
 /* animations */

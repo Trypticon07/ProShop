@@ -47,13 +47,6 @@ app.use(
   })
 );
 
-function requireAuth(req, res, next) {
-  if (!req.session.user) {
-    return res.status(401).send("Unauthorized");
-  }
-  next();
-}
-
 const registerLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 mins
   max: 2,
@@ -96,7 +89,20 @@ const supportLimiter = rateLimit({
   message: {
     isInvalid: true,
     field: "rateLimit",
-    error: "Too many subscription attempts. Please try again after 10 minutes.",
+    error:
+      "Too many to ask a support attempts. Please try again after 10 minutes.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const profileLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 mins
+  max: 3,
+  message: {
+    isInvalid: true,
+    field: "rateLimit",
+    error: "Too many changing attempts. Please try again after 10 minutes.",
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -140,7 +146,11 @@ app.post("/register", registerLimiter, async (req, res) => {
     );
 
     if (DBresult.rows.length > 0) {
-      return res.status(400).send("Email is already used");
+      return res.status(400).json({
+        isInvalid: true,
+        field: "email",
+        error: "Email is already used.",
+      });
     }
 
     const saltRounds = 10;
@@ -235,9 +245,9 @@ app.post("/subscribe", subscriptionLimiter, async (req, res) => {
   const email = req.body.email;
   try {
     const emailCheck = checkEmail(email);
-    // if (emailCheck.isInvalid) {
-    //   return res.status(400).json(emailCheck);
-    // }
+    if (emailCheck.isInvalid) {
+      return res.status(400).json(emailCheck);
+    }
 
     await connection.query("INSERT INTO mailing_list (email) VALUES ($1)", [
       email,
@@ -250,13 +260,11 @@ app.post("/subscribe", subscriptionLimiter, async (req, res) => {
   }
 });
 
-app.post("/support", async (req, res) => {
+app.post("/support", supportLimiter, async (req, res) => {
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const email = req.body.email;
   const problem_description = req.body.problem_description;
-  console.log(problem_description);
-  console.log(req.body.problem_description);
   try {
     if (email.length < 6 || email.length > 100) {
       return {
@@ -313,8 +321,143 @@ app.post("/logout", (req, res) => {
   });
 });
 
-app.get("/profile", requireAuth, async (req, res) => {
-  res.send(`Welcome, ${req.session.user.username}!`);
+app.get("/profile", async (req, res) => {
+  try {
+    const userId = req.session.user?.id;
+    if (!userId) return res.status(401).send("Not authorized");
+    const query = `
+      SELECT * FROM users 
+      WHERE id = $1`;
+
+    const values = [userId];
+
+    const result = await connection.query(query, values);
+
+    res.status(201).json(result.rows);
+  } catch (error) {
+    console.error("Profile error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/profile/edit", profileLimiter, async (req, res) => {
+  try {
+    const userId = req.session.user?.id;
+
+    if (!userId) return res.status(401).send("Not authorized");
+    const username = req.body.username;
+    const email = req.body.email;
+
+    if (!username && email) {
+      const emailCheck = checkEmail(email);
+      if (emailCheck.isInvalid) {
+        return res.status(400).json(emailCheck);
+      }
+      const checkQuery = `
+        SELECT id FROM users 
+        WHERE email = $1
+        `;
+      const checkResult = await connection.query(checkQuery, [email]);
+
+      if (checkResult.rows.length > 0) {
+        return res.status(409).json({
+          isInvalid: true,
+          field: "email",
+          error: "Email is already used.",
+        });
+      }
+      const query = `
+        UPDATE users
+        SET email = $2
+        WHERE id = $1
+        RETURNING *;
+        `;
+
+      const values = [userId, email];
+
+      const result = await connection.query(query, values);
+      res.status(201).json(result.rows);
+    }
+
+    if (!email && username) {
+      const usernameCheck = checkUsername(username);
+      if (usernameCheck.isInvalid) {
+        return res.status(400).json(usernameCheck);
+      }
+      const query = `
+        UPDATE users
+        SET username = $2
+        WHERE id = $1
+        RETURNING *;
+        `;
+
+      const values = [userId, username];
+
+      const result = await connection.query(query, values);
+      res.status(201).json(result.rows);
+    }
+  } catch (error) {
+    console.error("Profile error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/profile/changePassword", profileLimiter, async (req, res) => {
+  try {
+    const userId = req.session.user?.id;
+
+    if (!userId) return res.status(401).send("Not authorized");
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
+
+    const oldPasswordCheck = checkPassword(oldPassword);
+    if (oldPasswordCheck.isInvalid) {
+      return res.status(400).json({
+        isInvalid: true,
+        field: "oldPassword",
+        error: "Password must be between 8 and 100 characters.",
+      });
+    }
+
+    const newPasswordCheck = checkPassword(newPassword);
+    if (newPasswordCheck.isInvalid) {
+      return res.status(400).json({
+        isInvalid: true,
+        field: "newPassword",
+        error: "Password must be between 8 and 100 characters.",
+      });
+    }
+
+    const result = await connection.query("SELECT * FROM users WHERE id = $1", [
+      userId,
+    ]);
+
+    const user = result.rows[0];
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+    if (!isMatch) {
+      return res.status(401).send("Incorrect password");
+    }
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    const query = `
+        UPDATE users
+        SET password = $2
+        WHERE id = $1
+        RETURNING *;
+        `;
+
+    const values = [userId, hashedPassword];
+
+    await connection.query(query, values);
+
+    res.status(201).json({ message: "Password has been changed." });
+  } catch (error) {
+    console.error("Profile error:", error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 app.get("/session", (req, res) => {
@@ -688,8 +831,6 @@ app.post("/order/add", async (req, res) => {
     const values2 = [orderId, userId];
     const result2 = await connection.query(query2, values2);
 
-    console.log(req.body.cardNumber);
-    console.log(req.body.cvv);
     if (
       processPayment(
         nameOnCard,
