@@ -521,8 +521,8 @@ body.dark-theme .btn-outline-secondary:hover {
 }
 
 #carouselExampleIndicators {
-  height: 400px;
-  width: 400px;
+  max-height: 400px;
+  max-width: 400px;
   background-color: white;
   margin: 0 auto;
 }
