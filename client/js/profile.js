@@ -34,6 +34,26 @@ changePasswordBtn.addEventListener("click", () => {
   changePassword();
 });
 
+// Order details
+const orderId = document.getElementById("orderId");
+const orderFirstName = document.getElementById("orderFirstNameField");
+const orderLastName = document.getElementById("orderLastNameField");
+const orderEmail = document.getElementById("orderEmailField");
+const orderAddress = document.getElementById("orderAddressField");
+const orderAddress2 = document.getElementById("orderAddress2Field");
+const orderCountry = document.getElementById("orderCountryField");
+const orderCity = document.getElementById("orderCityField");
+const orderZip = document.getElementById("orderZipField");
+const orderPaymentMethod = document.getElementById("orderPaymentMethodField");
+const orderDate = document.getElementById("orderDateField");
+const orderStatus = document.getElementById("orderStatusField");
+const orderTotal = document.getElementById("orderTotalField");
+const screen1 = document.getElementById("screen-1");
+const screen2 = document.getElementById("screen-2");
+
+screen1.classList.remove("d-none");
+screen2.classList.add("d-none");
+
 document.addEventListener("DOMContentLoaded", () => {
   const sidebarLinks = document.querySelectorAll(
     ".nav-pills .nav-link[data-target]"
@@ -77,40 +97,71 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-fetch("http://localhost:3000/order/items", {
-  method: "POST",
-  credentials: "include",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    orderId: 9,
-  }),
-})
-  .then((res) => {
-    if (!res.ok) {
-      return res.text();
-    }
-    return res.json();
+function getOrderDetails(orderId) {
+  screen1.classList.add("d-none");
+  screen2.classList.remove("d-none");
+  fetch("http://localhost:3000/order/details", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      orderId,
+    }),
   })
-  .then((response) => {
-    const orderItems = response.order_items;
-    console.log(orderItems);
-    console.log(orderItems[0]);
-    console.log(orderItems[0].product_name);
-    console.log(orderItems[1]);
-    console.log(orderItems[1].product_name);
-  })
-  .catch((err) => {
-    if (err.response?.status === 401) {
-      console.log("err" + err);
-    }
-  });
+    .then((res) => {
+      if (!res.ok) {
+        return res.text();
+      }
+      return res.json();
+    })
+    .then((response) => {
+      const orderDetails = response.order_items[0];
+      orderId.textContent = "Order №" + orderDetails.order_id + " details";
+      orderFirstName.textContent = orderDetails.first_name;
+      orderLastName.textContent = orderDetails.last_name;
+      orderEmail.textContent = orderDetails.email;
+      orderAddress.textContent = orderDetails.address;
+      orderAddress2.textContent = orderDetails.address2;
+      orderCountry.textContent = orderDetails.country;
+      orderCity.textContent = orderDetails.city;
+      orderZip.textContent = orderDetails.zip;
+      orderPaymentMethod.textContent = orderDetails.payment_method;
+      orderDate.textContent = formatDate(orderDetails.created_at);
+      orderStatus.textContent = orderDetails.status;
 
-// Example: mock data
-const orders = [
-  { id: 101, date: "2025-07-18", status: "Delivered", total: "$120.50" },
-  { id: 102, date: "2025-08-01", status: "Pending", total: "$85.00" },
-  { id: 103, date: "2025-08-12", status: "Shipped", total: "$45.30" },
-];
+      orderTotal.textContent =
+        "$" +
+        orderDetails.items
+          .reduce((sum, product) => {
+            return sum + product.price * product.quantity;
+          }, 0)
+          .toFixed(2);
+
+      const orderItems = orderDetails.items;
+      const tableBody = document.getElementById("orderItemsTableBody");
+      tableBody.innerHTML = "";
+
+      orderItems.forEach((product) => {
+        const row = `
+        <tr>
+          <td>${product.product_id}</td>
+          <td>${product.name}</td>
+          <td>
+            ${product.quantity}
+          </td>
+          <td>$${product.price.toFixed(2)}</td>
+          <td>
+            $${(product.price * product.quantity).toFixed(2)}
+          </td>
+        </tr>
+      `;
+        tableBody.insertAdjacentHTML("beforeend", row);
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
 
 function renderOrders() {
   fetch("http://localhost:3000/orders/history", {
@@ -124,51 +175,53 @@ function renderOrders() {
     })
     .then((response) => {
       const orders = response.orders;
-      console.log(orders);
-      console.log(orders[0]);
-      console.log(orders[0].product_name);
-      console.log(orders[1]);
-      console.log(orders[1].product_name);
-    })
-    .catch((err) => {
-      if (err.response?.status === 401) {
-        console.log("err" + err);
-      }
-    });
+      const tableBody = document.getElementById("ordersTableBody");
+      tableBody.innerHTML = "";
 
-  const tableBody = document.getElementById("ordersTableBody");
-  tableBody.innerHTML = "";
-
-  orders.forEach((order) => {
-    const row = `
+      orders.forEach((order) => {
+        const row = `
         <tr>
-          <td>${order.id}</td>
-          <td>${new Date(order.date).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}</td>
+          <td>${order.order_id}</td>
+          <td>${formatDate(order.created_at)}</td>
           <td>
             <span class="badge ${
-              order.status === "Delivered"
+              order.status === "paid"
                 ? "bg-success"
-                : order.status === "Pending"
+                : order.status === "pending"
                 ? "bg-warning text-dark"
-                : "bg-info text-dark"
+                : order.status === "failed"
+                ? "bg-danger text-dark"
+                : order.status === "canceled"
+                ? "bg-info text-dark"
+                : "bg-dark"
             }">${order.status}</span>
           </td>
-          <td>${order.total}</td>
+          <td>$${Number(order.total_amount).toFixed(2)}</td>
           <td>
             <button class="btn btn-sm btn-outline-primary view-details" data-id="${
-              order.id
+              order.order_id
             }">
               View
             </button>
           </td>
         </tr>
-      `;
-    tableBody.insertAdjacentHTML("beforeend", row);
-  });
+        `;
+        tableBody.insertAdjacentHTML("beforeend", row);
+      });
+      const viewDetailsBtn = document.querySelectorAll(".view-details");
+      viewDetailsBtn.forEach((btn) => {
+        btn.addEventListener("click", (event) => {
+          const orderId = event.currentTarget.dataset.id;
+          getOrderDetails(orderId);
+          const detailsTab = document.querySelector('a[href="#orderDetails"]');
+          const tab = new bootstrap.Tab(detailsTab);
+          tab.show();
+        });
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
 
 document.addEventListener("DOMContentLoaded", renderOrders);
@@ -256,14 +309,20 @@ document.addEventListener("DOMContentLoaded", renderOrders);
       event.preventDefault();
       event.stopPropagation();
 
-      if (!usernameInput.textContent && isValidEmail) {
-        isValidUsername = true;
-      }
-      if (!emailInput.textContent && isValidUsername) {
-        isValidEmail = true;
+      if (usernameInput.value === "" || emailInput.value === "") {
+        console.log("here1");
+        if (!usernameInput.value && isValidEmail) {
+          console.log("hereUSer");
+          isValidUsername = true;
+        }
+        if (!emailInput.value && isValidUsername) {
+          console.log("hereEmail");
+          isValidEmail = true;
+        }
       }
 
       if (!isValidEmail || !isValidUsername) {
+        console.log("here2");
         return;
       }
 

@@ -351,14 +351,11 @@
                       ></path>
                     </svg>
                     <div>
-                      <h5 id="username">Welcome, John Doe</h5>
-                      <p class="text-muted mb-0" id="email">
-                        john.doe@example.com
-                      </p>
+                      <h5 id="username"></h5>
+                      <p class="text-muted mb-0" id="email"></p>
                     </div>
                   </div>
 
-                  <!-- Основная информация -->
                   <div class="row">
                     <div class="col-md-6 mb-3">
                       <h6 class="text-muted">Username</h6>
@@ -420,7 +417,7 @@
                 <div class="tab-pane fade p-4" id="ChangePassword">
                   <h5>Change password</h5>
                   <form class="needs-validation" novalidate>
-                    <div class="mb-3">
+                    <div class="mb-3 password-wrapper">
                       <label for="oldPasswordInput" class="form-label"
                         >Old password</label
                       >
@@ -430,12 +427,19 @@
                         id="oldPasswordInput"
                         placeholder="Enter old password"
                       />
+                      <button
+                        class="btn toggle-password"
+                        type="button"
+                        id="toggleOldPassword"
+                      >
+                        <i class="bi bi-eye-fill" id="toggleIcon"></i>
+                      </button>
                       <div
                         class="invalid-feedback"
                         id="oldPasswordFeedback"
                       ></div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 password-wrapper">
                       <label for="newPasswordInput" class="form-label"
                         >New password</label
                       >
@@ -445,6 +449,13 @@
                         id="newPasswordInput"
                         placeholder="Enter a new password"
                       />
+                      <button
+                        class="btn toggle-password"
+                        type="button"
+                        id="toggleNewPassword"
+                      >
+                        <i class="bi bi-eye-fill" id="toggleIcon"></i>
+                      </button>
                       <div
                         class="invalid-feedback"
                         id="newPasswordFeedback"
@@ -462,6 +473,7 @@
             </div>
             <!-- Orders section -->
             <div class="section d-none" id="ordersSection">
+              <!-- Tabs -->
               <ul class="nav nav-tabs">
                 <li class="nav-item">
                   <a
@@ -473,12 +485,13 @@
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" data-bs-toggle="tab" href="#orderDetails"
-                    >Order Details</a
+                    >Order details</a
                   >
                 </li>
               </ul>
 
               <div class="tab-content border-top-0 border-bottom border-sides">
+                <!-- Order list -->
                 <div class="tab-pane fade show active p-4" id="ordersList">
                   <h5>Your orders</h5>
                   <div class="table-responsive mt-3">
@@ -498,10 +511,90 @@
                     </table>
                   </div>
                 </div>
-
-                <div class="tab-pane fade p-4" id="orderDetails">
-                  <h5>Order Details</h5>
-                  <p>Details for selected order...</p>
+                <!-- Order details -->
+                <div class="tab-pane fade active p-4" id="orderDetails">
+                  <div id="screen-1">
+                    <h5>Please select an order first.</h5>
+                  </div>
+                  <div class="d-none" id="screen-2">
+                    <div class="d-flex align-items-center mb-3">
+                      <img
+                        class="d-block me-2"
+                        src="images/png/projectImage.png"
+                        alt=""
+                        width="60"
+                        height="60"
+                      />
+                    </div>
+                    <h5 id="orderId"></h5>
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">First name</h6>
+                        <p id="orderFirstNameField"></p>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Last name</h6>
+                        <p id="orderLastNameField"></p>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Email</h6>
+                        <p id="orderEmailField"></p>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Address</h6>
+                        <p id="orderAddressField"></p>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Address2</h6>
+                        <p id="orderAddress2Field"></p>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Country</h6>
+                        <p id="orderCountryField"></p>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">City</h6>
+                        <p id="orderCityField"></p>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Zip</h6>
+                        <p id="orderZipField"></p>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Payment method</h6>
+                        <p id="orderPaymentMethodField"></p>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Date</h6>
+                        <p id="orderDateField"></p>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Status</h6>
+                        <p id="orderStatusField"></p>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Total</h6>
+                        <p id="orderTotalField"></p>
+                      </div>
+                    </div>
+                    <h5>Your order items</h5>
+                    <div class="table-responsive mt-3">
+                      <table class="table table-sm table-bordered align-middle">
+                        <thead class="table-light">
+                          <tr>
+                            <th>#</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                          </tr>
+                        </thead>
+                        <tbody id="orderItemsTableBody">
+                          <!-- Orders will be inserted dynamically -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

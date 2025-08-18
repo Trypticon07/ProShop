@@ -436,7 +436,7 @@ async function loadCart() {
       cart.forEach((cartItem) => {
         let productPrice = cartItem.product_price * cartItem.quantity;
         totalPriceInCart += productPrice;
-        totalPriceInCartText.textContent = "$" + totalPriceInCart;
+        totalPriceInCartText.textContent = "$" + totalPriceInCart.toFixed(2);
         const li = document.createElement("li");
         li.className = "list-group-item d-flex justify-content-between lh-sm";
 
@@ -444,7 +444,9 @@ async function loadCart() {
               <div>
                 <h6 class="my-0">${cartItem.product_name}</h6>
               </div>
-              <span class="text-body-secondary">$${productPrice}</span>
+              <span class="text-body-secondary">$${productPrice.toFixed(
+                2
+              )}</span>
             `;
 
         cartTable.appendChild(li);

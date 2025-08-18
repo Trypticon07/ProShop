@@ -340,22 +340,74 @@ app.get("/profile", async (req, res) => {
   }
 });
 
-app.post("/profile/edit", profileLimiter, async (req, res) => {
+app.post("/profile/edit", async (req, res) => {
   try {
     const userId = req.session.user?.id;
 
     if (!userId) return res.status(401).send("Not authorized");
     const username = req.body.username;
     const email = req.body.email;
+    if (username === "" || email === "") {
+      if (!username && email) {
+        const emailCheck = checkEmail(email);
+        if (emailCheck.isInvalid) {
+          return res.status(400).json(emailCheck);
+        }
+        const checkQuery = `
+          SELECT id FROM users 
+          WHERE email = $1
+        `;
+        const checkResult = await connection.query(checkQuery, [email]);
 
-    if (!username && email) {
+        if (checkResult.rows.length > 0) {
+          return res.status(409).json({
+            isInvalid: true,
+            field: "email",
+            error: "Email is already used.",
+          });
+        }
+        const query = `
+          UPDATE users
+          SET email = $2
+          WHERE id = $1
+          RETURNING *;
+        `;
+
+        const values = [userId, email];
+
+        const result = await connection.query(query, values);
+        res.status(201).json(result.rows);
+      }
+
+      if (!email && username) {
+        const usernameCheck = checkUsername(username);
+        if (usernameCheck.isInvalid) {
+          return res.status(400).json(usernameCheck);
+        }
+        const query = `
+          UPDATE users
+          SET username = $2
+          WHERE id = $1
+          RETURNING *;
+        `;
+
+        const values = [userId, username];
+
+        const result = await connection.query(query, values);
+        res.status(201).json(result.rows);
+      }
+    } else {
+      const usernameCheck = checkUsername(username);
+      if (usernameCheck.isInvalid) {
+        return res.status(400).json(usernameCheck);
+      }
       const emailCheck = checkEmail(email);
       if (emailCheck.isInvalid) {
         return res.status(400).json(emailCheck);
       }
       const checkQuery = `
-        SELECT id FROM users 
-        WHERE email = $1
+          SELECT id FROM users 
+          WHERE email = $1
         `;
       const checkResult = await connection.query(checkQuery, [email]);
 
@@ -366,35 +418,18 @@ app.post("/profile/edit", profileLimiter, async (req, res) => {
           error: "Email is already used.",
         });
       }
-      const query = `
-        UPDATE users
-        SET email = $2
-        WHERE id = $1
-        RETURNING *;
+      const updateQuery = `
+          UPDATE users
+          SET username = $2, email = $3
+          WHERE id = $1
+          RETURNING *;
         `;
 
-      const values = [userId, email];
+      const updateValues = [userId, username, email];
 
-      const result = await connection.query(query, values);
-      res.status(201).json(result.rows);
-    }
+      const updateResult = await connection.query(updateQuery, updateValues);
 
-    if (!email && username) {
-      const usernameCheck = checkUsername(username);
-      if (usernameCheck.isInvalid) {
-        return res.status(400).json(usernameCheck);
-      }
-      const query = `
-        UPDATE users
-        SET username = $2
-        WHERE id = $1
-        RETURNING *;
-        `;
-
-      const values = [userId, username];
-
-      const result = await connection.query(query, values);
-      res.status(201).json(result.rows);
+      res.status(201).json(updateResult.rows);
     }
   } catch (error) {
     console.error("Profile error:", error);
@@ -877,8 +912,17 @@ app.get("/orders/history", async (req, res) => {
     if (!userId) return res.status(401).send("Not authorized");
 
     const query = `
-      SELECT * FROM orders WHERE user_id = $1
-      `;
+      SELECT o.id AS order_id,
+             o.created_at,
+             o.status,
+             SUM(p.price * oi.quantity) AS total_amount
+      FROM orders o
+      JOIN order_items oi ON o.id = oi.order_id
+      JOIN products p ON oi.product_id = p.id
+      WHERE o.user_id = $1
+      GROUP BY o.id, o.created_at, o.status
+      ORDER BY o.created_at DESC;
+    `;
 
     const values = [userId];
     const result = await connection.query(query, values);
@@ -892,7 +936,7 @@ app.get("/orders/history", async (req, res) => {
   }
 });
 
-app.post("/order/items", async (req, res) => {
+app.post("/order/details", async (req, res) => {
   try {
     const userId = req.session.user?.id;
     if (!userId) return res.status(401).send("Not authorized");
@@ -900,13 +944,34 @@ app.post("/order/items", async (req, res) => {
     const orderId = req.body.orderId;
 
     const query = `
-      SELECT oi.id, oi.user_id, oi.order_id, oi.product_id, oi.quantity, oi.created_at,
-             p.name AS product_name, p.description AS product_description,
-             p.price AS product_price, p.image_urls AS product_images
-      FROM order_items oi
+      SELECT o.id AS order_id,
+         o.first_name,
+         o.last_name,
+         o.email,
+         o.address,
+         o.address2,
+         o.country,
+         o.city,
+         o.zip,
+         o.payment_method,
+         o.status,
+         o.created_at,
+         json_agg(
+           json_build_object(
+             'product_id', oi.product_id,
+             'quantity', oi.quantity,
+             'name', p.name,
+             'price', p.price
+           )
+         ) AS items
+      FROM orders o
+      JOIN order_items oi ON o.id = oi.order_id
       JOIN products p ON oi.product_id = p.id
-      WHERE oi.user_id = $1 AND oi.order_id = $2
-      ORDER BY oi.created_at DESC;
+      WHERE o.user_id = $1 AND o.id = $2
+      GROUP BY o.id, o.first_name, o.last_name, o.email,
+           o.address, o.address2, o.country, o.city, o.zip,
+           o.payment_method, o.status, o.created_at
+      ORDER BY o.created_at DESC;
     `;
 
     const values = [userId, orderId];
