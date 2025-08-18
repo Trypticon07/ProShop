@@ -41,6 +41,7 @@ const submitCheckoutBtn = document.getElementById("submit-checkout");
 
 const screen1 = document.getElementById("screen-1");
 const screen2 = document.getElementById("screen-2");
+const backBtn = document.querySelector("#to-home-page");
 
 let isValidEmail = false;
 
@@ -60,6 +61,10 @@ let isValidNameOnCard = false;
 let isValidCardNumber = false;
 let isValidCardExpiration = false;
 let isValidCVVCode = false;
+
+backBtn.addEventListener("click", () => {
+  window.location.href = "/client/html/index.html";
+});
 
 fetch("http://localhost:3000/session", {
   credentials: "include",
