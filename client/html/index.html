@@ -8,6 +8,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
+    <meta http-equiv="Cache-Control" content="no-store" />
 
     <!-- Bootstrap CSS v5.2.1 -->
     <link
@@ -20,7 +21,7 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
     />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="/client/css/style.css" />
   </head>
 
   <body>
@@ -48,7 +49,7 @@
             <div class="offcanvas-header">
               <img
                 class="d-block"
-                src="images/png/projectImage.png"
+                src="/client/images/png/projectImage.png"
                 alt=""
                 width="40"
                 height="40"
@@ -135,14 +136,14 @@
                   <hr class="sidebar-divider" />
                   <li class="mb-3">
                     <a
-                      href="/client/contactUs.html"
+                      href="/client/html/contactUs.html"
                       class="nav-link px-2 text-body-secondary"
                       >Contact us</a
                     >
                   </li>
                   <li class="mb-3">
                     <a
-                      href="/client/about.html"
+                      href="/client/html/about.html"
                       class="nav-link px-2 text-body-secondary"
                       >About Pro Shop</a
                     >
@@ -152,12 +153,12 @@
             </div>
           </div>
           <a
-            href="/client/index.html"
+            href="/client/html/index.html"
             class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none me-3"
           >
             <img
               class="d-block"
-              src="images/png/projectImage.png"
+              src="/client/images/png/projectImage.png"
               alt=""
               width="40"
               height="40"
@@ -298,92 +299,146 @@
       </div>
     </header>
     <main>
-      <div class="container">
-        <section class="py-5 border-bottom">
-          <div>
-            <h1 class="mb-4">About Us</h1>
-            <p>
-              Pro Shop is a modern online marketplace offering high-quality
-              products at fair prices. Founded in 2020, we’ve built a trusted
-              shopping experience for thousands of customers across the country.
-              Whether you're looking for electronics, fashion, accessories, or
-              home essentials — we’ve got you covered.
-            </p>
-          </div>
-        </section>
-
-        <section class="py-5 border-bottom bg-body">
-          <div>
-            <h2 class="mb-4">Our Mission & Values</h2>
-            <p>
-              Our mission is to simplify the online shopping experience and
-              ensure every customer gets exactly what they need — quickly and
-              reliably. At Pro Shop, we stand for transparency, quality, and
-              exceptional customer service. We believe in long-term
-              relationships, not one-time purchases.
-            </p>
-          </div>
-        </section>
-
-        <section class="py-5 border-bottom">
-          <div>
-            <h2 class="mb-4">What Makes Us Different</h2>
-            <ul class="list-unstyled fs-5">
-              <li>✓ Fast and affordable shipping across the country</li>
-              <li>✓ 24/7 customer support — we’re always here to help</li>
-              <li>✓ We offer warranty on all our products</li>
-              <li>✓ Clothing items are eligible for easy returns</li>
-              <li>✓ Carefully selected suppliers and trusted brands</li>
-            </ul>
-          </div>
-        </section>
-
-        <section class="py-5 border-bottom bg-body">
-          <div>
-            <h2 class="mb-4">What Our Customers Say:</h2>
-            <blockquote class="blockquote">
-              <p class="">
-                "The best online shop I've used — great support and fast
-                delivery!"
-              </p>
-              <footer class="blockquote-footer">Anna L., Berlin</footer>
-            </blockquote>
-            <blockquote class="blockquote mt-4">
-              <p class="">
-                "Product was exactly as described. I'm very satisfied and will
-                order again."
-              </p>
-              <footer class="blockquote-footer">Marcus D., Hamburg</footer>
-            </blockquote>
-            <blockquote class="blockquote mt-4">
-              <p class="">
-                "Had to return a jacket — the process was super easy. Great
-                service!"
-              </p>
-              <footer class="blockquote-footer">Julia S., Munich</footer>
-            </blockquote>
-          </div>
-        </section>
-
-        <section class="py-5 border-bottom">
-          <div>
-            <h2 class="mb-4">Our Team</h2>
-            <p>
-              We’re a passionate team of developers, logistics experts, and
-              customer service professionals working together to build a better
-              online store. We believe that people are at the heart of every
-              great shopping experience.
-            </p>
-          </div>
-        </section>
-
-        <section class="py-5 text-center">
-          <div>
-            <a href="" class="btn btn-primary btn-lg me-3 catalogBtn"
-              >Browse Catalog</a
+      <div class="px-4 py-5 my-5 text-center">
+        <img
+          class="d-block mx-auto mb-4"
+          src="/client/images/png/projectImage.png"
+          alt=""
+          width="72"
+          height="72"
+        />
+        <h1 class="display-5 fw-bold">Welcome to Pro Shop!</h1>
+        <div class="col-lg-6 mx-auto">
+          <p class="lead mb-4">
+            Pro Shop is a modern online store where you’ll find everything you
+            need — from electronics to home goods. We offer high-quality
+            products, fast delivery, and great prices for every customer.
+          </p>
+          <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a
+              type="button"
+              class="btn btn-primary btn-anim btn-lg px-4 gap-3 catalogBtn"
+              href=""
+              >View catalog</a
             >
           </div>
-        </section>
+        </div>
+      </div>
+      <!-- Hero Section -->
+      <section class="bg-light py-5 mb-5 bg-color-change">
+        <div class="container w-75">
+          <div class="row align-items-center">
+            <!-- Text Content -->
+            <div class="col-lg-6 text-center text-lg-start">
+              <h1 class="display-4 fw-bold">
+                The best products at fair prices!
+              </h1>
+              <p class="lead mb-4 secondary-muted-text">
+                Leave your email — be the first to receive discounts!
+              </p>
+              <form
+                id="subscribe-form"
+                class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start needs-validation"
+                novalidate
+              >
+                <div class="form-floating mb-3 email-holder">
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="main-email-input"
+                    placeholder="email"
+                    required
+                  />
+                  <label for="main-email-input">Email</label>
+                  <div
+                    class="invalid-feedback backend-response"
+                    id="emailFeedback"
+                  >
+                    Please enter a valid email
+                  </div>
+                  <div class="valid-feedback d-none" id="validEmailFeedback">
+                    Successfully subscribed!
+                  </div>
+                </div>
+                <button
+                  class="btn btn-primary btn-lg"
+                  type="submit"
+                  id="subscribe-btn"
+                >
+                  Subscribe
+                </button>
+              </form>
+            </div>
+
+            <!-- Image -->
+            <div class="col-lg-6 mt-4 mt-lg-0 text-center">
+              <img
+                src="/client/images/png/projectImage.png"
+                class="img-fluid rounded shadow"
+                alt="ProShop Banner"
+                width="200px"
+                height="200px"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Advantages Section -->
+      <div class="advantages-section py-5 mb-5 bg-color-change">
+        <div class="container px-4" id="advantages-grid">
+          <h2 class="pb-3 mb-4 text-center fw-bold">Why choose us?</h2>
+
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+            <!-- Card Item -->
+            <div class="col">
+              <div class="card advantages-card h-100 text-center p-4">
+                <div class="advantages-icon text-primary">
+                  <i class="bi bi-truck"></i>
+                </div>
+                <h5 class="fw-bold">Fast Delivery</h5>
+                <p class="text-muted secondary-muted-text">
+                  We deliver your order in 1-3 business days.
+                </p>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="card advantages-card h-100 text-center p-4">
+                <div class="advantages-icon text-success">
+                  <i class="bi bi-credit-card"></i>
+                </div>
+                <h5 class="fw-bold">Secure Payment</h5>
+                <p class="text-muted secondary-muted-text">
+                  Your transactions are 100% protected.
+                </p>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="card advantages-card h-100 text-center p-4">
+                <div class="advantages-icon text-warning">
+                  <i class="bi bi-arrow-repeat"></i>
+                </div>
+                <h5 class="fw-bold">Easy Returns</h5>
+                <p class="text-muted secondary-muted-text">
+                  14-day return policy without hassle.
+                </p>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="card advantages-card h-100 text-center p-4">
+                <div class="advantages-icon text-danger">
+                  <i class="bi bi-headset"></i>
+                </div>
+                <h5 class="fw-bold">24/7 Support</h5>
+                <p class="text-muted secondary-muted-text">
+                  Our team is always here to help you.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Cart modal -->
@@ -447,6 +502,36 @@
       <div id="alert-container">
         <!-- Messages will be inserted here -->
       </div>
+      <!-- Products -->
+      <div class="d-flex justify-content-center align-items-center">
+        <div class="card-group w-75 flex-wrap" id="product-container">
+          <!-- Cards will be inserted here -->
+        </div>
+      </div>
+      <!-- Chat -->
+      <div class="chat">
+        <button class="btn btn-primary btn-anim" id="open-chat-btn">
+          <i class="bi bi-chat-dots"></i> Technical support
+        </button>
+
+        <div id="chat-box">
+          <button
+            type="button"
+            class="btn-close"
+            id="close-chat"
+            aria-label="Close"
+          ></button>
+          <div id="chat-messages"></div>
+          <div id="chat-input">
+            <input
+              type="text"
+              id="user-message"
+              placeholder="Enter message..."
+            />
+            <button class="btn btn-primary" id="send-btn">➤</button>
+          </div>
+        </div>
+      </div>
     </main>
     <footer>
       <div class="container" id="footer-container">
@@ -455,13 +540,13 @@
         >
           <p class="col-md-4 mb-0 text-body-secondary">© 2025 Company, Inc</p>
           <a
-            href="/client/index.html"
+            href="/client/html/index.html"
             class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
             aria-label="Bootstrap"
           >
             <img
               class="d-block"
-              src="images/png/projectImage.png"
+              src="/client/images/png/projectImage.png"
               alt=""
               width="40"
               height="40"
@@ -470,14 +555,14 @@
           <ul class="nav col-md-4 justify-content-end">
             <li class="nav-item">
               <a
-                href="/client/contactUs.html"
+                href="/client/html/contactUs.html"
                 class="nav-link px-2 text-body-secondary"
                 >Contact us</a
               >
             </li>
             <li class="nav-item">
               <a
-                href="/client/about.html"
+                href="/client/html/about.html"
                 class="nav-link px-2 text-body-secondary"
                 >About Pro Shop</a
               >
@@ -486,7 +571,6 @@
         </footer>
       </div>
     </footer>
-    <!-- Bootstrap JavaScript Libraries -->
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
       integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
@@ -498,7 +582,14 @@
       integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
       crossorigin="anonymous"
     ></script>
-    <script src="js/common.js"></script>
-    <script src=""></script>
+    <script src="/client/js/index.js"></script>
+    <script src="/client/js/common.js"></script>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.10.0/axios.min.js"
+      integrity="sha512-WkZrEcQ5LMyNy6Y2PQf+Tu3vMcsmKKRKuPXtJSTHQJ3mpuvLRlA5dlDDhrrcXfyWr6Z/y3wIMfjfqVFO/gDZYQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
   </body>
 </html>

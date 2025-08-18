@@ -54,6 +54,26 @@ const screen2 = document.getElementById("screen-2");
 screen1.classList.remove("d-none");
 screen2.classList.add("d-none");
 
+document
+  .getElementById("toggleOldPassword")
+  .addEventListener("click", function () {
+    const passwordInput = document.getElementById("oldPasswordInput");
+    const icon = document.getElementById("toggleOldIcon");
+    const isHidden = passwordInput.type === "password";
+    passwordInput.type = isHidden ? "text" : "password";
+    icon.className = isHidden ? "bi bi-eye-slash-fill" : "bi bi-eye-fill";
+  });
+
+document
+  .getElementById("toggleNewPassword")
+  .addEventListener("click", function () {
+    const passwordInput = document.getElementById("newPasswordInput");
+    const icon = document.getElementById("toggleNewIcon");
+    const isHidden = passwordInput.type === "password";
+    passwordInput.type = isHidden ? "text" : "password";
+    icon.className = isHidden ? "bi bi-eye-slash-fill" : "bi bi-eye-fill";
+  });
+
 document.addEventListener("DOMContentLoaded", () => {
   const sidebarLinks = document.querySelectorAll(
     ".nav-pills .nav-link[data-target]"
@@ -310,19 +330,15 @@ document.addEventListener("DOMContentLoaded", renderOrders);
       event.stopPropagation();
 
       if (usernameInput.value === "" || emailInput.value === "") {
-        console.log("here1");
         if (!usernameInput.value && isValidEmail) {
-          console.log("hereUSer");
           isValidUsername = true;
         }
         if (!emailInput.value && isValidUsername) {
-          console.log("hereEmail");
           isValidEmail = true;
         }
       }
 
       if (!isValidEmail || !isValidUsername) {
-        console.log("here2");
         return;
       }
 
@@ -345,7 +361,7 @@ function Submit() {
     )
     .then((response) => {
       console.log(response.data);
-      window.location.href = "/client/profile.html";
+      window.location.href = "/client/html/profile.html";
     })
     .catch((err) => {
       const res = err.response.data;
@@ -397,7 +413,7 @@ function changePassword() {
     )
     .then((response) => {
       console.log(response.data);
-      window.location.href = "/client/profile.html";
+      window.location.href = "/client/html/profile.html";
     })
     .catch((err) => {
       const res = err.response.data;
@@ -439,7 +455,7 @@ fetch("http://localhost:3000/profile", {
 })
   .then((res) => {
     if (!res.ok) {
-      window.location.href = "/client/logIn.html";
+      window.location.href = "/client/html/logIn.html";
       return;
     }
     return res.text();

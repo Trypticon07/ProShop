@@ -659,6 +659,29 @@ body.dark-theme .btn-outline-secondary:hover {
   border-right: var(--bs-border-width) var(--bs-border-style)
     var(--bs-border-color) !important;
 }
+.profile-password-wrapper {
+  position: relative;
+}
+
+.profile-password-wrapper input {
+  padding-right: 2.5rem;
+}
+
+.profile-password-wrapper .profile-toggle-password {
+  position: absolute;
+  top: 2.4rem;
+  right: 2rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.profile-password-wrapper .profile-toggle-password:focus {
+  outline: none;
+  box-shadow: none;
+}
 
 /* animations */
 

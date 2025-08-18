@@ -70,7 +70,7 @@ logOutButtons.forEach((btn) => {
 profileButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     e.preventDefault();
-    window.location.href = "profile.html";
+    window.location.href = "/client/html/profile.html";
   });
 });
 
@@ -145,7 +145,7 @@ cartModal.addEventListener("click", (e) => {
 });
 
 checkoutBtn.addEventListener("click", (e) => {
-  window.location.href = "/client/checkout.html";
+  window.location.href = "/client/html/checkout.html";
 });
 
 // session
@@ -311,9 +311,7 @@ async function addToCart(productId, quantity) {
       return res.json();
     })
     .catch((err) => {
-      if (err.response?.status === 401) {
-        console.log("err" + err);
-      }
+      console.log(err);
     });
 }
 

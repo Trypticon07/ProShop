@@ -212,7 +212,7 @@ async function appendProduct(products) {
     let image_src = "";
     if (product.image_urls) {
       const imageArray = product.image_urls.replace(/[{}]/g, "").split(",");
-      image_src = "images/png/" + imageArray[0];
+      image_src = "/client/images/png/" + imageArray[0];
     }
     const col = document.createElement("div");
     col.className = "col-12 col-sm-6 col-md-4 col-lg-3 mb-4";
@@ -222,7 +222,7 @@ async function appendProduct(products) {
 
     card.innerHTML = `
         <img src="${
-          image_src || "images/png/projectImage.png"
+          image_src || "/client/images/png/projectImage.png"
         }" class="card-img-top" alt="images/png/projectImage.png">
         <div class="card-body">
           <a href="product.html?id=${

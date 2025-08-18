@@ -66,14 +66,14 @@ fetch("http://localhost:3000/session", {
 })
   .then((res) => {
     if (!res.ok) {
-      window.location.href = "/client/logIn.html";
+      window.location.href = "/client/html/logIn.html";
       return;
     }
     return res.text();
   })
   .catch((err) => {
     console.error("Session error:", err);
-    window.location.href = "/client/logIn.html";
+    window.location.href = "/client/html/logIn.html";
   });
 
 let previousCart = JSON.parse(localStorage.getItem("cart")) || [];
