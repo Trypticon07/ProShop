@@ -986,6 +986,43 @@ app.post("/order/details", async (req, res) => {
   }
 });
 
+app.post("/order/cancel", async (req, res) => {
+  try {
+    const userId = req.session.user?.id;
+    if (!userId) return res.status(401).send("Not authorized");
+
+    const orderId = req.body.orderId;
+    const status = "canceled";
+
+    const checkQuery = `
+      SELECT * FROM orders WHERE user_id = $1 AND id = $2
+    `;
+    const checkValues = [userId, orderId];
+    const checkResult = await connection.query(checkQuery, checkValues);
+
+    if (
+      checkResult.rows[0].status !== "paid" &&
+      checkResult.rows[0].status !== "pending"
+    ) {
+      return res.status(400).send("Order is already canceled.");
+    }
+
+    const query = `
+      UPDATE orders SET status = $3 WHERE user_id = $1 AND id = $2
+    `;
+
+    const values = [userId, orderId, status];
+    const result = await connection.query(query, values);
+
+    res.status(200).json({
+      orders: result.rows,
+    });
+  } catch (error) {
+    console.error("Error canceling order history:", error);
+    res.status(500).send("Error while canceling order history");
+  }
+});
+
 function processPayment(nameOnCard, cardExpirationDate, cardNumber, cvvCode) {
   // Here you can put payment processing code.
   if (nameOnCard && cardExpirationDate && cardNumber && cvvCode) {

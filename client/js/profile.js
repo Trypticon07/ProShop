@@ -50,6 +50,9 @@ const orderStatus = document.getElementById("orderStatusField");
 const orderTotal = document.getElementById("orderTotalField");
 const screen1 = document.getElementById("screen-1");
 const screen2 = document.getElementById("screen-2");
+const cancelOrder = document.getElementById("cancelOrder");
+
+let addedListener = false;
 
 screen1.classList.remove("d-none");
 screen2.classList.add("d-none");
@@ -135,6 +138,8 @@ function getOrderDetails(orderId) {
       return res.json();
     })
     .then((response) => {
+      cancelOrder.classList.remove("disabled");
+
       const orderDetails = response.order_items[0];
       orderId.textContent = "Order №" + orderDetails.order_id + " details";
       orderFirstName.textContent = orderDetails.first_name;
@@ -177,6 +182,28 @@ function getOrderDetails(orderId) {
       `;
         tableBody.insertAdjacentHTML("beforeend", row);
       });
+      if (orderDetails.status !== "paid" && orderDetails.status !== "pending") {
+        cancelOrder.classList.add("disabled");
+      }
+      if (!addedListener) {
+        cancelOrder.addEventListener("click", () => {
+          fetch("http://localhost:3000/order/cancel", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              orderId,
+            }),
+          }).then((res) => {
+            if (!res.ok) {
+              return res.text();
+            }
+            console.log(res);
+            window.location.href = "/client/html/profile.html";
+          });
+        });
+        addedListener = true;
+      }
     })
     .catch((err) => {
       console.log(err);
@@ -208,11 +235,11 @@ function renderOrders() {
               order.status === "paid"
                 ? "bg-success"
                 : order.status === "pending"
-                ? "bg-warning text-dark"
+                ? "bg-warning"
                 : order.status === "failed"
-                ? "bg-danger text-dark"
+                ? "bg-danger"
                 : order.status === "canceled"
-                ? "bg-info text-dark"
+                ? "bg-info"
                 : "bg-dark"
             }">${order.status}</span>
           </td>
