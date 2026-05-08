@@ -1,14 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <title>Contact Us</title>
+    <title>Log in</title>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta http-equiv="Cache-Control" content="no-store" />
 
     <!-- Bootstrap CSS v5.2.1 -->
     <link
@@ -21,7 +20,7 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
     />
-    <link rel="stylesheet" href="/client/css/style.css" />
+    <link rel="stylesheet" href="/src/styles/style.css" />
   </head>
 
   <body>
@@ -49,7 +48,7 @@
             <div class="offcanvas-header">
               <img
                 class="d-block"
-                src="/client/images/png/projectImage.png"
+                src="/images/projectImage.png"
                 alt=""
                 width="40"
                 height="40"
@@ -79,7 +78,7 @@
                       >
                         <li>
                           <a
-                            href="index.html"
+                            href="/index.html"
                             class="link-body-emphasis d-inline-flex text-decoration-none rounded sidebar-li-item"
                             >Main page</a
                           >
@@ -136,14 +135,14 @@
                   <hr class="sidebar-divider" />
                   <li class="mb-3">
                     <a
-                      href="/client/html/contactUs.html"
+                      href="/contactUs.html"
                       class="nav-link px-2 text-body-secondary"
                       >Contact us</a
                     >
                   </li>
                   <li class="mb-3">
                     <a
-                      href="/client/html/about.html"
+                      href="/about.html"
                       class="nav-link px-2 text-body-secondary"
                       >About Pro Shop</a
                     >
@@ -153,12 +152,12 @@
             </div>
           </div>
           <a
-            href="/client/html/index.html"
+            href="/index.html"
             class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none me-3"
           >
             <img
               class="d-block"
-              src="/client/images/png/projectImage.png"
+              src="/images/projectImage.png"
               alt=""
               width="40"
               height="40"
@@ -299,114 +298,104 @@
       </div>
     </header>
     <main>
-      <div class="first-slide">
-        <div class="py-5 text-center">
-          <img
-            class="d-block mx-auto mb-4"
-            src="/client/images/png/projectImage.png"
-            alt=""
-            width="57"
-            height="57"
-          />
-          <h1 class="h2">
-            A problem arose? Don't worry! Our team is always here to help!
-          </h1>
-        </div>
-
-        <div class="d-flex justify-content-center">
-          <div class="bd-example-snippet bd-code-snippet w-50">
-            <div class="bd-example m-0 border-0">
-              <form class="row g-3 needs-validation" id="check-form" novalidate>
-                <!-- Name and Last name in one row -->
-                <div class="col-md-6">
-                  <label for="" class="form-label">First name</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="first-name-input"
-                    value=""
-                    required
-                  />
-                  <div class="invalid-feedback" id="firstNameFeedback"></div>
-                </div>
-
-                <div class="col-md-6">
-                  <label for="" class="form-label">Last name</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="last-name-input"
-                    value=""
-                    required
-                  />
-                  <div class="invalid-feedback" id="lastNameFeedback"></div>
-                </div>
-
-                <!-- Email under names -->
-                <div class="col-12">
-                  <label for="" class="form-label">Email</label>
-                  <input
-                    type="email"
-                    class="form-control"
-                    id="contact-email-input"
-                    placeholder="you@example.com"
-                    required
-                  />
-                  <div class="invalid-feedback" id="emailFeedback"></div>
-                </div>
-
-                <!-- Problem description -->
-                <div class="col-12">
-                  <label for="problem-description" class="form-label"
-                    >Describe your problem</label
+      <div class="container col-xl-10 col-xxl-8 px-4 py-5">
+        <div class="row align-items-center g-lg-5 py-5">
+          <div class="col-lg-7 text-center text-lg-start">
+            <h2 class="display-4 fw-bold lh-1 text-body-emphasis mb-3">
+              Pro Shop - shop with us quickly and easily!
+            </h2>
+            <p class="col-lg-10 fs-4">
+              Please log in to continue your journey through the world of goods
+              with us!
+            </p>
+          </div>
+          <div class="col-md-10 mx-auto col-lg-5">
+            <form
+              class="p-4 p-md-5 border rounded-3 bg-body-tertiary needs-validation"
+              id="check-form"
+              novalidate
+            >
+              <a
+                class="d-inline-flex fw-bold gap-2 link-primary mb-4 text-decoration-none"
+                href="index.html"
+              >
+                <i class="hstack fs-5">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="1em"
+                    height="1em"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
                   >
-                  <textarea
-                    class="form-control"
-                    id="problem-description"
-                    rows="6"
-                    style="resize: vertical; overflow-y: auto"
-                    placeholder="Please describe the issue in detail..."
-                    required
-                  ></textarea>
-                  <div class="invalid-feedback" id="problemFeedback"></div>
+                    <path
+                      d="m7.373 12.75 5.696 5.696L12 19.5 4.5 12 12 4.5l1.07 1.054-5.697 5.696H19.5v1.5H7.373Z"
+                    ></path>
+                  </svg>
+                </i>
+                Go back
+              </a>
+              <div class="form-floating mb-3">
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email-input"
+                  placeholder="email"
+                  required
+                />
+                <label for="floatingInput">Email</label>
+                <div class="invalid-feedback" id="emailFeedback">
+                  Please enter a valid email
                 </div>
-
-                <div class="col-12 d-flex">
-                  <p id="backend-response" class="d-none"></p>
+              </div>
+              <div class="form-floating mb-3 password-wrapper">
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password-input"
+                  placeholder="password"
+                  required
+                />
+                <button
+                  class="btn toggle-password"
+                  type="button"
+                  id="togglePassword"
+                >
+                  <i class="bi bi-eye-fill" id="toggleIcon"></i>
+                </button>
+                <label for="floatingInput">Password</label>
+                <div class="invalid-feedback" id="passwordFeedback">
+                  Please enter a valid password
                 </div>
-
-                <!-- Submit button aligned to bottom right -->
-                <div class="col-12 d-flex justify-content-end">
-                  <button class="btn btn-primary" type="submit">
-                    Submit form
-                  </button>
-                </div>
-              </form>
-            </div>
+              </div>
+              <div class="checkbox mb-3">
+                <label>
+                  <input
+                    type="checkbox"
+                    value="remember-me"
+                    id="rememberCheck"
+                  />
+                  Remember me
+                </label>
+              </div>
+              <div class="mb-4">
+                <div id="recaptcha"></div>
+                <p id="captchaFeedback" class="invalid-feedback d-none"></p>
+              </div>
+              <button
+                class="w-100 btn btn-lg btn-primary"
+                type="submit logInButton"
+              >
+                Log in
+              </button>
+              <p id="backend-response" class="d-none"></p>
+              <hr class="my-4" />
+              <small class="text-body-secondary"
+                >New to Pro Shop? <a href="signUp.html">Sign up</a></small
+              >
+            </form>
           </div>
         </div>
       </div>
-
-      <div class="second-slide d-none">
-        <div class="py-5 text-center">
-          <img
-            class="d-block mx-auto mb-4"
-            src="/client/images/png/projectImage.png"
-            alt=""
-            width="57"
-            height="57"
-          />
-          <h1 class="h2">Thank you for your message!</h1>
-          <p class="lead mb-4">
-            We are very sorry that there was a problem, our team will contact
-            you as soon as possible.
-          </p>
-          <button id="to-home-page" class="btn btn-primary" type="button">
-            Back to main page
-          </button>
-        </div>
-      </div>
-
       <!-- Cart modal -->
       <div id="cart-modal" class="cart-modal hidden">
         <div class="cart-content">
@@ -471,18 +460,18 @@
     </main>
     <footer>
       <div class="container" id="footer-container">
-        <footer
+        <div
           class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
         >
           <p class="col-md-4 mb-0 text-body-secondary">© 2025 Company, Inc</p>
           <a
-            href="/client/html/index.html"
+            href="/index.html"
             class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
             aria-label="Bootstrap"
           >
             <img
               class="d-block"
-              src="/client/images/png/projectImage.png"
+              src="/images/projectImage.png"
               alt=""
               width="40"
               height="40"
@@ -491,20 +480,18 @@
           <ul class="nav col-md-4 justify-content-end">
             <li class="nav-item">
               <a
-                href="/client/html/contactUs.html"
+                href="/contactUs.html"
                 class="nav-link px-2 text-body-secondary"
                 >Contact us</a
               >
             </li>
             <li class="nav-item">
-              <a
-                href="/client/html/about.html"
-                class="nav-link px-2 text-body-secondary"
+              <a href="/about.html" class="nav-link px-2 text-body-secondary"
                 >About Pro Shop</a
               >
             </li>
           </ul>
-        </footer>
+        </div>
       </div>
     </footer>
     <!-- Bootstrap JavaScript Libraries -->
@@ -519,13 +506,18 @@
       integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
       crossorigin="anonymous"
     ></script>
+    <script type="module" src="/src/logIn.js"></script>
+    <script type="module" src="/src/common.js"></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.10.0/axios.min.js"
       integrity="sha512-WkZrEcQ5LMyNy6Y2PQf+Tu3vMcsmKKRKuPXtJSTHQJ3mpuvLRlA5dlDDhrrcXfyWr6Z/y3wIMfjfqVFO/gDZYQ=="
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
-    <script src="/client/js/common.js"></script>
-    <script src="/client/js/contactUs.js"></script>
+    <script
+      src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad"
+      async
+      defer
+    ></script>
   </body>
 </html>

@@ -11,9 +11,11 @@ const productPrice = document.getElementById("productPrice");
 const buyButton = document.querySelector(".buy-btn");
 const buyAndCheckOutBtn = document.querySelector(".buy-and-checkout-btn");
 
+import { alertContainer, amountInCart, session, addToCart } from "./common.js";
+
 buyAndCheckOutBtn.addEventListener("click", async () => {
   await Buy();
-  window.location.href = "/client/html/checkout.html";
+  window.location.href = "/checkout.html";
 });
 
 buyButton.addEventListener("click", () => {
@@ -28,15 +30,15 @@ if (productId) {
       productDescription.textContent = data[0].description;
       productPrice.textContent = `${"$" + data[0].price}`;
       if (!data[0].image_urls) {
-        productImage1.src = `${"/client/images/png/projectImage.png"}`;
-        productImage2.src = `${"/client/images/png/projectImage.png"}`;
-        productImage3.src = `${"/client/images/png/projectImage.png"}`;
+        productImage1.src = `${"/images/projectImage.png"}`;
+        productImage2.src = `${"/images/projectImage.png"}`;
+        productImage3.src = `${"/images/projectImage.png"}`;
         return;
       }
       const imageArray = data[0].image_urls.replace(/[{}]/g, "").split(",");
-      productImage1.src = `${"/client/images/png/" + imageArray[0]}`;
-      productImage2.src = `${"/client/images/png/" + imageArray[1]}`;
-      productImage3.src = `${"/client/images/png/" + imageArray[2]}`;
+      productImage1.src = `${"/images/" + imageArray[0]}`;
+      productImage2.src = `${"/images/" + imageArray[1]}`;
+      productImage3.src = `${"/images/" + imageArray[2]}`;
     })
     .catch((err) => console.error("Error loading product:", err));
 }
@@ -92,7 +94,7 @@ async function Buy() {
       localStorage.setItem("cart", JSON.stringify(cart));
       amountInCart.textContent = cart.reduce(
         (sum, item) => sum + (item.quantity || 0),
-        0
+        0,
       );
       amountInCart.classList.remove("d-none");
       if (session) {

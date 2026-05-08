@@ -71,6 +71,7 @@ api/models/
 .env
 .env.*
 !.env.example
+!.env.sample
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

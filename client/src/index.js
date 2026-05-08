@@ -12,6 +12,15 @@ const subscribeBtn = document.getElementById("subscribe-btn");
 const emailFeedback = document.querySelector("#emailFeedback");
 const validEmailFeedback = document.getElementById("validEmailFeedback");
 const backendResponse = document.querySelector(".backend-response");
+import {
+  footer,
+  alertContainer,
+  amountInCart,
+  cartTotal,
+  openPopoverBtn,
+  checkoutBtn,
+  session,
+} from "./common.js";
 
 let isProcessing = false;
 
@@ -86,7 +95,7 @@ function Submit() {
         console.log("Error while waiting for server response: " + err);
         alert(
           "There was an error while trying to subscribe. If this keeps happening, inform the site owner with this info: " +
-            err
+            err,
         );
       }
     });
@@ -169,7 +178,7 @@ async function search(query) {
 
   try {
     const response = await fetch(
-      `http://localhost:3000/products/search?q=${encodeURIComponent(query)}`
+      `http://localhost:3000/products/search?q=${encodeURIComponent(query)}`,
     );
     if (!response.ok) {
       container.innerHTML = `<p>Error: ${response.statusText}</p>`;
@@ -212,7 +221,7 @@ async function appendProduct(products) {
     let image_src = "";
     if (product.image_urls) {
       const imageArray = product.image_urls.replace(/[{}]/g, "").split(",");
-      image_src = "/client/images/png/" + imageArray[0];
+      image_src = "/images/" + imageArray[0];
     }
     const col = document.createElement("div");
     col.className = "col-12 col-sm-6 col-md-4 col-lg-3 mb-4";
@@ -222,14 +231,14 @@ async function appendProduct(products) {
 
     card.innerHTML = `
         <img src="${
-          image_src || "/client/images/png/projectImage.png"
-        }" class="card-img-top" alt="images/png/projectImage.png">
+          image_src || "/images/projectImage.png"
+        }" class="card-img-top" alt="images/projectImage.png">
         <div class="card-body">
           <a href="product.html?id=${
             product.id
           }" class="text-decoration-none"><h5 class="card-title">${
-      product.name
-    }</h5></a>
+            product.name
+          }</h5></a>
           <p class="card-text">${product.description}</p>
         </div>
         <div class="card-footer d-flex justify-content-between align-items-center">
@@ -242,6 +251,7 @@ async function appendProduct(products) {
           </button>
         </div>
       `;
+    // TODO: add price validation maximum of 10 digits in total of which 2 are after the decimal point.
     const price = parseFloat(product.price);
     const [dollars, cents] = isNaN(price)
       ? ["0", "00"]
@@ -323,7 +333,7 @@ function Buy(btn) {
       localStorage.setItem("cart", JSON.stringify(cart));
       amountInCart.textContent = cart.reduce(
         (sum, item) => sum + (item.quantity || 0),
-        0
+        0,
       );
       amountInCart.classList.remove("d-none");
       cartTotal.classList.remove("d-none");

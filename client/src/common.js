@@ -15,31 +15,31 @@ const profileEmail = document.getElementById("profile-email");
 
 const openCartBtn = document.getElementById("open-cart");
 
-const amountInCart = document.getElementById("amount-in-cart");
+export const amountInCart = document.getElementById("amount-in-cart");
 
 const cartModal = document.getElementById("cart-modal");
 const closeCartBtn = document.getElementById("close-cart");
 const cartItemsTable = document.getElementById("cart-items");
-const cartTotal = document.getElementById("cart-total");
-const checkoutBtn = document.getElementById("checkout-btn");
+export const cartTotal = document.getElementById("cart-total");
+export const checkoutBtn = document.getElementById("checkout-btn");
 
 const searchForm = document.getElementById("searchForm");
 const searchInput = document.getElementById("searchInput");
 
-const footer = document.getElementById("footer-container");
+export const footer = document.getElementById("footer-container");
+export const alertContainer = document.getElementById("alert-container");
 
-const alertContainer = document.getElementById("alert-container");
+export const openPopoverBtn = document.querySelector(".btn-danger");
 
-const openPopoverBtn = document.querySelector(".btn-danger");
-
-let session = false;
-var checkout;
+export let session = false;
+// export let checkout = false;
+let catalog = false;
 
 // Popover
 const popoverTriggerList = document.querySelectorAll(
-  '[data-bs-toggle="popover"]'
+  '[data-bs-toggle="popover"]',
 );
-const popoverList = [...popoverTriggerList].map((popoverTriggerEl) => {
+export const popoverList = [...popoverTriggerList].map((popoverTriggerEl) => {
   const popover = new bootstrap.Popover(popoverTriggerEl, {
     container: "body",
     html: true,
@@ -70,7 +70,7 @@ logOutButtons.forEach((btn) => {
 profileButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     e.preventDefault();
-    window.location.href = "/client/html/profile.html";
+    window.location.href = "/profile.html";
   });
 });
 
@@ -93,11 +93,11 @@ newAccountButtons.forEach((btn) => {
       },
       {
         withCredentials: true,
-      }
+      },
     )
       .then((res) => {
         if (res.ok) {
-          window.location.href = "signUp.html";
+          window.location.href = "/signUp.html";
         }
       })
       .catch((err) => {
@@ -115,11 +115,11 @@ searchForm.addEventListener("submit", function (e) {
 });
 
 document.querySelector("#signUp").addEventListener("click", () => {
-  window.location.href = "signUp.html";
+  window.location.href = "/signUp.html";
 });
 
 document.querySelector("#logIn").addEventListener("click", () => {
-  window.location.href = "logIn.html";
+  window.location.href = "/logIn.html";
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -145,7 +145,7 @@ cartModal.addEventListener("click", (e) => {
 });
 
 checkoutBtn.addEventListener("click", (e) => {
-  window.location.href = "/client/html/checkout.html";
+  window.location.href = "/checkout.html";
 });
 
 // session
@@ -185,7 +185,7 @@ function logout() {
   })
     .then((res) => {
       if (res.ok) {
-        window.location.href = "index.html";
+        window.location.href = "/index.html";
       }
     })
     .catch((err) => {
@@ -210,7 +210,7 @@ function applyTheme(theme) {
     document.body.setAttribute("data-bs-theme", "dark");
   } else if (theme === "system") {
     const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
+      "(prefers-color-scheme: dark)",
     ).matches;
     document.body.classList.add(prefersDark ? "dark-theme" : "light-theme");
     if (prefersDark) {
@@ -294,7 +294,7 @@ async function loadCartItems() {
   });
 }
 
-async function addToCart(productId, quantity) {
+export async function addToCart(productId, quantity) {
   fetch("http://localhost:3000/cart/add", {
     method: "POST",
     credentials: "include",
@@ -365,7 +365,7 @@ function updateQuantity(productId, change) {
   loadCartItems();
 }
 
-function clearCart() {
+export function clearCart() {
   localStorage.removeItem("cart");
   loadCartItems();
   amountInCart.textContent = "0";
@@ -408,7 +408,7 @@ async function cartHistory() {
 
             const product = productData[0];
             const existing = cart.find(
-              (item) => item.product_id == cartItem.product_id
+              (item) => item.product_id == cartItem.product_id,
             );
 
             if (existing) {
@@ -430,7 +430,7 @@ async function cartHistory() {
 
         amountInCart.textContent = cart.reduce(
           (sum, item) => sum + (item.quantity || 0),
-          0
+          0,
         );
         amountInCart.classList.toggle("d-none", cart.length === 0);
       });

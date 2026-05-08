@@ -61,9 +61,10 @@ let isValidNameOnCard = false;
 let isValidCardNumber = false;
 let isValidCardExpiration = false;
 let isValidCVVCode = false;
+import { clearCart } from "./common.js";
 
 backBtn.addEventListener("click", () => {
-  window.location.href = "/client/html/index.html";
+  window.location.href = "/index.html";
 });
 
 fetch("http://localhost:3000/session", {
@@ -71,14 +72,14 @@ fetch("http://localhost:3000/session", {
 })
   .then((res) => {
     if (!res.ok) {
-      window.location.href = "/client/html/logIn.html";
+      window.location.href = "/logIn.html";
       return;
     }
     return res.text();
   })
   .catch((err) => {
     console.error("Session error:", err);
-    window.location.href = "/client/html/logIn.html";
+    window.location.href = "/logIn.html";
   });
 
 let previousCart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -105,7 +106,7 @@ setInterval(() => {
 
 (() => {
   loadCart();
-  checkout = true;
+  // checkout = true;
   const forms = document.querySelectorAll(".needs-validation");
 
   emailInput.classList.remove("is-invalid");
@@ -243,11 +244,11 @@ setInterval(() => {
   paymentRadios.forEach((radio) => {
     radio.addEventListener("change", () => {
       const selected = document.querySelector(
-        'input[name="paymentMethod"]:checked'
+        'input[name="paymentMethod"]:checked',
       );
 
       paymentRadios.forEach((r) =>
-        r.classList.remove("is-valid", "is-invalid")
+        r.classList.remove("is-valid", "is-invalid"),
       );
 
       if (selected) {
@@ -450,7 +451,7 @@ async function loadCart() {
                 <h6 class="my-0">${cartItem.product_name}</h6>
               </div>
               <span class="text-body-secondary">$${productPrice.toFixed(
-                2
+                2,
               )}</span>
             `;
 
@@ -466,7 +467,7 @@ async function loadCart() {
 
 function Submit() {
   const selected = document.querySelector(
-    'input[name="paymentMethod"]:checked'
+    'input[name="paymentMethod"]:checked',
   );
 
   axios
@@ -489,7 +490,7 @@ function Submit() {
       },
       {
         withCredentials: true,
-      }
+      },
     )
     .then((response) => {
       if (response.data) {
@@ -499,6 +500,8 @@ function Submit() {
       screen2.classList.remove("d-none");
     })
     .catch((err) => {
+      // TODO: add error logging before processing it!
+      console.log(err);
       const res = err.response.data;
       const status = err.response?.status;
       if (status === 401) {
@@ -533,7 +536,7 @@ function Submit() {
         console.log("Error while waiting for server response: " + err);
         alert(
           "There was an error while trying to log in. If this keeps happening, inform the site owner with this info: " +
-            err
+            err,
         );
       }
     });

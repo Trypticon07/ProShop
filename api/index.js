@@ -9,33 +9,38 @@ import { checkEmail, checkUsername, checkPassword } from "./validation.js";
 import { sendMessage } from "./model.js";
 import session from "express-session";
 import rateLimit from "express-rate-limit";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const connection = new Client({
-  user: "YOUR_DB_USERNAME",
-  host: "YOUR_DB_HOST",
-  database: "YOUR_DB_NAME",
-  password: "YOUR_DB_PASSWORD",
-  port: "YOUR_DB_PORT",
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
 });
 
 connection.connect();
 
 const app = express();
-const port = 3000;
+const port = process.env.APP_PORT;
+
+const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
 
 app.use(
   cors({
-    origin: "http://localhost:5500",
+    // Add more origins if needed
+    origin: ["http://localhost:5173", "http://localhost:5500"],
     credentials: true,
-  })
+  }),
 );
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("tiny"));
 app.use(express.json());
 app.use(
   session({
-    secret:
-      "YOUR_SESSION_SECRET_KEY",
+    secret: process.env.SESSION_SECRET_KEY,
     // node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
     resave: false,
     saveUninitialized: false,
@@ -44,12 +49,12 @@ app.use(
       secure: false,
       //maxAge: 1000 * 60 * 60 * 24, // 1 day
     },
-  })
+  }),
 );
 
 const registerLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 mins
-  max: 2,
+  max: 3,
   message: {
     isInvalid: true,
     field: "rateLimit",
@@ -114,11 +119,11 @@ app.post("/register", registerLimiter, async (req, res) => {
   const email = req.body.email;
 
   const userCaptchaToken = req.body.captcha;
-  const secretKey = "YOUR_RECAPTCHA_SECRET_KEY";
+  const secretKey = recaptchaSecretKey;
 
   try {
     const response = await axios.post(
-      `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${userCaptchaToken}`
+      `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${userCaptchaToken}`,
     );
     if (!response.data.success) {
       return res.status(400).json({
@@ -142,7 +147,7 @@ app.post("/register", registerLimiter, async (req, res) => {
 
     const DBresult = await connection.query(
       "SELECT * FROM users WHERE email = $1",
-      [email]
+      [email],
     );
 
     if (DBresult.rows.length > 0) {
@@ -157,8 +162,8 @@ app.post("/register", registerLimiter, async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const insertedUser = await connection.query(
-      "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id, username, email",
-      [username, hashedPassword, email]
+      "INSERT INTO users (username, password, email, created_at) VALUES ($1, $2, $3, NOW()) RETURNING id, username, email",
+      [username, hashedPassword, email],
     );
 
     const newUser = insertedUser.rows[0];
@@ -183,11 +188,11 @@ app.post("/logIn", loginLimiter, async (req, res) => {
   const email = req.body.email;
 
   const userCaptchaToken = req.body.captcha;
-  const secretKey = "YOUR_RECAPTCHA_SECRET_KEY";
+  const secretKey = recaptchaSecretKey;
 
   try {
     const response = await axios.post(
-      `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${userCaptchaToken}`
+      `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${userCaptchaToken}`,
     );
     if (!response.data.success) {
       return res.status(400).json({
@@ -208,7 +213,7 @@ app.post("/logIn", loginLimiter, async (req, res) => {
 
     const result = await connection.query(
       "SELECT * FROM users WHERE email = $1",
-      [email]
+      [email],
     );
 
     if (result.rows.length === 0) {
@@ -301,7 +306,7 @@ app.post("/support", supportLimiter, async (req, res) => {
 
     await connection.query(
       "INSERT INTO support_messages (first_name, last_name, email, problem_description) VALUES ($1, $2, $3, $4)",
-      [firstName, lastName, email, problem_description]
+      [firstName, lastName, email, problem_description],
     );
 
     res.status(200).send("You have successfully asked a question!");
@@ -529,7 +534,7 @@ async function getOrCreateTicket(req) {
 
   const result = await connection.query(
     "SELECT id FROM tickets WHERE user_id = $1 AND status != 'closed' ORDER BY created_at DESC LIMIT 1",
-    [userId]
+    [userId],
   );
 
   let ticketId;
@@ -539,7 +544,7 @@ async function getOrCreateTicket(req) {
   } else {
     const insertResult = await connection.query(
       "INSERT INTO tickets (user_id) VALUES ($1) RETURNING id",
-      [userId]
+      [userId],
     );
     ticketId = insertResult.rows[0].id;
   }
@@ -562,7 +567,7 @@ app.get("/product", async (req, res) => {
   const id = req.query.id;
   try {
     const result = await connection.query(
-      `SELECT * FROM products WHERE id=${id}`
+      `SELECT * FROM products WHERE id=${id}`,
     );
     res.json(result.rows);
   } catch (err) {
@@ -584,14 +589,14 @@ app.post("/chat", async (req, res) => {
   if (answer.json) {
     if (answer.cleanedText === "") {
       answer.cleanedText =
-        "Goodbye If you have any questions feel free to ask!";
+        "Goodbye! If you have any questions feel free to ask!";
     }
     res.json({ reply: answer.cleanedText });
   } else {
     res.json({ reply: answer });
   }
 
-  if (!req.session.user) {
+  if (!user) {
     return;
   }
   const ticketId = await getOrCreateTicket(req);
@@ -599,7 +604,7 @@ app.post("/chat", async (req, res) => {
     await connection.query(
       `UPDATE tickets SET status='closed', closed_at=NOW()
          WHERE id = $1`,
-      [ticketId]
+      [ticketId],
     );
     delete req.session.ticketId;
   }
@@ -619,9 +624,9 @@ app.post("/chat", async (req, res) => {
           if (err2) {
             console.error("Error while saving bot answer: ", err2);
           }
-        }
+        },
       );
-    }
+    },
   );
 });
 
@@ -633,7 +638,7 @@ app.get("/chat/history", async (req, res) => {
     const ticketResult = await connection.query(
       `SELECT id FROM tickets WHERE user_id = $1 AND status != 'closed'
        ORDER BY created_at DESC LIMIT 1`,
-      [userId]
+      [userId],
     );
 
     if (ticketResult.rows.length === 0) {
@@ -647,7 +652,7 @@ app.get("/chat/history", async (req, res) => {
        FROM chat_messages
        WHERE ticket_id = $1
        ORDER BY created_at ASC`,
-      [ticketId]
+      [ticketId],
     );
 
     res.json(chatResult.rows);
@@ -868,7 +873,7 @@ app.post("/order/add", async (req, res) => {
         nameOnCard,
         cardExpirationDate,
         req.body.cardNumber,
-        req.body.cvv
+        req.body.cvv,
       )
     ) {
       const updateQuery = `

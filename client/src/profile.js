@@ -27,7 +27,7 @@ let isValidNewPassword = false;
 const changePasswordBtn = document.getElementById("changePasswordBtn");
 
 const passwordBackendResponse = document.querySelector(
-  "#password-backend-response"
+  "#password-backend-response",
 );
 
 changePasswordBtn.addEventListener("click", () => {
@@ -35,7 +35,7 @@ changePasswordBtn.addEventListener("click", () => {
 });
 
 // Order details
-const orderId = document.getElementById("orderId");
+const orderIdField = document.getElementById("orderId");
 const orderFirstName = document.getElementById("orderFirstNameField");
 const orderLastName = document.getElementById("orderLastNameField");
 const orderEmail = document.getElementById("orderEmailField");
@@ -79,7 +79,7 @@ document
 
 document.addEventListener("DOMContentLoaded", () => {
   const sidebarLinks = document.querySelectorAll(
-    ".nav-pills .nav-link[data-target]"
+    ".nav-pills .nav-link[data-target]",
   );
   const sections = document.querySelectorAll(".section");
 
@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (targetId === "#profileSection") {
           const defaultTab = document.querySelector(
-            '#profileSection a[href="#overview"]'
+            '#profileSection a[href="#overview"]',
           );
           if (defaultTab) {
             const tab = new bootstrap.Tab(defaultTab);
@@ -141,7 +141,7 @@ function getOrderDetails(orderId) {
       cancelOrder.classList.remove("disabled");
 
       const orderDetails = response.order_items[0];
-      orderId.textContent = "Order №" + orderDetails.order_id + " details";
+      orderIdField.textContent = "Order №" + orderDetails.order_id + " details";
       orderFirstName.textContent = orderDetails.first_name;
       orderLastName.textContent = orderDetails.last_name;
       orderEmail.textContent = orderDetails.email;
@@ -198,8 +198,7 @@ function getOrderDetails(orderId) {
             if (!res.ok) {
               return res.text();
             }
-            console.log(res);
-            window.location.href = "/client/html/profile.html";
+            window.location.href = "/profile.html";
           });
         });
         addedListener = true;
@@ -235,12 +234,12 @@ function renderOrders() {
               order.status === "paid"
                 ? "bg-success"
                 : order.status === "pending"
-                ? "bg-warning"
-                : order.status === "failed"
-                ? "bg-danger"
-                : order.status === "canceled"
-                ? "bg-info"
-                : "bg-dark"
+                  ? "bg-warning"
+                  : order.status === "failed"
+                    ? "bg-danger"
+                    : order.status === "canceled"
+                      ? "bg-info"
+                      : "bg-dark"
             }">${order.status}</span>
           </td>
           <td>$${Number(order.total_amount).toFixed(2)}</td>
@@ -384,11 +383,11 @@ function Submit() {
       },
       {
         withCredentials: true,
-      }
+      },
     )
     .then((response) => {
       console.log(response.data);
-      window.location.href = "/client/html/profile.html";
+      window.location.href = "/profile.html";
     })
     .catch((err) => {
       const res = err.response.data;
@@ -420,7 +419,7 @@ function Submit() {
         console.log("Error while waiting for server response: " + err);
         alert(
           "There was an error while trying to log in. If this keeps happening, inform the site owner with this info: " +
-            err
+            err,
         );
       }
     });
@@ -436,11 +435,11 @@ function changePassword() {
       },
       {
         withCredentials: true,
-      }
+      },
     )
     .then((response) => {
       console.log(response.data);
-      window.location.href = "/client/html/profile.html";
+      window.location.href = "/profile.html";
     })
     .catch((err) => {
       const res = err.response.data;
@@ -471,7 +470,7 @@ function changePassword() {
         console.log("Error while waiting for server response: " + err);
         alert(
           "There was an error while trying to log in. If this keeps happening, inform the site owner with this info: " +
-            err
+            err,
         );
       }
     });
@@ -482,7 +481,7 @@ fetch("http://localhost:3000/profile", {
 })
   .then((res) => {
     if (!res.ok) {
-      window.location.href = "/client/html/logIn.html";
+      window.location.href = "/logIn.html";
       return;
     }
     return res.text();

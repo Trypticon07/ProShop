@@ -19,7 +19,7 @@ let isValidFirstName = false;
 let isValidLastName = false;
 
 backBtn.addEventListener("click", () => {
-  window.location.href = "/client/html/index.html";
+  window.location.href = "/index.html";
 });
 
 firstSlide.classList.remove("d-none");
@@ -110,7 +110,7 @@ function Submit() {
       },
       {
         withCredentials: true,
-      }
+      },
     )
     .then((response) => {
       firstSlide.classList.add("d-none");
@@ -144,7 +144,7 @@ function Submit() {
         console.log("Error while waiting for server response: " + err);
         alert(
           "There was an error while trying to log in. If this keeps happening, inform the site owner with this info: " +
-            err
+            err,
         );
       }
     });
