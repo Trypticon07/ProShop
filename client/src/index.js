@@ -20,6 +20,7 @@ import {
   openPopoverBtn,
   checkoutBtn,
   session,
+  addToCart,
 } from "./common.js";
 
 let isProcessing = false;
