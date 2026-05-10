@@ -13,6 +13,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const isProduction = process.env.NODE_ENV === "production";
+
 // Local DB
 // const connection = new Client({
 //   user: process.env.DB_USER,
@@ -30,7 +32,7 @@ const connection = new Client({
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
   ssl: {
-    rejectUnauthorized: false,
+    rejectUnauthorized: isProduction ? false : true,
   },
 });
 
@@ -38,8 +40,6 @@ connection.connect();
 
 const app = express();
 const port = process.env.APP_PORT;
-
-const isProduction = process.env.NODE_ENV === "production";
 
 const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
 

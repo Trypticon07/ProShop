@@ -11,7 +11,7 @@ const backendResponse = document.querySelector("#backend-response");
 
 let isValidEmail = false;
 let isValidPassword = false;
-//123
+
 window.addEventListener("load", () => {
   const interval = setInterval(() => {
     if (window.grecaptcha?.render) {
