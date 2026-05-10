@@ -110,7 +110,7 @@ function Submit(captchaToken) {
     )
     .then((response) => {
       console.log(response.data);
-      window.location.href = "index.html";
+      // window.location.href = "index.html";
     })
     .catch((err) => {
       const res = err.response.data;

@@ -39,6 +39,9 @@ connection.connect();
 const app = express();
 const port = process.env.APP_PORT;
 
+const isProduction = process.env.NODE_ENV === "production";
+console.log(isProduction);
+
 const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
 
 app.set("trust proxy", 1);
@@ -59,10 +62,12 @@ app.use(
     // node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
     resave: false,
     saveUninitialized: false,
+    proxy: true,
     cookie: {
       httpOnly: true,
-      secure: false,
-      //maxAge: 1000 * 60 * 60 * 24, // 1 day
+      secure: true,
+      sameSite: "none",
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
     },
   }),
 );
