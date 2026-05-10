@@ -70,7 +70,7 @@ logOutButtons.forEach((btn) => {
 profileButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     e.preventDefault();
-    window.location.href = "/profile.html";
+    window.location.href = "profile.html";
   });
 });
 
@@ -97,7 +97,7 @@ newAccountButtons.forEach((btn) => {
     )
       .then((res) => {
         if (res.ok) {
-          window.location.href = "/signUp.html";
+          window.location.href = "signUp.html";
         }
       })
       .catch((err) => {
@@ -115,11 +115,11 @@ searchForm.addEventListener("submit", function (e) {
 });
 
 document.querySelector("#signUp").addEventListener("click", () => {
-  window.location.href = "/signUp.html";
+  window.location.href = "signUp.html";
 });
 
 document.querySelector("#logIn").addEventListener("click", () => {
-  window.location.href = "/logIn.html";
+  window.location.href = "logIn.html";
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -145,7 +145,7 @@ cartModal.addEventListener("click", (e) => {
 });
 
 checkoutBtn.addEventListener("click", (e) => {
-  window.location.href = "/checkout.html";
+  window.location.href = "checkout.html";
 });
 
 // session
@@ -185,7 +185,7 @@ function logout() {
   })
     .then((res) => {
       if (res.ok) {
-        window.location.href = "/index.html";
+        window.location.href = "index.html";
       }
     })
     .catch((err) => {

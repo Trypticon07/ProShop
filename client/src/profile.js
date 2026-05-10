@@ -198,7 +198,7 @@ function getOrderDetails(orderId) {
             if (!res.ok) {
               return res.text();
             }
-            window.location.href = "/profile.html";
+            window.location.href = "profile.html";
           });
         });
         addedListener = true;
@@ -387,7 +387,7 @@ function Submit() {
     )
     .then((response) => {
       console.log(response.data);
-      window.location.href = "/profile.html";
+      window.location.href = "profile.html";
     })
     .catch((err) => {
       const res = err.response.data;
@@ -439,7 +439,7 @@ function changePassword() {
     )
     .then((response) => {
       console.log(response.data);
-      window.location.href = "/profile.html";
+      window.location.href = "profile.html";
     })
     .catch((err) => {
       const res = err.response.data;
@@ -481,7 +481,7 @@ fetch(`${import.meta.env.VITE_API_URL}/profile`, {
 })
   .then((res) => {
     if (!res.ok) {
-      window.location.href = "/logIn.html";
+      window.location.href = "logIn.html";
       return;
     }
     return res.text();

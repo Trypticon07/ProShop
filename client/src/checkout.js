@@ -64,7 +64,7 @@ let isValidCVVCode = false;
 import { clearCart } from "./common.js";
 
 backBtn.addEventListener("click", () => {
-  window.location.href = "/index.html";
+  window.location.href = "index.html";
 });
 
 fetch(`${import.meta.env.VITE_API_URL}/session`, {
@@ -72,14 +72,14 @@ fetch(`${import.meta.env.VITE_API_URL}/session`, {
 })
   .then((res) => {
     if (!res.ok) {
-      window.location.href = "/logIn.html";
+      window.location.href = "logIn.html";
       return;
     }
     return res.text();
   })
   .catch((err) => {
     console.error("Session error:", err);
-    window.location.href = "/logIn.html";
+    window.location.href = "logIn.html";
   });
 
 let previousCart = JSON.parse(localStorage.getItem("cart")) || [];

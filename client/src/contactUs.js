@@ -19,7 +19,7 @@ let isValidFirstName = false;
 let isValidLastName = false;
 
 backBtn.addEventListener("click", () => {
-  window.location.href = "/index.html";
+  window.location.href = "index.html";
 });
 
 firstSlide.classList.remove("d-none");

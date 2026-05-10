@@ -44,7 +44,7 @@ const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
 app.use(
   cors({
     // Add more origins if needed
-    origin: ["http://localhost:5173", "http://localhost:5500"],
+    origin: ["http://localhost:5500", "http://localhost:4173"],
     credentials: true,
   }),
 );
