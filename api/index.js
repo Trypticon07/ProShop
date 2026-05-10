@@ -51,7 +51,7 @@ app.use(
     origin: [
       "http://localhost:5500",
       "http://localhost:4173",
-      "https://trypticon07.github.io/",
+      "https://trypticon07.github.io",
     ],
     credentials: true,
   }),
