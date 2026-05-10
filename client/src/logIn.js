@@ -16,7 +16,6 @@ console.log(new Date().toLocaleString());
 //   if (window.grecaptcha?.render) {
 //     console.log("Here2");
 //   }
-
 //   grecaptcha.render("recaptcha", {
 //     sitekey: import.meta.env.VITE_RECAPTCHA_SITE_KEY,
 //   });
