@@ -86,7 +86,7 @@ newAccountButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     e.preventDefault();
     fetch(
-      "http://localhost:3000/logout",
+      `${import.meta.env.VITE_API_URL}/logout`,
       {
         method: "POST",
         credentials: "include",
@@ -149,7 +149,7 @@ checkoutBtn.addEventListener("click", (e) => {
 });
 
 // session
-fetch("http://localhost:3000/session", {
+fetch(`${import.meta.env.VITE_API_URL}/session`, {
   credentials: "include",
 })
   .then((res) => {
@@ -179,7 +179,7 @@ fetch("http://localhost:3000/session", {
   });
 
 function logout() {
-  fetch("http://localhost:3000/logout", {
+  fetch(`${import.meta.env.VITE_API_URL}/logout`, {
     method: "POST",
     credentials: "include",
   })
@@ -295,7 +295,7 @@ async function loadCartItems() {
 }
 
 export async function addToCart(productId, quantity) {
-  fetch("http://localhost:3000/cart/add", {
+  fetch(`${import.meta.env.VITE_API_URL}/cart/add`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -324,7 +324,7 @@ function updateQuantity(productId, change) {
   if (item.quantity <= 0) {
     cart = cart.filter((p) => p.product_id !== productId);
     if (session) {
-      fetch("http://localhost:3000/cart/remove", {
+      fetch(`${import.meta.env.VITE_API_URL}/cart/remove`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -343,7 +343,7 @@ function updateQuantity(productId, change) {
     }
   } else {
     if (session) {
-      fetch("http://localhost:3000/cart/add", {
+      fetch(`${import.meta.env.VITE_API_URL}/cart/add`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -371,7 +371,7 @@ export function clearCart() {
   amountInCart.textContent = "0";
   amountInCart.classList.add("d-none");
   if (session) {
-    fetch("http://localhost:3000/cart/clear", {
+    fetch(`${import.meta.env.VITE_API_URL}/cart/clear`, {
       method: "POST",
       credentials: "include",
     })
@@ -387,7 +387,7 @@ export function clearCart() {
 }
 
 async function cartHistory() {
-  fetch("http://localhost:3000/cart/history", {
+  fetch(`${import.meta.env.VITE_API_URL}/cart/history`, {
     method: "GET",
     credentials: "include",
   })

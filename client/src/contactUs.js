@@ -100,7 +100,7 @@ secondSlide.classList.add("d-none");
 function Submit() {
   axios
     .post(
-      "http://localhost:3000/support",
+      `${import.meta.env.VITE_API_URL}/support`,
       {
         email: document.querySelector("#contact-email-input").value,
         firstName: document.querySelector("#first-name-input").value,

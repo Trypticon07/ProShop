@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function getOrderDetails(orderId) {
   screen1.classList.add("d-none");
   screen2.classList.remove("d-none");
-  fetch("http://localhost:3000/order/details", {
+  fetch(`${import.meta.env.VITE_API_URL}/order/details`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -187,7 +187,7 @@ function getOrderDetails(orderId) {
       }
       if (!addedListener) {
         cancelOrder.addEventListener("click", () => {
-          fetch("http://localhost:3000/order/cancel", {
+          fetch(`${import.meta.env.VITE_API_URL}/order/cancel`, {
             method: "POST",
             credentials: "include",
             headers: { "Content-Type": "application/json" },
@@ -210,7 +210,7 @@ function getOrderDetails(orderId) {
 }
 
 function renderOrders() {
-  fetch("http://localhost:3000/orders/history", {
+  fetch(`${import.meta.env.VITE_API_URL}/orders/history`, {
     credentials: "include",
   })
     .then((res) => {
@@ -376,7 +376,7 @@ document.addEventListener("DOMContentLoaded", renderOrders);
 function Submit() {
   axios
     .post(
-      "http://localhost:3000/profile/edit",
+      `${import.meta.env.VITE_API_URL}/profile/edit`,
       {
         username: document.querySelector("#usernameEdit").value,
         email: document.querySelector("#emailEdit").value,
@@ -428,7 +428,7 @@ function Submit() {
 function changePassword() {
   axios
     .post(
-      "http://localhost:3000/profile/changePassword",
+      `${import.meta.env.VITE_API_URL}/profile/changePassword`,
       {
         oldPassword: document.querySelector("#oldPasswordInput").value,
         newPassword: document.querySelector("#newPasswordInput").value,
@@ -476,7 +476,7 @@ function changePassword() {
     });
 }
 
-fetch("http://localhost:3000/profile", {
+fetch(`${import.meta.env.VITE_API_URL}/profile`, {
   credentials: "include",
 })
   .then((res) => {

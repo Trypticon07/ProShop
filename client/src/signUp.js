@@ -117,7 +117,7 @@ document
 function Submit(captchaToken) {
   axios
     .post(
-      "http://localhost:3000/register",
+      `${import.meta.env.VITE_API_URL}/register`,
       {
         username: document.querySelector("#username-input").value,
         password: document.querySelector("#password-input").value,

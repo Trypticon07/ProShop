@@ -67,7 +67,7 @@ backBtn.addEventListener("click", () => {
   window.location.href = "/index.html";
 });
 
-fetch("http://localhost:3000/session", {
+fetch(`${import.meta.env.VITE_API_URL}/session`, {
   credentials: "include",
 })
   .then((res) => {
@@ -428,7 +428,7 @@ async function loadCart() {
     submitCheckoutBtn.classList.add("disabled");
     return;
   }
-  fetch("http://localhost:3000/cart/history", {
+  fetch(`${import.meta.env.VITE_API_URL}/cart/history`, {
     method: "GET",
     credentials: "include",
   })
@@ -472,7 +472,7 @@ function Submit() {
 
   axios
     .post(
-      "http://localhost:3000/order/add",
+      `${import.meta.env.VITE_API_URL}/order/add`,
       {
         firstName: document.querySelector("#first-name-input").value,
         lastName: document.querySelector("#last-name-input").value,

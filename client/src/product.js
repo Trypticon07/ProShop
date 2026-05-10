@@ -23,7 +23,7 @@ buyButton.addEventListener("click", () => {
 });
 
 if (productId) {
-  fetch(`http://localhost:3000/product?id=${productId}`)
+  fetch(`${import.meta.env.VITE_API_URL}/product?id=${productId}`)
     .then((res) => res.json())
     .then((data) => {
       productName.textContent = data[0].name;
@@ -70,7 +70,7 @@ async function Buy() {
   let productPrice;
   let quantity = 1;
 
-  fetch(`http://localhost:3000/product?id=${productId}`)
+  fetch(`${import.meta.env.VITE_API_URL}/product?id=${productId}`)
     .then((res) => res.json())
     .then(async (data) => {
       productName = data[0].name;

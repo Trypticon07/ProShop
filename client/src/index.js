@@ -65,7 +65,7 @@ let isValidEmail = false;
 
 function Submit() {
   axios
-    .post("http://localhost:3000/subscribe", {
+    .post(`${import.meta.env.VITE_API_URL}/subscribe`, {
       email: document.querySelector("#main-email-input").value,
     })
     .then((response) => {
@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 async function getProducts() {
-  await fetch("http://localhost:3000/products")
+  await fetch(`${import.meta.env.VITE_API_URL}/products`)
     .then((res) => res.json())
     .then(async (products) => {
       await appendProduct(products);
@@ -347,7 +347,7 @@ function Buy(btn) {
 }
 
 function getChatHistory() {
-  fetch("http://localhost:3000/chat/history", {
+  fetch(`${import.meta.env.VITE_API_URL}/chat/history`, {
     credentials: "include",
   })
     .then((res) => {
@@ -376,7 +376,7 @@ function sendMessage() {
 
   const typingElement = appendMessage("Bot", "Typing...");
 
-  fetch("http://localhost:3000/chat", {
+  fetch(`${import.meta.env.VITE_API_URL}/chat`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
