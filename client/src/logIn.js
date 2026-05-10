@@ -12,18 +12,28 @@ const backendResponse = document.querySelector("#backend-response");
 let isValidEmail = false;
 let isValidPassword = false;
 console.log(new Date().toLocaleString());
-window.onRecaptchaLoad = () => {
-  if (window.grecaptcha?.render) {
-    console.log("Here2");
-  }
+// window.onRecaptchaLoad = () => {
+//   if (window.grecaptcha?.render) {
+//     console.log("Here2");
+//   }
 
-  grecaptcha.render("recaptcha", {
-    sitekey: import.meta.env.VITE_RECAPTCHA_SITE_KEY,
-  });
-};
-if (window.grecaptcha?.render) {
-  console.log("Here1");
-}
+//   grecaptcha.render("recaptcha", {
+//     sitekey: import.meta.env.VITE_RECAPTCHA_SITE_KEY,
+//   });
+// };
+
+window.addEventListener("load", () => {
+  const interval = setInterval(() => {
+    console.log("Here1");
+    if (window.grecaptcha?.render) {
+      clearInterval(interval);
+      console.log("Here2");
+      grecaptcha.render("recaptcha", {
+        sitekey: import.meta.env.VITE_RECAPTCHA_SITE_KEY,
+      });
+    }
+  }, 100);
+});
 
 document
   .getElementById("togglePassword")
