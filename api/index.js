@@ -41,6 +41,8 @@ const port = process.env.APP_PORT;
 
 const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
 
+app.set("trust proxy", 1);
+
 app.use(
   cors({
     // Add more origins if needed
