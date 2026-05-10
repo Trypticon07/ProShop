@@ -31,9 +31,7 @@ const connection = new Client({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-  ssl: {
-    rejectUnauthorized: isProduction ? false : true,
-  },
+  ...(isProduction && { ssl: { rejectUnauthorized: false } }),
 });
 
 connection.connect();
