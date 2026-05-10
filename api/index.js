@@ -40,7 +40,6 @@ const app = express();
 const port = process.env.APP_PORT;
 
 const isProduction = process.env.NODE_ENV === "production";
-console.log(isProduction);
 
 const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
 
@@ -49,7 +48,11 @@ app.set("trust proxy", 1);
 app.use(
   cors({
     // Add more origins if needed
-    origin: ["http://localhost:5500", "http://localhost:4173"],
+    origin: [
+      "http://localhost:5500",
+      "http://localhost:4173",
+      "trypticon07.github.io",
+    ],
     credentials: true,
   }),
 );
@@ -65,8 +68,8 @@ app.use(
     proxy: true,
     cookie: {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 24, // 1 day
     },
   }),
