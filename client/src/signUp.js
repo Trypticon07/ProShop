@@ -13,11 +13,16 @@ let isValidEmail = false;
 let isValidPassword = false;
 let isValidUsername = false;
 
-window.onRecaptchaLoad = () => {
-  grecaptcha.render("recaptcha", {
-    sitekey: import.meta.env.VITE_RECAPTCHA_SITE_KEY,
-  });
-};
+window.addEventListener("load", () => {
+  const interval = setInterval(() => {
+    if (window.grecaptcha?.render) {
+      clearInterval(interval);
+      grecaptcha.render("recaptcha", {
+        sitekey: import.meta.env.VITE_RECAPTCHA_SITE_KEY,
+      });
+    }
+  }, 100);
+});
 
 document
   .getElementById("togglePassword")
