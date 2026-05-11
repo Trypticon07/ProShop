@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { Client } from "pg";
+import { Pool } from "pg";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 import bcrypt from "bcrypt";
@@ -15,17 +15,7 @@ dotenv.config();
 
 const isProduction = process.env.NODE_ENV === "production";
 
-// Local DB
-// const connection = new Client({
-//   user: process.env.DB_USER,
-//   host: process.env.DB_HOST,
-//   database: process.env.DB_NAME,
-//   password: process.env.DB_PASSWORD,
-//   port: process.env.DB_PORT,
-// });
-
-//Global DB
-const connection = new Client({
+const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
@@ -34,7 +24,9 @@ const connection = new Client({
   ...(isProduction && { ssl: { rejectUnauthorized: false } }),
 });
 
-connection.connect();
+pool.on("error", (err, client) => {
+  console.error("Unexpected error in pool connection:", err);
+});
 
 const app = express();
 const port = process.env.APP_PORT;
@@ -166,10 +158,9 @@ app.post("/register", registerLimiter, async (req, res) => {
       return res.status(400).json(passwordCheck);
     }
 
-    const DBresult = await connection.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email],
-    );
+    const DBresult = await pool.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
 
     if (DBresult.rows.length > 0) {
       return res.status(400).json({
@@ -182,7 +173,7 @@ app.post("/register", registerLimiter, async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const insertedUser = await connection.query(
+    const insertedUser = await pool.query(
       "INSERT INTO users (username, password, email, created_at) VALUES ($1, $2, $3, NOW()) RETURNING id, username, email",
       [username, hashedPassword, email],
     );
@@ -232,10 +223,9 @@ app.post("/logIn", loginLimiter, async (req, res) => {
       return res.status(400).json(passwordCheck);
     }
 
-    const result = await connection.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email],
-    );
+    const result = await pool.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
 
     if (result.rows.length === 0) {
       return res.status(401).send("invalid email or password");
@@ -275,9 +265,7 @@ app.post("/subscribe", subscriptionLimiter, async (req, res) => {
       return res.status(400).json(emailCheck);
     }
 
-    await connection.query("INSERT INTO mailing_list (email) VALUES ($1)", [
-      email,
-    ]);
+    await pool.query("INSERT INTO mailing_list (email) VALUES ($1)", [email]);
 
     res.status(200).send("You have successfully subscribed!");
   } catch (err) {
@@ -325,7 +313,7 @@ app.post("/support", supportLimiter, async (req, res) => {
       };
     }
 
-    await connection.query(
+    await pool.query(
       "INSERT INTO support_messages (first_name, last_name, email, problem_description) VALUES ($1, $2, $3, $4)",
       [firstName, lastName, email, problem_description],
     );
@@ -357,7 +345,7 @@ app.get("/profile", async (req, res) => {
 
     const values = [userId];
 
-    const result = await connection.query(query, values);
+    const result = await pool.query(query, values);
 
     res.status(201).json(result.rows);
   } catch (error) {
@@ -383,7 +371,7 @@ app.post("/profile/edit", async (req, res) => {
           SELECT id FROM users 
           WHERE email = $1
         `;
-        const checkResult = await connection.query(checkQuery, [email]);
+        const checkResult = await pool.query(checkQuery, [email]);
 
         if (checkResult.rows.length > 0) {
           return res.status(409).json({
@@ -401,7 +389,7 @@ app.post("/profile/edit", async (req, res) => {
 
         const values = [userId, email];
 
-        const result = await connection.query(query, values);
+        const result = await pool.query(query, values);
         res.status(201).json(result.rows);
       }
 
@@ -419,7 +407,7 @@ app.post("/profile/edit", async (req, res) => {
 
         const values = [userId, username];
 
-        const result = await connection.query(query, values);
+        const result = await pool.query(query, values);
         res.status(201).json(result.rows);
       }
     } else {
@@ -435,7 +423,7 @@ app.post("/profile/edit", async (req, res) => {
           SELECT id FROM users 
           WHERE email = $1
         `;
-      const checkResult = await connection.query(checkQuery, [email]);
+      const checkResult = await pool.query(checkQuery, [email]);
 
       if (checkResult.rows.length > 0) {
         return res.status(409).json({
@@ -453,7 +441,7 @@ app.post("/profile/edit", async (req, res) => {
 
       const updateValues = [userId, username, email];
 
-      const updateResult = await connection.query(updateQuery, updateValues);
+      const updateResult = await pool.query(updateQuery, updateValues);
 
       res.status(201).json(updateResult.rows);
     }
@@ -489,7 +477,7 @@ app.post("/profile/changePassword", profileLimiter, async (req, res) => {
       });
     }
 
-    const result = await connection.query("SELECT * FROM users WHERE id = $1", [
+    const result = await pool.query("SELECT * FROM users WHERE id = $1", [
       userId,
     ]);
 
@@ -512,7 +500,7 @@ app.post("/profile/changePassword", profileLimiter, async (req, res) => {
 
     const values = [userId, hashedPassword];
 
-    await connection.query(query, values);
+    await pool.query(query, values);
 
     res.status(201).json({ message: "Password has been changed." });
   } catch (error) {
@@ -553,7 +541,7 @@ async function getOrCreateTicket(req) {
 
   const userId = req.session.user.id;
 
-  const result = await connection.query(
+  const result = await pool.query(
     "SELECT id FROM tickets WHERE user_id = $1 AND status != 'closed' ORDER BY created_at DESC LIMIT 1",
     [userId],
   );
@@ -563,7 +551,7 @@ async function getOrCreateTicket(req) {
   if (result.rows.length > 0) {
     ticketId = result.rows[0].id;
   } else {
-    const insertResult = await connection.query(
+    const insertResult = await pool.query(
       "INSERT INTO tickets (user_id) VALUES ($1) RETURNING id",
       [userId],
     );
@@ -576,7 +564,7 @@ async function getOrCreateTicket(req) {
 
 app.get("/products", async (req, res) => {
   try {
-    const result = await connection.query("SELECT * FROM products LIMIT 40");
+    const result = await pool.query("SELECT * FROM products LIMIT 40");
     res.json(result.rows);
   } catch (err) {
     console.error("Error loading products:", err);
@@ -587,9 +575,7 @@ app.get("/products", async (req, res) => {
 app.get("/product", async (req, res) => {
   const id = req.query.id;
   try {
-    const result = await connection.query(
-      `SELECT * FROM products WHERE id=${id}`,
-    );
+    const result = await pool.query(`SELECT * FROM products WHERE id=${id}`);
     res.json(result.rows);
   } catch (err) {
     console.error("Error loading product:", err);
@@ -622,7 +608,7 @@ app.post("/chat", async (req, res) => {
   }
   const ticketId = await getOrCreateTicket(req);
   if (answer.json && answer.json.command === "finish") {
-    await connection.query(
+    await pool.query(
       `UPDATE tickets SET status='closed', closed_at=NOW()
          WHERE id = $1`,
       [ticketId],
@@ -630,7 +616,7 @@ app.post("/chat", async (req, res) => {
     delete req.session.ticketId;
   }
 
-  connection.query(
+  pool.query(
     "INSERT INTO chat_messages (ticket_id, sender, message) VALUES ($1, 'user', $2)",
     [ticketId, message],
     (err) => {
@@ -638,7 +624,7 @@ app.post("/chat", async (req, res) => {
         console.error("Error while saving chat: ", err);
         return res.status(500).send("Error saving message");
       }
-      connection.query(
+      pool.query(
         "INSERT INTO chat_messages (ticket_id, sender, message) VALUES ($1, 'bot', $2)",
         [ticketId, botReply],
         (err2) => {
@@ -656,7 +642,7 @@ app.get("/chat/history", async (req, res) => {
   if (!userId) return res.status(401).send("Not authorized");
 
   try {
-    const ticketResult = await connection.query(
+    const ticketResult = await pool.query(
       `SELECT id FROM tickets WHERE user_id = $1 AND status != 'closed'
        ORDER BY created_at DESC LIMIT 1`,
       [userId],
@@ -668,7 +654,7 @@ app.get("/chat/history", async (req, res) => {
 
     const ticketId = ticketResult.rows[0].id;
 
-    const chatResult = await connection.query(
+    const chatResult = await pool.query(
       `SELECT sender, message, created_at
        FROM chat_messages
        WHERE ticket_id = $1
@@ -702,7 +688,7 @@ app.get("/products/search", async (req, res) => {
 
     const values = [`%${searchTerm}%`];
 
-    const result = await connection.query(query, values);
+    const result = await pool.query(query, values);
 
     res.json(result.rows);
   } catch (error) {
@@ -732,7 +718,7 @@ app.post("/cart/add", async (req, res) => {
     `;
     const values = [userId, productId, quantity];
 
-    const result = await connection.query(query, values);
+    const result = await pool.query(query, values);
 
     res.status(201).json({
       message: "Item added/updated in cart successfully",
@@ -761,7 +747,7 @@ app.post("/cart/remove", async (req, res) => {
     `;
     const values = [userId, productId];
 
-    const result = await connection.query(query, values);
+    const result = await pool.query(query, values);
 
     res.status(201).json({
       message: "Item removed from cart successfully",
@@ -785,7 +771,7 @@ app.post("/cart/clear", async (req, res) => {
     `;
     const values = [userId];
 
-    const result = await connection.query(query, values);
+    const result = await pool.query(query, values);
 
     res.status(200).json({
       message: "Cart cleared successfully",
@@ -811,7 +797,7 @@ app.get("/cart/history", async (req, res) => {
     `;
 
     const values = [userId];
-    const result = await connection.query(query, values);
+    const result = await pool.query(query, values);
 
     res.status(200).json({
       cart_items: result.rows,
@@ -879,7 +865,7 @@ app.post("/order/add", async (req, res) => {
       status,
     ];
 
-    const result1 = await connection.query(query1, values1);
+    const result1 = await pool.query(query1, values1);
     const orderId = result1.rows[0].id;
     const query2 = `  INSERT INTO order_items (user_id, order_id, product_id, quantity, created_at)
       SELECT user_id, $1 AS order_id, product_id, quantity, NOW()
@@ -887,7 +873,7 @@ app.post("/order/add", async (req, res) => {
       WHERE user_id = $2;
       `;
     const values2 = [orderId, userId];
-    const result2 = await connection.query(query2, values2);
+    const result2 = await pool.query(query2, values2);
 
     if (
       processPayment(
@@ -900,7 +886,7 @@ app.post("/order/add", async (req, res) => {
       const updateQuery = `
       UPDATE orders SET status = 'paid' WHERE user_id = $1 AND id = $2`;
       const updateValues = [userId, orderId];
-      await connection.query(updateQuery, updateValues);
+      await pool.query(updateQuery, updateValues);
 
       req.body.cardNumber = null;
       req.body.cvv = null;
@@ -908,7 +894,7 @@ app.post("/order/add", async (req, res) => {
       const updateQuery = `
       UPDATE orders SET status = 'failed' WHERE user_id = $1 AND id = $2`;
       const updateValues = [userId, orderId];
-      await connection.query(updateQuery, updateValues);
+      await pool.query(updateQuery, updateValues);
       return res.status(402).json({ error: "Payment failed." });
     }
 
@@ -919,7 +905,7 @@ app.post("/order/add", async (req, res) => {
     `;
     const clearCartValues = [userId];
 
-    await connection.query(clearCartQuery, clearCartValues);
+    await pool.query(clearCartQuery, clearCartValues);
 
     res.status(201).json({
       message: "Order created successfully",
@@ -951,7 +937,7 @@ app.get("/orders/history", async (req, res) => {
     `;
 
     const values = [userId];
-    const result = await connection.query(query, values);
+    const result = await pool.query(query, values);
 
     res.status(200).json({
       orders: result.rows,
@@ -1001,7 +987,7 @@ app.post("/order/details", async (req, res) => {
     `;
 
     const values = [userId, orderId];
-    const result = await connection.query(query, values);
+    const result = await pool.query(query, values);
 
     res.status(200).json({
       order_items: result.rows,
@@ -1024,7 +1010,7 @@ app.post("/order/cancel", async (req, res) => {
       SELECT * FROM orders WHERE user_id = $1 AND id = $2
     `;
     const checkValues = [userId, orderId];
-    const checkResult = await connection.query(checkQuery, checkValues);
+    const checkResult = await pool.query(checkQuery, checkValues);
 
     if (
       checkResult.rows[0].status !== "paid" &&
@@ -1038,7 +1024,7 @@ app.post("/order/cancel", async (req, res) => {
     `;
 
     const values = [userId, orderId, status];
-    const result = await connection.query(query, values);
+    const result = await pool.query(query, values);
 
     res.status(200).json({
       orders: result.rows,
