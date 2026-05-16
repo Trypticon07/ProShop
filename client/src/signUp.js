@@ -1,17 +1,15 @@
 const usernameInput = document.querySelector("#username-input");
 const emailInput = document.querySelector("#email-input");
 const passwordInput = document.querySelector("#password-input");
+const agreeCheck = document.getElementById("invalidCheck");
 
 const usernameFeedback = document.querySelector("#usernameFeedback");
 const emailFeedback = document.querySelector("#emailFeedback");
 const passwordFeedback = document.querySelector("#passwordFeedback");
 const captchaError = document.querySelector("#captchaFeedback");
+const agreeFeedback = document.getElementById("agreeFeedback");
 
 const backendResponse = document.querySelector("#backend-response");
-
-let isValidEmail = false;
-let isValidPassword = false;
-let isValidUsername = false;
 
 window.addEventListener("load", () => {
   const interval = setInterval(() => {
@@ -39,59 +37,65 @@ document
   usernameInput.classList.remove("is-invalid");
   emailInput.classList.remove("is-invalid");
   passwordInput.classList.remove("is-invalid");
+  agreeCheck.classList.remove("is-invalid");
 
-  usernameInput.addEventListener("input", () => {
-    const username = usernameInput.value.trim();
+  const updateFieldUI = (input, feedback, isValid, msg) => {
+    input.classList.toggle("is-valid", isValid);
+    input.classList.toggle("is-invalid", !isValid);
+    feedback.textContent = isValid ? "" : msg;
+    return isValid;
+  };
 
-    if (username.length < 3) {
-      usernameInput.classList.remove("is-valid");
-      usernameInput.classList.add("is-invalid");
-      usernameFeedback.textContent =
-        "Username must be at least 3 characters long.";
-    } else {
-      usernameInput.classList.remove("is-invalid");
-      usernameInput.classList.add("is-valid");
-      usernameFeedback.textContent = "";
-      isValidUsername = true;
-    }
-  });
-
-  emailInput.addEventListener("input", () => {
+  const checkEmail = () => {
     const email = emailInput.value.trim();
 
-    isValidEmail =
+    const isValid =
       email.length >= 6 &&
       email.length <= 64 &&
       email.includes("@") &&
       email.includes(".") &&
       email.indexOf("@") !== 0 &&
-      email.lastIndexOf(".") > email.indexOf("@");
+      email.lastIndexOf(".") > email.indexOf("@") &&
+      email.lastIndexOf(".") < email.length - 1;
+    return updateFieldUI(
+      emailInput,
+      emailFeedback,
+      isValid,
+      "Please enter a valid email address (6-64 characters, must include @ and .)",
+    );
+  };
 
-    if (!isValidEmail) {
-      emailInput.classList.remove("is-valid");
-      emailInput.classList.add("is-invalid");
-      emailFeedback.textContent = "Please enter a valid email address.";
-    } else {
-      emailInput.classList.remove("is-invalid");
-      emailInput.classList.add("is-valid");
-      emailFeedback.textContent = "";
-    }
-  });
-  passwordInput.addEventListener("input", () => {
-    const password = passwordInput.value;
+  const checkPassword = () => {
+    return updateFieldUI(
+      passwordInput,
+      passwordFeedback,
+      passwordInput.value.trim().length >= 8,
+      "Password must be at least 8 characters long.",
+    );
+  };
 
-    if (password.length < 8) {
-      passwordInput.classList.remove("is-valid");
-      passwordInput.classList.add("is-invalid");
-      passwordFeedback.textContent =
-        "Password must be at least 8 characters long.";
-    } else {
-      passwordInput.classList.remove("is-invalid");
-      passwordInput.classList.add("is-valid");
-      passwordFeedback.textContent = "";
-      isValidPassword = true;
-    }
-  });
+  const checkUsername = () => {
+    return updateFieldUI(
+      usernameInput,
+      usernameFeedback,
+      usernameInput.value.trim().length >= 3,
+      "Username must be at least 3 characters long.",
+    );
+  };
+
+  const checkAgreeCheck = () => {
+    return updateFieldUI(
+      agreeCheck,
+      agreeFeedback,
+      agreeCheck.checked,
+      "You must agree before submitting.",
+    );
+  };
+
+  usernameInput.addEventListener("input", checkUsername);
+  emailInput.addEventListener("input", checkEmail);
+  passwordInput.addEventListener("input", checkPassword);
+  agreeCheck.addEventListener("change", checkAgreeCheck);
 
   Array.from(forms).forEach((form) => {
     form.addEventListener("submit", (event) => {
@@ -107,11 +111,16 @@ document
         captchaError.classList.remove("d-none");
         captchaError.classList.add("d-block");
       }
+      const isValidUsername = checkUsername();
+      const isValidEmail = checkEmail();
+      const isValidPassword = checkPassword();
+      const isValidAgreeCheckBox = checkAgreeCheck();
       if (
         !isValidEmail ||
         !isValidPassword ||
         !isValidUsername ||
-        !captchaResponse
+        !captchaResponse ||
+        !isValidAgreeCheckBox
       )
         return;
       Submit(captchaResponse);
@@ -128,6 +137,7 @@ function Submit(captchaToken) {
         password: document.querySelector("#password-input").value,
         email: document.querySelector("#email-input").value,
         captcha: captchaToken,
+        agreeCheck: agreeCheck.checked,
       },
       {
         withCredentials: true,

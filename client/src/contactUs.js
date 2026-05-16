@@ -32,61 +32,70 @@ secondSlide.classList.add("d-none");
   firstNameInput.classList.remove("is-invalid");
   lastNameInput.classList.remove("is-invalid");
 
-  emailInput.addEventListener("input", () => {
+  const updateFieldUI = (input, feedback, isValid, msg) => {
+    input.classList.toggle("is-valid", isValid);
+    input.classList.toggle("is-invalid", !isValid);
+    feedback.textContent = isValid ? "" : msg;
+    return isValid;
+  };
+  const checkName = (input, feedback, msg1) => {
+    const nameValue = input.value.trim();
+    const nameRegex = /^[a-zA-Z][a-zA-Z\s-]*$/;
+    const isValid =
+      nameValue.length >= 2 &&
+      nameValue.length <= 30 &&
+      nameRegex.test(nameValue);
+    const errorMsg =
+      nameValue.length === 0
+        ? msg1
+        : "Please use only English letters (2-30 characters)";
+    return updateFieldUI(input, feedback, isValid, errorMsg);
+  };
+  const checkEmail = () => {
     const email = emailInput.value.trim();
 
-    isValidEmail =
+    const isValid =
       email.length >= 6 &&
       email.length <= 64 &&
       email.includes("@") &&
       email.includes(".") &&
       email.indexOf("@") !== 0 &&
-      email.lastIndexOf(".") > email.indexOf("@");
+      email.lastIndexOf(".") > email.indexOf("@") &&
+      email.lastIndexOf(".") < email.length - 1;
+    return updateFieldUI(
+      emailInput,
+      emailFeedback,
+      isValid,
+      "Please enter a valid email address (6-64 characters, must include @ and .)",
+    );
+  };
 
-    if (!isValidEmail) {
-      emailInput.classList.remove("is-valid");
-      emailInput.classList.add("is-invalid");
-      emailFeedback.textContent = "Please enter a valid email address.";
-    } else {
-      emailInput.classList.remove("is-invalid");
-      emailInput.classList.add("is-valid");
-      emailFeedback.textContent = "";
-    }
-  });
   firstNameInput.addEventListener("input", () => {
-    const firstName = firstNameInput.value.trim();
-
-    isValidFirstName = firstName.length >= 1 && firstName.length <= 30;
-    if (!isValidFirstName) {
-      firstNameInput.classList.remove("is-valid");
-      firstNameInput.classList.add("is-invalid");
-      firstNameFeedback.textContent = "Please enter a valid first name.";
-    } else {
-      firstNameInput.classList.remove("is-invalid");
-      firstNameInput.classList.add("is-valid");
-      firstNameFeedback.textContent = "";
-    }
+    checkName(firstNameInput, firstNameFeedback, "First name is required.");
   });
 
   lastNameInput.addEventListener("input", () => {
-    const lastName = lastNameInput.value.trim();
-
-    isValidLastName = lastName.length >= 1 && lastName.length <= 35;
-    if (!isValidLastName) {
-      lastNameInput.classList.add("is-invalid");
-      lastNameInput.classList.remove("is-valid");
-      lastNameFeedback.textContent = "Please enter a valid last name.";
-    } else {
-      lastNameInput.classList.remove("is-invalid");
-      lastNameInput.classList.add("is-valid");
-      lastNameFeedback.textContent = "";
-    }
+    checkName(lastNameInput, lastNameFeedback, "Last name is required.");
   });
+
+  emailInput.addEventListener("input", checkEmail);
 
   Array.from(forms).forEach((form) => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       event.stopPropagation();
+
+      const isValidEmail = checkEmail();
+      const isValidFirstName = checkName(
+        firstNameInput,
+        firstNameFeedback,
+        "First name is required.",
+      );
+      const isValidLastName = checkName(
+        lastNameInput,
+        lastNameFeedback,
+        "Last name is required.",
+      );
 
       if (!isValidEmail || !isValidFirstName || !isValidLastName) return;
 
