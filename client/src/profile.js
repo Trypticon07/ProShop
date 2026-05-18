@@ -13,16 +13,11 @@ const emailFeedback = document.querySelector("#emailFeedback");
 const usernameFeedback = document.querySelector("#usernameFeedback");
 const backendResponse = document.querySelector("#backend-response");
 
-let isValidEmail = false;
-let isValidUsername = false;
-
 // Change password
 const oldPasswordInput = document.getElementById("oldPasswordInput");
 const newPasswordInput = document.getElementById("newPasswordInput");
 const oldPasswordFeedback = document.querySelector("#oldPasswordFeedback");
 const newPasswordFeedback = document.querySelector("#newPasswordFeedback");
-let isValidOldPassword = false;
-let isValidNewPassword = false;
 
 const changePasswordBtn = document.getElementById("changePasswordBtn");
 
@@ -280,91 +275,87 @@ document.addEventListener("DOMContentLoaded", renderOrders);
   oldPasswordInput.classList.remove("is-invalid");
   newPasswordInput.classList.remove("is-invalid");
 
-  usernameInput.addEventListener("input", () => {
-    const username = usernameInput.value.trim();
+  const updateFieldUI = (input, feedback, isValid, msg) => {
+    input.classList.toggle("is-valid", isValid);
+    input.classList.toggle("is-invalid", !isValid);
+    feedback.textContent = isValid ? "" : msg;
+    return isValid;
+  };
 
-    if (username.length < 3) {
-      usernameInput.classList.remove("is-valid");
-      usernameInput.classList.add("is-invalid");
-      usernameFeedback.textContent =
-        "Username must be at least 3 characters long.";
-    } else {
-      usernameInput.classList.remove("is-invalid");
-      usernameInput.classList.add("is-valid");
-      usernameFeedback.textContent = "";
-      isValidUsername = true;
-    }
-  });
-
-  emailInput.addEventListener("input", () => {
+  const checkEmail = () => {
     const email = emailInput.value.trim();
 
-    isValidEmail =
+    const isValid =
       email.length >= 6 &&
       email.length <= 64 &&
       email.includes("@") &&
       email.includes(".") &&
       email.indexOf("@") !== 0 &&
-      email.lastIndexOf(".") > email.indexOf("@");
+      email.lastIndexOf(".") > email.indexOf("@") &&
+      email.lastIndexOf(".") < email.length - 1;
+    return updateFieldUI(
+      emailInput,
+      emailFeedback,
+      isValid,
+      "Please enter a valid email address (6-64 characters, must include @ and .)",
+    );
+  };
 
-    if (!isValidEmail) {
-      emailInput.classList.remove("is-valid");
-      emailInput.classList.add("is-invalid");
-      emailFeedback.textContent = "Please enter a valid email address.";
-    } else {
-      emailInput.classList.remove("is-invalid");
-      emailInput.classList.add("is-valid");
-      emailFeedback.textContent = "";
-    }
-  });
+  const checkPassword = (passwordInput, passwordFeedback) => {
+    return updateFieldUI(
+      passwordInput,
+      passwordFeedback,
+      passwordInput.value.trim().length >= 8,
+      "Password must be at least 8 characters long.",
+    );
+  };
 
+  const checkUsername = () => {
+    return updateFieldUI(
+      usernameInput,
+      usernameFeedback,
+      usernameInput.value.trim().length >= 3,
+      "Username must be at least 3 characters long.",
+    );
+  };
+
+  usernameInput.addEventListener("input", checkUsername);
+  emailInput.addEventListener("input", checkEmail);
   oldPasswordInput.addEventListener("input", () => {
-    const password = oldPasswordInput.value;
-
-    if (password.length < 8) {
-      oldPasswordInput.classList.remove("is-valid");
-      oldPasswordInput.classList.add("is-invalid");
-      oldPasswordFeedback.textContent =
-        "Password must be at least 8 characters long.";
-    } else {
-      oldPasswordInput.classList.remove("is-invalid");
-      oldPasswordInput.classList.add("is-valid");
-      oldPasswordFeedback.textContent = "";
-      isValidOldPassword = true;
-    }
+    checkPassword(oldPasswordInput, oldPasswordFeedback);
   });
-
   newPasswordInput.addEventListener("input", () => {
-    const password = newPasswordInput.value;
-
-    if (password.length < 8) {
-      newPasswordInput.classList.remove("is-valid");
-      newPasswordInput.classList.add("is-invalid");
-      newPasswordFeedback.textContent =
-        "Password must be at least 8 characters long.";
-    } else {
-      newPasswordInput.classList.remove("is-invalid");
-      newPasswordInput.classList.add("is-valid");
-      newPasswordFeedback.textContent = "";
-      isValidNewPassword = true;
-    }
+    checkPassword(newPasswordInput, newPasswordFeedback);
   });
 
   Array.from(forms).forEach((form) => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       event.stopPropagation();
-
-      if (usernameInput.value === "" || emailInput.value === "") {
-        if (!usernameInput.value && isValidEmail) {
-          isValidUsername = true;
-        }
-        if (!emailInput.value && isValidUsername) {
-          isValidEmail = true;
-        }
+      let isValidUsername = true;
+      let isValidEmail = true;
+      let isValidOldPass = true;
+      let isValidNewPass = true;
+      if (usernameInput.value.trim() !== "") {
+        isValidUsername = checkUsername();
+      } else if (emailInput.value.trim !== "") {
+        isValidEmail = checkEmail();
+      } else if (oldPasswordInput.value.trim() !== "") {
+        isValidOldPass = checkPassword();
+      } else if (newPasswordInput.value.trim() !== "") {
+        isValidNewPass = checkPassword();
       }
+      let areValidPasswords = isValidOldPass && isValidNewPass;
+      // if (usernameInput.value === "" || emailInput.value === "") {
+      //   if (!usernameInput.value && isValidEmail) {
+      //     isValidUsername = true;
+      //   }
+      //   if (!emailInput.value && isValidUsername) {
+      //     isValidEmail = true;
+      //   }
+      // }
 
-      if (!isValidEmail || !isValidUsername) {
+      if (!isValidEmail || !isValidUsername || !areValidPasswords) {
         return;
       }
 
@@ -380,6 +371,8 @@ function Submit() {
       {
         username: document.querySelector("#usernameEdit").value,
         email: document.querySelector("#emailEdit").value,
+        oldPassword: document.querySelector("#oldPasswordInput").value,
+        newPassword: document.querySelector("#newPasswordInput").value,
       },
       {
         withCredentials: true,
@@ -400,8 +393,18 @@ function Submit() {
           } else if (res?.field === "username") {
             usernameInput.classList.add("is-invalid");
             usernameFeedback.textContent = res.error;
+          } else if (res.field === "oldPassword") {
+            oldPasswordInput.classList.add("is-invalid");
+            oldPasswordFeedback.textContent = res.error;
+          } else if (res?.field === "newPassword") {
+            newPasswordInput.classList.add("is-invalid");
+            newPasswordFeedback.textContent = res.error;
           }
         }
+      } else if (status === 401) {
+        backendResponse.textContent = "Incorrect password";
+        backendResponse.classList.remove("d-none");
+        backendResponse.classList.add("d-block");
       } else if (status === 409) {
         if (res.field === "email") {
           emailInput.classList.add("is-invalid");

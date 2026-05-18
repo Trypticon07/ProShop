@@ -179,7 +179,7 @@ async function search(query) {
 
   try {
     const response = await fetch(
-      `http://localhost:3000/products/search?q=${encodeURIComponent(query)}`,
+      `${import.meta.env.VITE_API_URL}/products/search?q=${encodeURIComponent(query)}`,
     );
     if (!response.ok) {
       container.innerHTML = `<p>Error: ${response.statusText}</p>`;

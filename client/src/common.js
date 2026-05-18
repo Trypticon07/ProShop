@@ -401,7 +401,9 @@ async function cartHistory() {
       let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
       const fetchPromises = data.cart_items.map((cartItem) => {
-        return fetch(`http://localhost:3000/product?id=${cartItem.product_id}`)
+        return fetch(
+          `${import.meta.env.VITE_API_URL}/product?id=${cartItem.product_id}`,
+        )
           .then((res) => res.json())
           .then((productData) => {
             if (!productData || !productData[0]) return;

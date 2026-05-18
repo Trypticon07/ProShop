@@ -11,7 +11,7 @@ export default defineConfig({
         main: resolve(__dirname, "index.html"),
         about: resolve(__dirname, "about.html"),
         checkout: resolve(__dirname, "checkout.html"),
-        contactUs: resolve(__dirname, "contactUs.html"),
+        Support: resolve(__dirname, "support.html"),
         logIn: resolve(__dirname, "logIn.html"),
         product: resolve(__dirname, "product.html"),
         profile: resolve(__dirname, "profile.html"),

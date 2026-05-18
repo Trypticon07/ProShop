@@ -486,7 +486,7 @@ app.post("/profile/changePassword", profileLimiter, async (req, res) => {
     const isMatch = await bcrypt.compare(oldPassword, user.password);
 
     if (!isMatch) {
-      return res.status(401).send("Incorrect password");
+      return res.status(400).send("Incorrect password");
     }
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(newPassword, saltRounds);

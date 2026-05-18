@@ -14,10 +14,6 @@ const secondSlide = document.querySelector(".second-slide");
 
 const backBtn = document.querySelector("#to-home-page");
 
-let isValidEmail = false;
-let isValidFirstName = false;
-let isValidLastName = false;
-
 backBtn.addEventListener("click", () => {
   window.location.href = "index.html";
 });
