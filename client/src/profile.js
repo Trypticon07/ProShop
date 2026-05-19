@@ -293,6 +293,7 @@ document.addEventListener("DOMContentLoaded", renderOrders);
       email.indexOf("@") !== 0 &&
       email.lastIndexOf(".") > email.indexOf("@") &&
       email.lastIndexOf(".") < email.length - 1;
+    console.log("V? ", isValid);
     return updateFieldUI(
       emailInput,
       emailFeedback,
@@ -336,16 +337,26 @@ document.addEventListener("DOMContentLoaded", renderOrders);
       let isValidEmail = true;
       let isValidOldPass = true;
       let isValidNewPass = true;
+      let areValidPasswords = true;
       if (usernameInput.value.trim() !== "") {
         isValidUsername = checkUsername();
-      } else if (emailInput.value.trim !== "") {
+      } else if (emailInput.value.trim() !== "") {
         isValidEmail = checkEmail();
-      } else if (oldPasswordInput.value.trim() !== "") {
-        isValidOldPass = checkPassword();
-      } else if (newPasswordInput.value.trim() !== "") {
-        isValidNewPass = checkPassword();
+      } else if (
+        oldPasswordInput.value.trim() !== "" ||
+        newPasswordInput.value.trim() !== ""
+      ) {
+        areValidPasswords =
+          checkPassword(oldPasswordInput, oldPasswordFeedback) &&
+          checkPassword(newPasswordInput, newPasswordFeedback);
       }
-      let areValidPasswords = isValidOldPass && isValidNewPass;
+      // let areValidPasswords = isValidOldPass && isValidNewPass;
+      // FINISH THIS!!!
+      console.log(oldPasswordInput.value.trim() !== "");
+      console.log(newPasswordInput.value.trim() !== "");
+      console.log(isValidOldPass);
+      console.log(isValidNewPass);
+      console.log(areValidPasswords);
       // if (usernameInput.value === "" || emailInput.value === "") {
       //   if (!usernameInput.value && isValidEmail) {
       //     isValidUsername = true;
@@ -354,8 +365,9 @@ document.addEventListener("DOMContentLoaded", renderOrders);
       //     isValidEmail = true;
       //   }
       // }
-
+      console.log(!isValidEmail || !isValidUsername || !areValidPasswords);
       if (!isValidEmail || !isValidUsername || !areValidPasswords) {
+        console.log("here1");
         return;
       }
 
