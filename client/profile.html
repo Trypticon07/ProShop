@@ -315,16 +315,21 @@
                   >
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" data-bs-toggle="tab" href="#edit-profile"
-                    >Edit Profile</a
+                  <a class="nav-link" data-bs-toggle="tab" href="#edit-username"
+                    >Edit Username</a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" data-bs-toggle="tab" href="#edit-email"
+                    >Edit Email</a
                   >
                 </li>
                 <li class="nav-item">
                   <a
                     class="nav-link"
                     data-bs-toggle="tab"
-                    href="#ChangePassword"
-                    >Change password</a
+                    href="#change-password"
+                    >Change Password</a
                   >
                 </li>
               </ul>
@@ -376,14 +381,11 @@
                   </div>
                 </div>
 
-                <!-- Edit Profile -->
-                <div class="tab-pane fade p-4" id="edit-profile">
-                  <h5>Edit Profile</h5>
-                  <form class="needs-validation" novalidate>
+                <!-- Edit Username -->
+                <div class="tab-pane fade p-4" id="edit-username">
+                  <h5>Edit Username</h5>
+                  <form class="needs-validation" id="usernameForm" novalidate>
                     <div class="mb-3">
-                      <label for="profile-name" class="form-label"
-                        >Username</label
-                      >
                       <input
                         type="text"
                         class="form-control"
@@ -392,10 +394,19 @@
                       />
                       <div class="invalid-feedback" id="usernameFeedback"></div>
                     </div>
+                    <div class="col-12 d-flex">
+                      <p id="username-backend-response" class="d-none"></p>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                      Save Changes
+                    </button>
+                  </form>
+                </div>
+                <!-- Edit Email -->
+                <div class="tab-pane fade p-4" id="edit-email">
+                  <h5>Edit Email</h5>
+                  <form class="needs-validation" id="emailForm" novalidate>
                     <div class="mb-3">
-                      <label for="profile-email" class="form-label"
-                        >Email</label
-                      >
                       <input
                         type="email"
                         class="form-control"
@@ -405,7 +416,7 @@
                       <div class="invalid-feedback" id="emailFeedback"></div>
                     </div>
                     <div class="col-12 d-flex">
-                      <p id="backend-response" class="d-none"></p>
+                      <p id="email-backend-response" class="d-none"></p>
                     </div>
                     <button type="submit" class="btn btn-primary">
                       Save Changes
@@ -414,9 +425,9 @@
                 </div>
 
                 <!-- Change password -->
-                <div class="tab-pane fade p-4" id="ChangePassword">
+                <div class="tab-pane fade p-4" id="change-password">
                   <h5>Change password</h5>
-                  <form class="needs-validation" novalidate>
+                  <form class="needs-validation" id="passwordForm" novalidate>
                     <div class="mb-3 profile-password-wrapper">
                       <label for="oldPasswordInput" class="form-label"
                         >Old password</label
@@ -464,7 +475,11 @@
                     <div class="col-12 d-flex">
                       <p id="password-backend-response" class="d-none"></p>
                     </div>
-                    <button id="changePasswordBtn" class="btn btn-primary">
+                    <button
+                      type="submit"
+                      id="changePasswordBtn"
+                      class="btn btn-primary"
+                    >
                       Change password
                     </button>
                   </form>

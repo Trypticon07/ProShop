@@ -354,97 +354,67 @@ app.get("/profile", async (req, res) => {
   }
 });
 
-app.post("/profile/edit", async (req, res) => {
+app.post("/profile/changeUsername", profileLimiter, async (req, res) => {
   try {
     const userId = req.session.user?.id;
 
     if (!userId) return res.status(401).send("Not authorized");
     const username = req.body.username;
-    const email = req.body.email;
-    if (username === "" || email === "") {
-      if (!username && email) {
-        const emailCheck = checkEmail(email);
-        if (emailCheck.isInvalid) {
-          return res.status(400).json(emailCheck);
-        }
-        const checkQuery = `
-          SELECT id FROM users 
-          WHERE email = $1
-        `;
-        const checkResult = await pool.query(checkQuery, [email]);
 
-        if (checkResult.rows.length > 0) {
-          return res.status(409).json({
-            isInvalid: true,
-            field: "email",
-            error: "Email is already used.",
-          });
-        }
-        const query = `
-          UPDATE users
-          SET email = $2
-          WHERE id = $1
-          RETURNING *;
-        `;
-
-        const values = [userId, email];
-
-        const result = await pool.query(query, values);
-        res.status(201).json(result.rows);
-      }
-
-      if (!email && username) {
-        const usernameCheck = checkUsername(username);
-        if (usernameCheck.isInvalid) {
-          return res.status(400).json(usernameCheck);
-        }
-        const query = `
+    const usernameCheck = checkUsername(username);
+    if (usernameCheck.isInvalid) {
+      return res.status(400).json(usernameCheck);
+    }
+    const query = `
           UPDATE users
           SET username = $2
           WHERE id = $1
           RETURNING *;
         `;
 
-        const values = [userId, username];
+    const values = [userId, username];
 
-        const result = await pool.query(query, values);
-        res.status(201).json(result.rows);
-      }
-    } else {
-      const usernameCheck = checkUsername(username);
-      if (usernameCheck.isInvalid) {
-        return res.status(400).json(usernameCheck);
-      }
-      const emailCheck = checkEmail(email);
-      if (emailCheck.isInvalid) {
-        return res.status(400).json(emailCheck);
-      }
-      const checkQuery = `
+    const result = await pool.query(query, values);
+    res.status(201).json(result.rows);
+  } catch (error) {
+    console.error("Profile error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/profile/changeEmail", profileLimiter, async (req, res) => {
+  try {
+    const userId = req.session.user?.id;
+    if (!userId) return res.status(401).send("Not authorized");
+    const email = req.body.email;
+    const emailCheck = checkEmail(email);
+    if (emailCheck.isInvalid) {
+      return res.status(400).json(emailCheck);
+    }
+    const checkQuery = `
           SELECT id FROM users 
           WHERE email = $1
         `;
-      const checkResult = await pool.query(checkQuery, [email]);
+    const checkResult = await pool.query(checkQuery, [email]);
 
-      if (checkResult.rows.length > 0) {
-        return res.status(409).json({
-          isInvalid: true,
-          field: "email",
-          error: "Email is already used.",
-        });
-      }
-      const updateQuery = `
+    if (checkResult.rows.length > 0) {
+      return res.status(409).json({
+        isInvalid: true,
+        field: "email",
+        error: "Email is already used.",
+      });
+    }
+    const query = `
           UPDATE users
-          SET username = $2, email = $3
+          SET email = $2
           WHERE id = $1
           RETURNING *;
         `;
 
-      const updateValues = [userId, username, email];
+    const values = [userId, email];
 
-      const updateResult = await pool.query(updateQuery, updateValues);
-
-      res.status(201).json(updateResult.rows);
-    }
+    const result = await pool.query(query, values);
+    res.status(201).json(result.rows);
   } catch (error) {
     console.error("Profile error:", error);
     res.status(500).json({ error: error.message });
@@ -462,18 +432,16 @@ app.post("/profile/changePassword", profileLimiter, async (req, res) => {
     const oldPasswordCheck = checkPassword(oldPassword);
     if (oldPasswordCheck.isInvalid) {
       return res.status(400).json({
-        isInvalid: true,
+        ...oldPasswordCheck,
         field: "oldPassword",
-        error: "Password must be between 8 and 100 characters.",
       });
     }
 
     const newPasswordCheck = checkPassword(newPassword);
     if (newPasswordCheck.isInvalid) {
       return res.status(400).json({
-        isInvalid: true,
+        ...oldPasswordCheck,
         field: "newPassword",
-        error: "Password must be between 8 and 100 characters.",
       });
     }
 

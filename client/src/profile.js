@@ -6,12 +6,17 @@ const idField = document.getElementById("idField");
 const username = document.getElementById("username");
 const email = document.getElementById("email");
 
-// Edit profile
+// Edit username
 const usernameInput = document.getElementById("usernameEdit");
+const usernameFeedback = document.querySelector("#usernameFeedback");
+const usernameBackendResponse = document.querySelector(
+  "#username-backend-response",
+);
+
+// Edit email
 const emailInput = document.getElementById("emailEdit");
 const emailFeedback = document.querySelector("#emailFeedback");
-const usernameFeedback = document.querySelector("#usernameFeedback");
-const backendResponse = document.querySelector("#backend-response");
+const emailBackendResponse = document.querySelector("#email-backend-response");
 
 // Change password
 const oldPasswordInput = document.getElementById("oldPasswordInput");
@@ -19,15 +24,9 @@ const newPasswordInput = document.getElementById("newPasswordInput");
 const oldPasswordFeedback = document.querySelector("#oldPasswordFeedback");
 const newPasswordFeedback = document.querySelector("#newPasswordFeedback");
 
-const changePasswordBtn = document.getElementById("changePasswordBtn");
-
 const passwordBackendResponse = document.querySelector(
   "#password-backend-response",
 );
-
-changePasswordBtn.addEventListener("click", () => {
-  changePassword();
-});
 
 // Order details
 const orderIdField = document.getElementById("orderId");
@@ -329,62 +328,85 @@ document.addEventListener("DOMContentLoaded", renderOrders);
     checkPassword(newPasswordInput, newPasswordFeedback);
   });
 
-  Array.from(forms).forEach((form) => {
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      let isValidUsername = true;
-      let isValidEmail = true;
-      let isValidOldPass = true;
-      let isValidNewPass = true;
-      let areValidPasswords = true;
-      if (usernameInput.value.trim() !== "") {
-        isValidUsername = checkUsername();
-      } else if (emailInput.value.trim() !== "") {
-        isValidEmail = checkEmail();
-      } else if (
-        oldPasswordInput.value.trim() !== "" ||
-        newPasswordInput.value.trim() !== ""
-      ) {
-        areValidPasswords =
-          checkPassword(oldPasswordInput, oldPasswordFeedback) &&
-          checkPassword(newPasswordInput, newPasswordFeedback);
-      }
-      // let areValidPasswords = isValidOldPass && isValidNewPass;
-      // FINISH THIS!!!
-      console.log(oldPasswordInput.value.trim() !== "");
-      console.log(newPasswordInput.value.trim() !== "");
-      console.log(isValidOldPass);
-      console.log(isValidNewPass);
-      console.log(areValidPasswords);
-      // if (usernameInput.value === "" || emailInput.value === "") {
-      //   if (!usernameInput.value && isValidEmail) {
-      //     isValidUsername = true;
-      //   }
-      //   if (!emailInput.value && isValidUsername) {
-      //     isValidEmail = true;
-      //   }
-      // }
-      console.log(!isValidEmail || !isValidUsername || !areValidPasswords);
-      if (!isValidEmail || !isValidUsername || !areValidPasswords) {
-        console.log("here1");
-        return;
-      }
+  // 1. Username form
+  document.getElementById("usernameForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const isValid = checkUsername();
+    if (isValid) {
+      EditUsername();
+    }
+  });
 
-      Submit();
-    });
+  // 2. Email form
+  document.getElementById("emailForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const isValid = checkEmail();
+    if (isValid) {
+      EditEmail();
+    }
+  });
+
+  // 3. Password form
+  document.getElementById("passwordForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const isValid =
+      checkPassword(oldPasswordInput, oldPasswordFeedback) &&
+      checkPassword(newPasswordInput, newPasswordFeedback);
+    if (isValid) {
+      changePassword();
+    }
   });
 })();
 
-function Submit() {
+function EditUsername() {
   axios
     .post(
-      `${import.meta.env.VITE_API_URL}/profile/edit`,
+      `${import.meta.env.VITE_API_URL}/profile/editUsername`,
       {
         username: document.querySelector("#usernameEdit").value,
+      },
+      {
+        withCredentials: true,
+      },
+    )
+    .then((response) => {
+      console.log(response.data);
+      window.location.href = "profile.html";
+    })
+    .catch((err) => {
+      const res = err.response.data;
+      const status = err.response?.status;
+      if (status === 400) {
+        if (res?.isInvalid) {
+          if (res?.field === "username") {
+            usernameInput.classList.add("is-invalid");
+            usernameFeedback.textContent = res.error;
+          }
+        }
+      } else if (err.response?.status === 429) {
+        if (res?.isInvalid) {
+          if (res.field === "rateLimit") {
+            backendResponse.textContent = res.error;
+            backendResponse.classList.remove("d-none");
+            backendResponse.classList.add("d-block");
+          }
+        }
+      } else {
+        console.log("Error while waiting for server response: " + err);
+        alert(
+          "There was an error while trying to log in. If this keeps happening, inform the site owner with this info: " +
+            err,
+        );
+      }
+    });
+}
+
+function EditEmail() {
+  axios
+    .post(
+      `${import.meta.env.VITE_API_URL}/profile/editEmail`,
+      {
         email: document.querySelector("#emailEdit").value,
-        oldPassword: document.querySelector("#oldPasswordInput").value,
-        newPassword: document.querySelector("#newPasswordInput").value,
       },
       {
         withCredentials: true,
@@ -402,21 +424,8 @@ function Submit() {
           if (res.field === "email") {
             emailInput.classList.add("is-invalid");
             emailFeedback.textContent = res.error;
-          } else if (res?.field === "username") {
-            usernameInput.classList.add("is-invalid");
-            usernameFeedback.textContent = res.error;
-          } else if (res.field === "oldPassword") {
-            oldPasswordInput.classList.add("is-invalid");
-            oldPasswordFeedback.textContent = res.error;
-          } else if (res?.field === "newPassword") {
-            newPasswordInput.classList.add("is-invalid");
-            newPasswordFeedback.textContent = res.error;
           }
         }
-      } else if (status === 401) {
-        backendResponse.textContent = "Incorrect password";
-        backendResponse.classList.remove("d-none");
-        backendResponse.classList.add("d-block");
       } else if (status === 409) {
         if (res.field === "email") {
           emailInput.classList.add("is-invalid");
