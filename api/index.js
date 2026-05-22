@@ -354,7 +354,7 @@ app.get("/profile", async (req, res) => {
   }
 });
 
-app.post("/profile/changeUsername", profileLimiter, async (req, res) => {
+app.post("/profile/editUsername", profileLimiter, async (req, res) => {
   try {
     const userId = req.session.user?.id;
 
@@ -382,7 +382,7 @@ app.post("/profile/changeUsername", profileLimiter, async (req, res) => {
   }
 });
 
-app.post("/profile/changeEmail", profileLimiter, async (req, res) => {
+app.post("/profile/editEmail", profileLimiter, async (req, res) => {
   try {
     const userId = req.session.user?.id;
     if (!userId) return res.status(401).send("Not authorized");
@@ -454,7 +454,11 @@ app.post("/profile/changePassword", profileLimiter, async (req, res) => {
     const isMatch = await bcrypt.compare(oldPassword, user.password);
 
     if (!isMatch) {
-      return res.status(400).send("Incorrect password");
+      return res.status(400).json({
+        isInvalid: true,
+        field: "oldPassword",
+        error: "incorrect password",
+      });
     }
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(newPassword, saltRounds);

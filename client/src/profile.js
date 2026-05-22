@@ -292,7 +292,6 @@ document.addEventListener("DOMContentLoaded", renderOrders);
       email.indexOf("@") !== 0 &&
       email.lastIndexOf(".") > email.indexOf("@") &&
       email.lastIndexOf(".") < email.length - 1;
-    console.log("V? ", isValid);
     return updateFieldUI(
       emailInput,
       emailFeedback,
@@ -328,176 +327,106 @@ document.addEventListener("DOMContentLoaded", renderOrders);
     checkPassword(newPasswordInput, newPasswordFeedback);
   });
 
-  // 1. Username form
+  // 1. Username Form
   document.getElementById("usernameForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    const isValid = checkUsername();
-    if (isValid) {
-      EditUsername();
+    if (checkUsername()) {
+      submitProfileUpdate(
+        "/profile/editUsername",
+        { username: document.querySelector("#usernameEdit").value },
+        { username: { input: usernameInput, feedback: usernameFeedback } },
+        usernameBackendResponse,
+      );
     }
   });
 
-  // 2. Email form
+  // 2. Email Form
   document.getElementById("emailForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    const isValid = checkEmail();
-    if (isValid) {
-      EditEmail();
+    if (checkEmail()) {
+      submitProfileUpdate(
+        "/profile/editEmail",
+        { email: document.querySelector("#emailEdit").value },
+        { email: { input: emailInput, feedback: emailFeedback } },
+        emailBackendResponse,
+      );
     }
   });
 
-  // 3. Password form
+  // 3. Password Form
   document.getElementById("passwordForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const isValid =
       checkPassword(oldPasswordInput, oldPasswordFeedback) &&
       checkPassword(newPasswordInput, newPasswordFeedback);
+
     if (isValid) {
-      changePassword();
+      submitProfileUpdate(
+        "/profile/changePassword",
+        {
+          oldPassword: oldPasswordInput.value,
+          newPassword: newPasswordInput.value,
+        },
+        {
+          oldPassword: {
+            input: oldPasswordInput,
+            feedback: oldPasswordFeedback,
+          },
+          newPassword: {
+            input: newPasswordInput,
+            feedback: newPasswordFeedback,
+          },
+        },
+        passwordBackendResponse,
+      );
     }
   });
 })();
 
-function EditUsername() {
-  axios
-    .post(
-      `${import.meta.env.VITE_API_URL}/profile/editUsername`,
-      {
-        username: document.querySelector("#usernameEdit").value,
-      },
-      {
-        withCredentials: true,
-      },
-    )
-    .then((response) => {
-      console.log(response.data);
-      window.location.href = "profile.html";
-    })
-    .catch((err) => {
-      const res = err.response.data;
-      const status = err.response?.status;
-      if (status === 400) {
-        if (res?.isInvalid) {
-          if (res?.field === "username") {
-            usernameInput.classList.add("is-invalid");
-            usernameFeedback.textContent = res.error;
-          }
-        }
-      } else if (err.response?.status === 429) {
-        if (res?.isInvalid) {
-          if (res.field === "rateLimit") {
-            backendResponse.textContent = res.error;
-            backendResponse.classList.remove("d-none");
-            backendResponse.classList.add("d-block");
-          }
-        }
-      } else {
-        console.log("Error while waiting for server response: " + err);
-        alert(
-          "There was an error while trying to log in. If this keeps happening, inform the site owner with this info: " +
-            err,
-        );
-      }
-    });
-}
+async function submitProfileUpdate(
+  endpoint,
+  payload,
+  fieldMap,
+  backendResponseEl,
+) {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}${endpoint}`,
+      payload,
+      { withCredentials: true },
+    );
 
-function EditEmail() {
-  axios
-    .post(
-      `${import.meta.env.VITE_API_URL}/profile/editEmail`,
-      {
-        email: document.querySelector("#emailEdit").value,
-      },
-      {
-        withCredentials: true,
-      },
-    )
-    .then((response) => {
-      console.log(response.data);
-      window.location.href = "profile.html";
-    })
-    .catch((err) => {
-      const res = err.response.data;
-      const status = err.response?.status;
-      if (status === 400) {
-        if (res?.isInvalid) {
-          if (res.field === "email") {
-            emailInput.classList.add("is-invalid");
-            emailFeedback.textContent = res.error;
-          }
-        }
-      } else if (status === 409) {
-        if (res.field === "email") {
-          emailInput.classList.add("is-invalid");
-          emailFeedback.textContent = res.error;
-        }
-      } else if (err.response?.status === 429) {
-        if (res?.isInvalid) {
-          if (res.field === "rateLimit") {
-            backendResponse.textContent = res.error;
-            backendResponse.classList.remove("d-none");
-            backendResponse.classList.add("d-block");
-          }
-        }
-      } else {
-        console.log("Error while waiting for server response: " + err);
-        alert(
-          "There was an error while trying to log in. If this keeps happening, inform the site owner with this info: " +
-            err,
-        );
-      }
-    });
-}
+    console.log(response.data);
+    window.location.href = "profile.html";
+  } catch (err) {
+    const res = err.response?.data;
+    const status = err.response?.status;
+    // 1. Handle unexpected or server errors early
+    if (!status || !res) {
+      console.log("Error while waiting for server response: ", err);
+      alert(
+        "There was an error while trying to log in. If this keeps happening, inform the site owner with this info: " +
+          err,
+      );
+      return;
+    }
 
-function changePassword() {
-  axios
-    .post(
-      `${import.meta.env.VITE_API_URL}/profile/changePassword`,
-      {
-        oldPassword: document.querySelector("#oldPasswordInput").value,
-        newPassword: document.querySelector("#newPasswordInput").value,
-      },
-      {
-        withCredentials: true,
-      },
-    )
-    .then((response) => {
-      console.log(response.data);
-      window.location.href = "profile.html";
-    })
-    .catch((err) => {
-      const res = err.response.data;
-      const status = err.response?.status;
-      if (status === 400) {
-        if (res?.isInvalid) {
-          if (res.field === "oldPassword") {
-            oldPasswordInput.classList.add("is-invalid");
-            oldPasswordFeedback.textContent = res.error;
-          } else if (res?.field === "newPassword") {
-            newPasswordInput.classList.add("is-invalid");
-            newPasswordFeedback.textContent = res.error;
-          }
-        }
-      } else if (status === 401) {
-        backendResponse.textContent = "Incorrect password";
-        backendResponse.classList.remove("d-none");
-        backendResponse.classList.add("d-block");
-      } else if (err.response?.status === 429) {
-        if (res?.isInvalid) {
-          if (res.field === "rateLimit") {
-            backendResponse.textContent = res.error;
-            backendResponse.classList.remove("d-none");
-            backendResponse.classList.add("d-block");
-          }
-        }
-      } else {
-        console.log("Error while waiting for server response: " + err);
-        alert(
-          "There was an error while trying to log in. If this keeps happening, inform the site owner with this info: " +
-            err,
-        );
+    // 2. Handle 429 Rate Limit
+    if (status === 429 && res.field === "rateLimit" && backendResponseEl) {
+      backendResponseEl.textContent = res.error;
+      backendResponseEl.classList.replace("d-none", "d-block");
+      return;
+    }
+
+    // 4. Handle 400 and 409 Field Validation Errors
+    if ((status === 400 || status === 409) && res.field) {
+      const targetUI = fieldMap[res.field];
+      if (targetUI) {
+        targetUI.input.classList.add("is-invalid");
+        targetUI.feedback.textContent = res.error;
       }
-    });
+    }
+  }
 }
 
 fetch(`${import.meta.env.VITE_API_URL}/profile`, {

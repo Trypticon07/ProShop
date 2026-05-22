@@ -399,6 +399,18 @@ body.dark-theme .btn-outline-secondary:hover {
   color: #dc3545;
 }
 
+#password-backend-response {
+  color: #dc3545;
+}
+
+#username-backend-response {
+  color: #dc3545;
+}
+
+#email-backend-response {
+  color: #dc3545;
+}
+
 /* password-wrapper */
 
 .password-wrapper {
