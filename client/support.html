@@ -317,7 +317,7 @@
           <div class="bd-example-snippet bd-code-snippet w-50">
             <div class="bd-example m-0 border-0">
               <form class="row g-3 needs-validation" id="check-form" novalidate>
-                <!-- Name and Last name in one row -->
+                <!--First Name-->
                 <div class="col-md-6">
                   <label for="" class="form-label">First name</label>
                   <input
@@ -329,7 +329,7 @@
                   />
                   <div class="invalid-feedback" id="firstNameFeedback"></div>
                 </div>
-
+                <!-- Last Name -->
                 <div class="col-md-6">
                   <label for="" class="form-label">Last name</label>
                   <input
@@ -342,7 +342,7 @@
                   <div class="invalid-feedback" id="lastNameFeedback"></div>
                 </div>
 
-                <!-- Email under names -->
+                <!-- Email -->
                 <div class="col-12">
                   <label for="" class="form-label">Email</label>
                   <input
@@ -357,25 +357,24 @@
 
                 <!-- Problem description -->
                 <div class="col-12">
-                  <label for="problem-description" class="form-label"
+                  <label for="description-input" class="form-label"
                     >Describe your problem</label
                   >
                   <textarea
                     class="form-control"
-                    id="problem-description"
+                    id="description-input"
                     rows="6"
                     style="resize: vertical; overflow-y: auto"
                     placeholder="Please describe the issue in detail..."
                     required
                   ></textarea>
-                  <div class="invalid-feedback" id="problemFeedback"></div>
+                  <div class="invalid-feedback" id="descriptionFeedback"></div>
                 </div>
 
                 <div class="col-12 d-flex">
                   <p id="backend-response" class="d-none"></p>
                 </div>
 
-                <!-- Submit button aligned to bottom right -->
                 <div class="col-12 d-flex justify-content-end">
                   <button class="btn btn-primary" type="submit">
                     Submit form

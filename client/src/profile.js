@@ -46,6 +46,12 @@ const screen1 = document.getElementById("screen-1");
 const screen2 = document.getElementById("screen-2");
 const cancelOrder = document.getElementById("cancelOrder");
 
+import {
+  validateUsername,
+  validateEmail,
+  validatePassword,
+} from "./validation.js";
+
 let addedListener = false;
 
 screen1.classList.remove("d-none");
@@ -267,70 +273,28 @@ function renderOrders() {
 document.addEventListener("DOMContentLoaded", renderOrders);
 
 (() => {
-  const forms = document.querySelectorAll(".needs-validation");
-
   emailInput.classList.remove("is-invalid");
   usernameInput.classList.remove("is-invalid");
   oldPasswordInput.classList.remove("is-invalid");
   newPasswordInput.classList.remove("is-invalid");
 
-  const updateFieldUI = (input, feedback, isValid, msg) => {
-    input.classList.toggle("is-valid", isValid);
-    input.classList.toggle("is-invalid", !isValid);
-    feedback.textContent = isValid ? "" : msg;
-    return isValid;
-  };
-
-  const checkEmail = () => {
-    const email = emailInput.value.trim();
-
-    const isValid =
-      email.length >= 6 &&
-      email.length <= 64 &&
-      email.includes("@") &&
-      email.includes(".") &&
-      email.indexOf("@") !== 0 &&
-      email.lastIndexOf(".") > email.indexOf("@") &&
-      email.lastIndexOf(".") < email.length - 1;
-    return updateFieldUI(
-      emailInput,
-      emailFeedback,
-      isValid,
-      "Please enter a valid email address (6-64 characters, must include @ and .)",
-    );
-  };
-
-  const checkPassword = (passwordInput, passwordFeedback) => {
-    return updateFieldUI(
-      passwordInput,
-      passwordFeedback,
-      passwordInput.value.trim().length >= 8,
-      "Password must be at least 8 characters long.",
-    );
-  };
-
-  const checkUsername = () => {
-    return updateFieldUI(
-      usernameInput,
-      usernameFeedback,
-      usernameInput.value.trim().length >= 3,
-      "Username must be at least 3 characters long.",
-    );
-  };
-
-  usernameInput.addEventListener("input", checkUsername);
-  emailInput.addEventListener("input", checkEmail);
+  usernameInput.addEventListener("input", () => {
+    validateUsername(usernameInput, usernameFeedback);
+  });
+  emailInput.addEventListener("input", () => {
+    validateEmail(emailInput, emailFeedback);
+  });
   oldPasswordInput.addEventListener("input", () => {
-    checkPassword(oldPasswordInput, oldPasswordFeedback);
+    validatePassword(oldPasswordInput, oldPasswordFeedback);
   });
   newPasswordInput.addEventListener("input", () => {
-    checkPassword(newPasswordInput, newPasswordFeedback);
+    validatePassword(newPasswordInput, newPasswordFeedback);
   });
 
   // 1. Username Form
   document.getElementById("usernameForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    if (checkUsername()) {
+    if (validateUsername(usernameInput, usernameFeedback)) {
       submitProfileUpdate(
         "/profile/editUsername",
         { username: document.querySelector("#usernameEdit").value },
@@ -343,7 +307,7 @@ document.addEventListener("DOMContentLoaded", renderOrders);
   // 2. Email Form
   document.getElementById("emailForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    if (checkEmail()) {
+    if (validateEmail(emailInput, emailFeedback)) {
       submitProfileUpdate(
         "/profile/editEmail",
         { email: document.querySelector("#emailEdit").value },
@@ -357,8 +321,8 @@ document.addEventListener("DOMContentLoaded", renderOrders);
   document.getElementById("passwordForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const isValid =
-      checkPassword(oldPasswordInput, oldPasswordFeedback) &&
-      checkPassword(newPasswordInput, newPasswordFeedback);
+      validatePassword(oldPasswordInput, oldPasswordFeedback) &&
+      validatePassword(newPasswordInput, newPasswordFeedback);
 
     if (isValid) {
       submitProfileUpdate(

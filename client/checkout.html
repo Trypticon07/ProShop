@@ -409,8 +409,12 @@
                 <div class="col-md-5">
                   <label for="country" class="form-label">Country</label>
                   <select class="form-select" id="country-select" required>
-                    <option value="">Choose...</option>
-                    <option>Ukraine</option>
+                    <option value="" selected disabled>
+                      Select your country...
+                    </option>
+                    <option value="UA">Ukraine</option>
+                    <option value="PL">Poland</option>
+                    <option value="US">United States</option>
                   </select>
                   <div class="invalid-feedback" id="countryFeedback">
                     Please select a valid country.
@@ -418,11 +422,14 @@
                 </div>
                 <!-- City -->
                 <div class="col-md-4">
-                  <label for="city" class="form-label">City</label>
-                  <select class="form-select" id="city-select" required>
-                    <option value="">Choose...</option>
-                    <option>Kyiv</option>
-                  </select>
+                  <label for="zip" class="form-label">City</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="city-input"
+                    placeholder=""
+                    required=""
+                  />
                   <div class="invalid-feedback" id="cityFeedback">
                     Please provide a valid city.
                   </div>

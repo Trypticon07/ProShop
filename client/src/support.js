@@ -1,10 +1,12 @@
 const emailInput = document.querySelector("#contact-email-input");
 const firstNameInput = document.querySelector("#first-name-input");
 const lastNameInput = document.querySelector("#last-name-input");
+const descriptionInput = document.querySelector("#description-input");
 
 const emailFeedback = document.querySelector("#emailFeedback");
 const firstNameFeedback = document.querySelector("#firstNameFeedback");
 const lastNameFeedback = document.querySelector("#lastNameFeedback");
+const descriptionFeedback = document.querySelector("#descriptionFeedback");
 
 const checkForm = document.querySelector("#check-form");
 const backendResponse = document.querySelector("#backend-response");
@@ -13,6 +15,12 @@ const firstSlide = document.querySelector(".first-slide");
 const secondSlide = document.querySelector(".second-slide");
 
 const backBtn = document.querySelector("#to-home-page");
+
+import {
+  validateName,
+  validateEmail,
+  validateSupportDescription,
+} from "./validation";
 
 backBtn.addEventListener("click", () => {
   window.location.href = "index.html";
@@ -24,76 +32,41 @@ secondSlide.classList.add("d-none");
 (() => {
   const forms = document.querySelectorAll(".needs-validation");
 
-  emailInput.classList.remove("is-invalid");
-  firstNameInput.classList.remove("is-invalid");
-  lastNameInput.classList.remove("is-invalid");
-
-  const updateFieldUI = (input, feedback, isValid, msg) => {
-    input.classList.toggle("is-valid", isValid);
-    input.classList.toggle("is-invalid", !isValid);
-    feedback.textContent = isValid ? "" : msg;
-    return isValid;
-  };
-  const checkName = (input, feedback, msg1) => {
-    const nameValue = input.value.trim();
-    const nameRegex = /^[a-zA-Z][a-zA-Z\s-]*$/;
-    const isValid =
-      nameValue.length >= 2 &&
-      nameValue.length <= 30 &&
-      nameRegex.test(nameValue);
-    const errorMsg =
-      nameValue.length === 0
-        ? msg1
-        : "Please use only English letters (2-30 characters)";
-    return updateFieldUI(input, feedback, isValid, errorMsg);
-  };
-  const checkEmail = () => {
-    const email = emailInput.value.trim();
-
-    const isValid =
-      email.length >= 6 &&
-      email.length <= 64 &&
-      email.includes("@") &&
-      email.includes(".") &&
-      email.indexOf("@") !== 0 &&
-      email.lastIndexOf(".") > email.indexOf("@") &&
-      email.lastIndexOf(".") < email.length - 1;
-    return updateFieldUI(
-      emailInput,
-      emailFeedback,
-      isValid,
-      "Please enter a valid email address (6-64 characters, must include @ and .)",
-    );
-  };
-
   firstNameInput.addEventListener("input", () => {
-    checkName(firstNameInput, firstNameFeedback, "First name is required.");
+    validateName(firstNameInput, firstNameFeedback);
   });
 
   lastNameInput.addEventListener("input", () => {
-    checkName(lastNameInput, lastNameFeedback, "Last name is required.");
+    validateName(lastNameInput, lastNameFeedback);
   });
 
-  emailInput.addEventListener("input", checkEmail);
+  emailInput.addEventListener("input", () => {
+    validateEmail(emailInput, emailFeedback);
+  });
+  descriptionInput.addEventListener("blur", () => {
+    validateSupportDescription(descriptionInput, descriptionFeedback);
+  });
 
   Array.from(forms).forEach((form) => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       event.stopPropagation();
 
-      const isValidEmail = checkEmail();
-      const isValidFirstName = checkName(
-        firstNameInput,
-        firstNameFeedback,
-        "First name is required.",
-      );
-      const isValidLastName = checkName(
-        lastNameInput,
-        lastNameFeedback,
-        "Last name is required.",
+      const isValidEmail = validateEmail(emailInput, emailFeedback);
+      const isValidFirstName = validateName(firstNameInput, firstNameFeedback);
+      const isValidLastName = validateName(lastNameInput, lastNameFeedback);
+      const isValidDescription = validateSupportDescription(
+        descriptionInput,
+        descriptionFeedback,
       );
 
-      if (!isValidEmail || !isValidFirstName || !isValidLastName) return;
+      if (
+        !isValidEmail ||
+        !isValidFirstName ||
+        !isValidLastName ||
+        !isValidDescription
+      )
+        return;
 
       checkForm.classList.remove("form-invalid");
       checkForm.classList.add("form-valid");
@@ -110,8 +83,7 @@ function Submit() {
         email: document.querySelector("#contact-email-input").value,
         firstName: document.querySelector("#first-name-input").value,
         lastName: document.querySelector("#last-name-input").value,
-        problem_description: document.querySelector("#problem-description")
-          .value,
+        description: document.querySelector("#description-input").value,
       },
       {
         withCredentials: true,

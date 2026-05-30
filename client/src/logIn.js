@@ -9,6 +9,8 @@ const captchaError = document.querySelector("#captchaFeedback");
 const checkForm = document.querySelector("#check-form");
 const backendResponse = document.querySelector("#backend-response");
 
+import { validateEmail, validatePassword } from "./validation.js";
+
 window.addEventListener("load", () => {
   const interval = setInterval(() => {
     if (window.grecaptcha?.render) {
@@ -36,43 +38,13 @@ document
   emailInput.classList.remove("is-invalid");
   passwordInput.classList.remove("is-invalid");
 
-  const updateFieldUI = (input, feedback, isValid, msg) => {
-    input.classList.toggle("is-valid", isValid);
-    input.classList.toggle("is-invalid", !isValid);
-    feedback.textContent = isValid ? "" : msg;
-    return isValid;
-  };
+  emailInput.addEventListener("input", () => {
+    validateEmail(emailInput, emailFeedback);
+  });
 
-  const checkEmail = () => {
-    const email = emailInput.value.trim();
-
-    const isValid =
-      email.length >= 6 &&
-      email.length <= 64 &&
-      email.includes("@") &&
-      email.includes(".") &&
-      email.indexOf("@") !== 0 &&
-      email.lastIndexOf(".") > email.indexOf("@") &&
-      email.lastIndexOf(".") < email.length - 1;
-    return updateFieldUI(
-      emailInput,
-      emailFeedback,
-      isValid,
-      "Please enter a valid email address (6-64 characters, must include @ and .)",
-    );
-  };
-
-  const checkPassword = () => {
-    return updateFieldUI(
-      passwordInput,
-      passwordFeedback,
-      passwordInput.value.trim().length >= 8,
-      "Password must be at least 8 characters long.",
-    );
-  };
-
-  emailInput.addEventListener("input", checkEmail);
-  passwordInput.addEventListener("input", checkPassword);
+  passwordInput.addEventListener("input", () => {
+    validatePassword(passwordInput, passwordFeedback);
+  });
 
   Array.from(forms).forEach((form) => {
     form.addEventListener("submit", (event) => {
@@ -88,8 +60,8 @@ document
         captchaError.classList.remove("d-none");
         captchaError.classList.add("d-block");
       }
-      const isValidEmail = checkEmail();
-      const isValidPassword = checkPassword();
+      const isValidEmail = validateEmail(emailInput, emailFeedback);
+      const isValidPassword = validatePassword(passwordInput, passwordFeedback);
 
       if (!isValidEmail || !isValidPassword || !captchaResponse) return;
 

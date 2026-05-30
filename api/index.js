@@ -278,7 +278,7 @@ app.post("/support", supportLimiter, async (req, res) => {
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const email = req.body.email;
-  const problem_description = req.body.problem_description;
+  const description = req.body.description;
   try {
     if (email.length < 6 || email.length > 100) {
       return {
@@ -314,8 +314,8 @@ app.post("/support", supportLimiter, async (req, res) => {
     }
 
     await pool.query(
-      "INSERT INTO support_messages (first_name, last_name, email, problem_description) VALUES ($1, $2, $3, $4)",
-      [firstName, lastName, email, problem_description],
+      "INSERT INTO support_messages (first_name, last_name, email, description) VALUES ($1, $2, $3, $4)",
+      [firstName, lastName, email, description],
     );
 
     res.status(200).send("You have successfully asked a question!");

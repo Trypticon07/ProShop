@@ -22,43 +22,21 @@ import {
   session,
   addToCart,
 } from "./common.js";
+import { validateEmail } from "./validation.js";
 
 let isProcessing = false;
 
-let isValidEmail = false;
-
 (() => {
   const forms = document.querySelectorAll(".needs-validation");
-
-  emailInput.classList.remove("is-invalid");
-
   emailInput.addEventListener("input", () => {
-    const email = emailInput.value.trim();
-
-    isValidEmail =
-      email.length >= 6 &&
-      email.length <= 64 &&
-      email.includes("@") &&
-      email.includes(".") &&
-      email.indexOf("@") !== 0 &&
-      email.lastIndexOf(".") > email.indexOf("@");
-
-    if (!isValidEmail) {
-      emailInput.classList.remove("is-valid");
-      emailInput.classList.add("is-invalid");
-      emailFeedback.textContent = "Please enter a valid email address.";
-    } else {
-      emailInput.classList.remove("is-invalid");
-      emailInput.classList.add("is-valid");
-      emailFeedback.textContent = "";
-    }
+    validateEmail(emailInput, emailFeedback);
   });
   Array.from(forms).forEach((form) => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       event.stopPropagation();
 
-      if (!isValidEmail) return;
+      if (!validateEmail(emailInput, emailFeedback)) return;
       Submit();
     });
   });
