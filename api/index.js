@@ -281,11 +281,11 @@ app.post("/support", supportLimiter, async (req, res) => {
   const description = req.body.description;
   try {
     if (email.length < 6 || email.length > 100) {
-      return {
+      return res.status(400).json({
         isInvalid: true,
         field: "email",
         error: "Email must be between 6 and 100 characters.",
-      };
+      });
     } else if (
       !email.includes("@") ||
       !email.includes(".") ||

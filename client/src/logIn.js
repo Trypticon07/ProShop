@@ -1,6 +1,7 @@
 const emailInput = document.querySelector("#email-input");
 const passwordInput = document.querySelector("#password-input");
 const rememberCheck = document.getElementById("rememberCheck");
+const captchaWidget = document.querySelector("#recaptcha");
 
 const emailFeedback = document.querySelector("#emailFeedback");
 const passwordFeedback = document.querySelector("#passwordFeedback");
@@ -9,7 +10,12 @@ const captchaError = document.querySelector("#captchaFeedback");
 const checkForm = document.querySelector("#check-form");
 const backendResponse = document.querySelector("#backend-response");
 
-import { validateEmail, validatePassword } from "./validation.js";
+import {
+  validateEmail,
+  validatePassword,
+  validateCaptcha,
+  setupLiveValidation,
+} from "./validation.js";
 
 window.addEventListener("load", () => {
   const interval = setInterval(() => {
@@ -35,38 +41,54 @@ document
 (() => {
   const forms = document.querySelectorAll(".needs-validation");
 
-  emailInput.classList.remove("is-invalid");
-  passwordInput.classList.remove("is-invalid");
-
-  emailInput.addEventListener("input", () => {
-    validateEmail(emailInput, emailFeedback);
-  });
-
-  passwordInput.addEventListener("input", () => {
-    validatePassword(passwordInput, passwordFeedback);
-  });
+  const fieldsToValidate = [
+    setupLiveValidation(emailInput, () =>
+      validateEmail(emailInput, emailFeedback),
+    ),
+    setupLiveValidation(passwordInput, () =>
+      validatePassword(passwordInput, passwordFeedback),
+    ),
+  ];
 
   Array.from(forms).forEach((form) => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       event.stopPropagation();
 
+      let isFormValid = true;
+      let firstInvalidInput = null;
+
+      fieldsToValidate.forEach((field) => {
+        const isValid = field.forceValidate();
+
+        if (!isValid) {
+          isFormValid = false;
+          if (!firstInvalidInput) {
+            firstInvalidInput = field.element;
+          }
+        }
+      });
+
+      if (!isFormValid) {
+        if (firstInvalidInput) {
+          firstInvalidInput.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+        return;
+      }
       const captchaResponse = grecaptcha.getResponse();
-      if (captchaResponse) {
-        grecaptcha.reset();
+      const isCaptchaValid = validateCaptcha(
+        captchaResponse,
+        captchaError,
+        captchaWidget,
+      );
+      if (!isCaptchaValid) {
+        captchaWidget.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
       }
-      if (!captchaResponse) {
-        captchaError.textContent = "Please confirm that you are not a robot.";
-        captchaError.classList.remove("d-none");
-        captchaError.classList.add("d-block");
-      }
-      const isValidEmail = validateEmail(emailInput, emailFeedback);
-      const isValidPassword = validatePassword(passwordInput, passwordFeedback);
 
-      if (!isValidEmail || !isValidPassword || !captchaResponse) return;
-
-      checkForm.classList.remove("form-invalid");
-      checkForm.classList.add("form-valid");
       Submit(captchaResponse);
     });
   });

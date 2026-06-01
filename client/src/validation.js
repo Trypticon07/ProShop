@@ -277,3 +277,58 @@ export const validateSupportDescription = (
 
   return updateFieldUI(descriptionInput, descriptionFeedback, true, "");
 };
+
+export const validateAgreeCheck = (agreeCheck, agreeFeedback) => {
+  return updateFieldUI(
+    agreeCheck,
+    agreeFeedback,
+    agreeCheck.checked,
+    "You must agree before submitting.",
+  );
+};
+
+export const validateCaptcha = (
+  captchaResponse,
+  captchaFeedback,
+  captchaWidget,
+) => {
+  const isValid = captchaResponse.length > 0;
+
+  if (!isValid) {
+    console.log(captchaFeedback);
+    console.log(captchaFeedback.textContent);
+    captchaFeedback.textContent = "Please verify that you are not a robot.";
+    captchaFeedback.style.display = "block";
+    captchaWidget.style.border = "1px solid #dc3545";
+    captchaWidget.style.borderRadius = "4px";
+  } else {
+    captchaFeedback.textContent = "";
+    captchaFeedback.style.display = "none";
+    captchaWidget.style.border = "none";
+  }
+
+  return isValid;
+};
+
+export const setupLiveValidation = (inputElement, validationFunction) => {
+  let hasBeenBlurred = false;
+
+  inputElement.addEventListener("blur", () => {
+    hasBeenBlurred = true;
+    validationFunction();
+  });
+
+  inputElement.addEventListener("input", () => {
+    if (inputElement.classList.contains("is-invalid") || hasBeenBlurred) {
+      validationFunction();
+    }
+  });
+
+  return {
+    forceValidate: () => {
+      hasBeenBlurred = true;
+      return validationFunction();
+    },
+    element: inputElement,
+  };
+};
