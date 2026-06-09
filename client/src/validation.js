@@ -310,6 +310,26 @@ export const validateCaptcha = (
   return isValid;
 };
 
+export const validatePaymentMethod = (paymentRadios, paymentRadiosFeedback) => {
+  const checkedRadio = Array.from(paymentRadios).find((radio) => radio.checked);
+  const isValid = !!checkedRadio;
+
+  const errorMessage = "Please select a payment method.";
+  paymentRadiosFeedback.classList.toggle("d-block", !isValid);
+  paymentRadios.forEach((radio, index) => {
+    if (index === 0) {
+      updateFieldUI(radio, paymentRadiosFeedback, isValid, errorMessage);
+    } else {
+      updateFieldUI(radio, {}, isValid, errorMessage);
+    }
+    // radio.classList.toggle("is-valid", isValid);
+    // radio.classList.toggle("is-invalid", !isValid);
+    // paymentRadiosFeedback.textContent = isValid ? "" : msg;
+  });
+
+  return isValid;
+};
+
 export const setupLiveValidation = (inputElement, validationFunction) => {
   let hasBeenBlurred = false;
 

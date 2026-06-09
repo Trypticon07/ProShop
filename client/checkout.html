@@ -416,9 +416,7 @@
                     <option value="PL">Poland</option>
                     <option value="US">United States</option>
                   </select>
-                  <div class="invalid-feedback" id="countryFeedback">
-                    Please select a valid country.
-                  </div>
+                  <div class="invalid-feedback" id="countryFeedback"></div>
                 </div>
                 <!-- City -->
                 <div class="col-md-4">
@@ -430,9 +428,7 @@
                     placeholder=""
                     required=""
                   />
-                  <div class="invalid-feedback" id="cityFeedback">
-                    Please provide a valid city.
-                  </div>
+                  <div class="invalid-feedback" id="cityFeedback"></div>
                 </div>
                 <!-- Zip -->
                 <div class="col-md-3">
@@ -444,9 +440,7 @@
                     placeholder=""
                     required=""
                   />
-                  <div class="invalid-feedback" id="zipFeedback">
-                    Zip code required.
-                  </div>
+                  <div class="invalid-feedback" id="zipFeedback"></div>
                 </div>
               </div>
               <!-- Payment details -->
@@ -489,7 +483,9 @@
                   />
                   <label class="form-check-label" for="paypal">PayPal</label>
                 </div>
+                <div class="invalid-feedback" id="paymentRadiosFeedback"></div>
               </div>
+
               <div class="row gy-3">
                 <!-- Name on card -->
                 <div class="col-md-6">
@@ -532,9 +528,7 @@
                     placeholder=""
                     required
                   />
-                  <div class="invalid-feedback" id="ExpirationFeedback">
-                    Expiration date required
-                  </div>
+                  <div class="invalid-feedback" id="ExpirationFeedback"></div>
                 </div>
                 <!-- CVV code -->
                 <div class="col-md-3">
@@ -546,9 +540,7 @@
                     placeholder=""
                     required
                   />
-                  <div class="invalid-feedback" id="CVVFeedback">
-                    Security code required
-                  </div>
+                  <div class="invalid-feedback" id="CVVFeedback"></div>
                 </div>
               </div>
               <hr class="my-4" />

@@ -18,7 +18,9 @@ const countryFeedback = document.querySelector("#countryFeedback");
 const cityFeedback = document.querySelector("#cityFeedback");
 const zipFeedback = document.querySelector("#zipFeedback");
 
+const paymentRadiosElement = document.querySelector("#payment-method");
 const paymentRadios = document.querySelectorAll("input[name='paymentMethod']");
+const paymentRadiosFeedback = document.querySelector("#paymentRadiosFeedback");
 
 const nameOnCardInput = document.querySelector("#name-on-card-input");
 const cardNumberInput = document.querySelector("#card-number-input");
@@ -54,6 +56,7 @@ import {
   validateCardName,
   validateCvv,
   validateCountry,
+  validatePaymentMethod,
 } from "./validation.js";
 import { clearCart } from "./common.js";
 let isValidPaymentMethod = false;
@@ -134,32 +137,35 @@ setInterval(() => {
     validateZip(zipInput, zipFeedback);
   });
 
-  paymentRadios.forEach((radio) => {
-    radio.addEventListener("change", () => {
-      const selected = document.querySelector(
-        'input[name="paymentMethod"]:checked',
-      );
+  // paymentRadios.forEach((radio) => {
+  //   radio.addEventListener("change", () => {
+  //     const selected = document.querySelector(
+  //       'input[name="paymentMethod"]:checked',
+  //     );
 
-      paymentRadios.forEach((r) =>
-        r.classList.remove("is-valid", "is-invalid"),
-      );
+  //     paymentRadios.forEach((r) =>
+  //       r.classList.remove("is-valid", "is-invalid"),
+  //     );
 
-      if (selected) {
-        const allowedMethods = ["credit", "debit", "paypal"];
-        if (allowedMethods.includes(selected.id)) {
-          selected.classList.add("is-valid");
-          isValidPaymentMethod = true;
-        } else {
-          paymentRadios.forEach((r) => r.classList.add("is-invalid"));
-          isValidPaymentMethod = false;
-        }
-      } else {
-        paymentRadios.forEach((r) => r.classList.add("is-invalid"));
-        isValidPaymentMethod = false;
-      }
-    });
+  //     if (selected) {
+  //       const allowedMethods = ["credit", "debit", "paypal"];
+  //       if (allowedMethods.includes(selected.id)) {
+  //         selected.classList.add("is-valid");
+  //         isValidPaymentMethod = true;
+  //       } else {
+  //         paymentRadios.forEach((r) => r.classList.add("is-invalid"));
+  //         isValidPaymentMethod = false;
+  //       }
+  //     } else {
+  //       paymentRadios.forEach((r) => r.classList.add("is-invalid"));
+  //       isValidPaymentMethod = false;
+  //     }
+  //   });
+  // });
+
+  paymentRadiosElement.addEventListener("change", (e) => {
+    validatePaymentMethod(paymentRadios, paymentRadiosFeedback);
   });
-
   nameOnCardInput.addEventListener("input", (e) => {
     e.target.value = e.target.value.toUpperCase();
     validateCardName(nameOnCardInput, nameOnCardFeedback);
@@ -191,7 +197,7 @@ setInterval(() => {
         !validateCountry(countrySelect, countryFeedback) ||
         !validateCity(cityInput, cityFeedback) ||
         !validateZip(zipInput, zipFeedback) ||
-        !isValidPaymentMethod ||
+        !validatePaymentMethod(paymentRadios, paymentRadiosFeedback) ||
         !validateCardName(nameOnCardInput, nameOnCardFeedback) ||
         !validateCardNumber(cardNumberInput, cardNumberFeedback) ||
         !validateCardExpiration(cardExpirationInput, cardExpirationFeedback) ||
