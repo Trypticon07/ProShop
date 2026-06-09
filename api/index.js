@@ -142,7 +142,7 @@ app.post("/register", registerLimiter, async (req, res) => {
       return res.status(400).json({
         isInvalid: true,
         field: "captcha",
-        error: "Please confirm that you are not a robot.",
+        error: "Please verify that you are not a robot.",
       });
     }
     const emailCheck = checkEmail(email);

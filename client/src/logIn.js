@@ -79,6 +79,9 @@ document
         return;
       }
       const captchaResponse = grecaptcha.getResponse();
+      if (captchaResponse) {
+        grecaptcha.reset();
+      }
       const isCaptchaValid = validateCaptcha(
         captchaResponse,
         captchaError,

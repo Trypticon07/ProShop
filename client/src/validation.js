@@ -295,8 +295,6 @@ export const validateCaptcha = (
   const isValid = captchaResponse.length > 0;
 
   if (!isValid) {
-    console.log(captchaFeedback);
-    console.log(captchaFeedback.textContent);
     captchaFeedback.textContent = "Please verify that you are not a robot.";
     captchaFeedback.style.display = "block";
     captchaWidget.style.border = "1px solid #dc3545";
@@ -322,9 +320,6 @@ export const validatePaymentMethod = (paymentRadios, paymentRadiosFeedback) => {
     } else {
       updateFieldUI(radio, {}, isValid, errorMessage);
     }
-    // radio.classList.toggle("is-valid", isValid);
-    // radio.classList.toggle("is-invalid", !isValid);
-    // paymentRadiosFeedback.textContent = isValid ? "" : msg;
   });
 
   return isValid;
