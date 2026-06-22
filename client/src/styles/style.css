@@ -694,11 +694,6 @@ body.dark-theme .btn-outline-secondary:hover {
   box-shadow: none;
 }
 
-/* checkout */
-.card-name-input {
-  text-transform: uppercase;
-}
-
 /* animations */
 
 .btn-anim {

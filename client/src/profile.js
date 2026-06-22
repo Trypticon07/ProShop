@@ -50,6 +50,7 @@ import {
   validateUsername,
   validateEmail,
   validatePassword,
+  setupLiveValidation,
 } from "./validation.js";
 
 let addedListener = false;
@@ -273,31 +274,30 @@ function renderOrders() {
 document.addEventListener("DOMContentLoaded", renderOrders);
 
 (() => {
-  emailInput.classList.remove("is-invalid");
-  usernameInput.classList.remove("is-invalid");
-  oldPasswordInput.classList.remove("is-invalid");
-  newPasswordInput.classList.remove("is-invalid");
+  const usernameField = setupLiveValidation(usernameInput, () =>
+    validateUsername(usernameInput, usernameFeedback),
+  );
 
-  usernameInput.addEventListener("input", () => {
-    validateUsername(usernameInput, usernameFeedback);
-  });
-  emailInput.addEventListener("input", () => {
-    validateEmail(emailInput, emailFeedback);
-  });
-  oldPasswordInput.addEventListener("input", () => {
-    validatePassword(oldPasswordInput, oldPasswordFeedback);
-  });
-  newPasswordInput.addEventListener("input", () => {
-    validatePassword(newPasswordInput, newPasswordFeedback);
-  });
+  const emailField = setupLiveValidation(emailInput, () =>
+    validateEmail(emailInput, emailFeedback),
+  );
+
+  const oldPasswordField = setupLiveValidation(oldPasswordInput, () =>
+    validatePassword(oldPasswordInput, oldPasswordFeedback),
+  );
+
+  const newPasswordField = setupLiveValidation(newPasswordInput, () =>
+    validatePassword(newPasswordInput, newPasswordFeedback),
+  );
 
   // 1. Username Form
   document.getElementById("usernameForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    if (validateUsername(usernameInput, usernameFeedback)) {
+    const isValid = usernameField.forceValidate();
+    if (isValid) {
       submitProfileUpdate(
         "/profile/editUsername",
-        { username: document.querySelector("#usernameEdit").value },
+        { username: usernameInput.value },
         { username: { input: usernameInput, feedback: usernameFeedback } },
         usernameBackendResponse,
       );
@@ -307,10 +307,11 @@ document.addEventListener("DOMContentLoaded", renderOrders);
   // 2. Email Form
   document.getElementById("emailForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    if (validateEmail(emailInput, emailFeedback)) {
+    const isValid = emailField.forceValidate();
+    if (isValid) {
       submitProfileUpdate(
         "/profile/editEmail",
-        { email: document.querySelector("#emailEdit").value },
+        { email: emailInput.value },
         { email: { input: emailInput, feedback: emailFeedback } },
         emailBackendResponse,
       );
@@ -320,10 +321,10 @@ document.addEventListener("DOMContentLoaded", renderOrders);
   // 3. Password Form
   document.getElementById("passwordForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    const isValid =
-      validatePassword(oldPasswordInput, oldPasswordFeedback) &&
-      validatePassword(newPasswordInput, newPasswordFeedback);
+    const isOldValid = oldPasswordField.forceValidate();
+    const isNewValid = newPasswordField.forceValidate();
 
+    const isValid = isOldValid && isNewValid;
     if (isValid) {
       submitProfileUpdate(
         "/profile/changePassword",

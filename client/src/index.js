@@ -22,24 +22,33 @@ import {
   session,
   addToCart,
 } from "./common.js";
-import { validateEmail } from "./validation.js";
+import { validateEmail, setupLiveValidation } from "./validation.js";
 
 let isProcessing = false;
 
 (() => {
-  const forms = document.querySelectorAll(".needs-validation");
-  emailInput.addEventListener("input", () => {
-    validateEmail(emailInput, emailFeedback);
-  });
-  Array.from(forms).forEach((form) => {
+  const form = document.querySelector(".needs-validation");
+  const emailField = setupLiveValidation(emailInput, () =>
+    validateEmail(emailInput, emailFeedback),
+  );
+  if (form) {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       event.stopPropagation();
-
-      if (!validateEmail(emailInput, emailFeedback)) return;
+      const isValid = emailField.forceValidate();
+      if (!isValid) {
+        if (emailField.element) {
+          emailField.element.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+          emailField.element.focus();
+        }
+        return;
+      }
       Submit();
     });
-  });
+  }
 })();
 
 function Submit() {

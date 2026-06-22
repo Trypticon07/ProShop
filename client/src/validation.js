@@ -203,7 +203,7 @@ export const validateZip = (zipInput, zipFeedback) => {
 };
 
 export const validateCardName = (cardNameInput, cardNameFeedback) => {
-  const trimmedName = cardNameInput.value.trim();
+  const trimmedName = cardNameInput.value.trim().toUpperCase();
 
   if (trimmedName.length < 4 || trimmedName.length > 26) {
     return updateFieldUI(
@@ -325,17 +325,46 @@ export const validatePaymentMethod = (paymentRadios, paymentRadiosFeedback) => {
   return isValid;
 };
 
-export const setupLiveValidation = (inputElement, validationFunction) => {
+export const setupLiveValidation = (
+  elements,
+  validationFunction,
+  validateOnInput = true,
+) => {
   let hasBeenBlurred = false;
 
-  inputElement.addEventListener("blur", () => {
-    hasBeenBlurred = true;
-    validationFunction();
-  });
+  const inputElements = elements.forEach ? Array.from(elements) : [elements];
 
-  inputElement.addEventListener("input", () => {
-    if (inputElement.classList.contains("is-invalid") || hasBeenBlurred) {
-      validationFunction();
+  const mainElement = inputElements[0];
+
+  inputElements.forEach((inputElement) => {
+    const isClickable =
+      inputElement.type === "radio" || inputElement.type === "checkbox";
+    if (isClickable) {
+      inputElement.addEventListener("change", () => {
+        hasBeenBlurred = true;
+        validationFunction();
+      });
+    } else {
+      inputElement.addEventListener("blur", () => {
+        hasBeenBlurred = true;
+        validationFunction();
+      });
+      inputElement.addEventListener("input", () => {
+        const hasInvalid = inputElements.some((el) =>
+          el.classList.contains("is-invalid"),
+        );
+
+        if (!validateOnInput) {
+          if (hasInvalid) {
+            validationFunction();
+          }
+          return;
+        }
+
+        if (hasInvalid || hasBeenBlurred) {
+          validationFunction();
+        }
+      });
     }
   });
 
@@ -344,6 +373,6 @@ export const setupLiveValidation = (inputElement, validationFunction) => {
       hasBeenBlurred = true;
       return validationFunction();
     },
-    element: inputElement,
+    element: mainElement,
   };
 };

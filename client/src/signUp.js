@@ -54,6 +54,9 @@ document
     setupLiveValidation(passwordInput, () =>
       validatePassword(passwordInput, passwordFeedback),
     ),
+    setupLiveValidation(agreeCheck, () =>
+      validateAgreeCheck(agreeCheck, agreeFeedback),
+    ),
   ];
 
   Array.from(forms).forEach((form) => {
@@ -82,11 +85,6 @@ document
             block: "center",
           });
         }
-        return;
-      }
-      const isValidAgreeCheck = validateAgreeCheck(agreeCheck, agreeFeedback);
-      if (!isValidAgreeCheck) {
-        agreeCheck.scrollIntoView({ behavior: "smooth", block: "center" });
         return;
       }
       const captchaResponse = grecaptcha.getResponse();

@@ -19,7 +19,8 @@ const backBtn = document.querySelector("#to-home-page");
 import {
   validateName,
   validateEmail,
-  validateSupportDescription,
+  validateSupportDescription as validateDescription,
+  setupLiveValidation,
 } from "./validation";
 
 backBtn.addEventListener("click", () => {
@@ -32,44 +33,52 @@ secondSlide.classList.add("d-none");
 (() => {
   const forms = document.querySelectorAll(".needs-validation");
 
-  firstNameInput.addEventListener("input", () => {
-    validateName(firstNameInput, firstNameFeedback);
-  });
-
-  lastNameInput.addEventListener("input", () => {
-    validateName(lastNameInput, lastNameFeedback);
-  });
-
-  emailInput.addEventListener("input", () => {
-    validateEmail(emailInput, emailFeedback);
-  });
-  descriptionInput.addEventListener("blur", () => {
-    validateSupportDescription(descriptionInput, descriptionFeedback);
-  });
+  const fieldsToValidate = [
+    setupLiveValidation(firstNameInput, () =>
+      validateName(firstNameInput, firstNameFeedback),
+    ),
+    setupLiveValidation(lastNameInput, () =>
+      validateName(lastNameInput, lastNameFeedback),
+    ),
+    setupLiveValidation(emailInput, () =>
+      validateEmail(emailInput, emailFeedback),
+    ),
+    setupLiveValidation(
+      descriptionInput,
+      () => validateDescription(descriptionInput, descriptionFeedback),
+      false,
+    ),
+  ];
 
   Array.from(forms).forEach((form) => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       event.stopPropagation();
 
-      const isValidEmail = validateEmail(emailInput, emailFeedback);
-      const isValidFirstName = validateName(firstNameInput, firstNameFeedback);
-      const isValidLastName = validateName(lastNameInput, lastNameFeedback);
-      const isValidDescription = validateSupportDescription(
-        descriptionInput,
-        descriptionFeedback,
-      );
+      let isFormValid = true;
+      let firstInvalidInput = null;
 
-      if (
-        !isValidEmail ||
-        !isValidFirstName ||
-        !isValidLastName ||
-        !isValidDescription
-      )
+      fieldsToValidate.forEach((field) => {
+        const isValid = field.forceValidate();
+
+        if (!isValid) {
+          isFormValid = false;
+          if (!firstInvalidInput) {
+            firstInvalidInput = field.element;
+          }
+        }
+      });
+
+      if (!isFormValid) {
+        if (firstInvalidInput) {
+          firstInvalidInput.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
         return;
+      }
 
-      checkForm.classList.remove("form-invalid");
-      checkForm.classList.add("form-valid");
       Submit();
     });
   });

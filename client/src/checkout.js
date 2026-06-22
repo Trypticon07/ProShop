@@ -18,7 +18,9 @@ const countryFeedback = document.querySelector("#countryFeedback");
 const cityFeedback = document.querySelector("#cityFeedback");
 const zipFeedback = document.querySelector("#zipFeedback");
 
-const paymentRadiosElement = document.querySelector("#payment-method");
+const paymentRadiosElement = document.querySelectorAll(
+  "#payment-method input[type='radio']",
+);
 const paymentRadios = document.querySelectorAll("input[name='paymentMethod']");
 const paymentRadiosFeedback = document.querySelector("#paymentRadiosFeedback");
 
@@ -57,9 +59,9 @@ import {
   validateCvv,
   validateCountry,
   validatePaymentMethod,
+  setupLiveValidation,
 } from "./validation.js";
 import { clearCart } from "./common.js";
-let isValidPaymentMethod = false;
 
 backBtn.addEventListener("click", () => {
   window.location.href = "index.html";
@@ -106,103 +108,70 @@ setInterval(() => {
   loadCart();
   const forms = document.querySelectorAll(".needs-validation");
 
-  emailInput.addEventListener("input", () => {
-    validateEmail(emailInput, emailFeedback);
-  });
-  firstNameInput.addEventListener("input", () => {
-    validateName(firstNameInput, firstNameFeedback);
-  });
-
-  lastNameInput.addEventListener("input", () => {
-    validateName(lastNameInput, lastNameFeedback);
-  });
-
-  addressInput.addEventListener("input", () => {
-    validateAddress(addressInput, addressFeedback);
-  });
-
-  address2Input.addEventListener("input", () => {
-    validateAddress(address2Input, address2Feedback);
-  });
-
-  countrySelect.addEventListener("change", () => {
-    validateCountry(countrySelect, countryFeedback);
-  });
-
-  cityInput.addEventListener("input", () => {
-    validateCity(cityInput, cityFeedback);
-  });
-
-  zipInput.addEventListener("input", () => {
-    validateZip(zipInput, zipFeedback);
-  });
-
-  // paymentRadios.forEach((radio) => {
-  //   radio.addEventListener("change", () => {
-  //     const selected = document.querySelector(
-  //       'input[name="paymentMethod"]:checked',
-  //     );
-
-  //     paymentRadios.forEach((r) =>
-  //       r.classList.remove("is-valid", "is-invalid"),
-  //     );
-
-  //     if (selected) {
-  //       const allowedMethods = ["credit", "debit", "paypal"];
-  //       if (allowedMethods.includes(selected.id)) {
-  //         selected.classList.add("is-valid");
-  //         isValidPaymentMethod = true;
-  //       } else {
-  //         paymentRadios.forEach((r) => r.classList.add("is-invalid"));
-  //         isValidPaymentMethod = false;
-  //       }
-  //     } else {
-  //       paymentRadios.forEach((r) => r.classList.add("is-invalid"));
-  //       isValidPaymentMethod = false;
-  //     }
-  //   });
-  // });
-
-  paymentRadiosElement.addEventListener("change", (e) => {
-    validatePaymentMethod(paymentRadios, paymentRadiosFeedback);
-  });
-  nameOnCardInput.addEventListener("input", (e) => {
-    e.target.value = e.target.value.toUpperCase();
-    validateCardName(nameOnCardInput, nameOnCardFeedback);
-  });
-
-  cardNumberInput.addEventListener("input", () => {
-    validateCardNumber(cardNumberInput, cardNumberFeedback);
-  });
-
-  cardExpirationInput.addEventListener("input", () => {
-    validateCardExpiration(cardExpirationInput, cardExpirationFeedback);
-  });
-
-  cardCvvInput.addEventListener("input", () => {
-    validateCvv(cardCvvInput, cardCvvFeedback);
-  });
+  const fieldsToValidate = [
+    setupLiveValidation(firstNameInput, () =>
+      validateName(firstNameInput, firstNameFeedback),
+    ),
+    setupLiveValidation(lastNameInput, () =>
+      validateName(lastNameInput, lastNameFeedback),
+    ),
+    setupLiveValidation(emailInput, () =>
+      validateEmail(emailInput, emailFeedback),
+    ),
+    setupLiveValidation(addressInput, () =>
+      validateAddress(addressInput, addressFeedback),
+    ),
+    setupLiveValidation(address2Input, () =>
+      validateAddress(address2Input, address2Feedback),
+    ),
+    setupLiveValidation(countrySelect, () =>
+      validateCountry(countrySelect, countryFeedback),
+    ),
+    setupLiveValidation(cityInput, () => validateCity(cityInput, cityFeedback)),
+    setupLiveValidation(zipInput, () => validateZip(zipInput, zipFeedback)),
+    setupLiveValidation(paymentRadiosElement, () =>
+      validatePaymentMethod(paymentRadios, paymentRadiosFeedback),
+    ),
+    setupLiveValidation(nameOnCardInput, () =>
+      validateCardName(nameOnCardInput, nameOnCardFeedback),
+    ),
+    setupLiveValidation(cardNumberInput, () =>
+      validateCardNumber(cardNumberInput, cardNumberFeedback),
+    ),
+    setupLiveValidation(cardExpirationInput, () =>
+      validateCardExpiration(cardExpirationInput, cardExpirationFeedback),
+    ),
+    setupLiveValidation(cardCvvInput, () =>
+      validateCvv(cardCvvInput, cardCvvFeedback),
+    ),
+  ];
 
   Array.from(forms).forEach((form) => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       event.stopPropagation();
 
-      if (
-        !validateEmail(emailInput, emailFeedback) ||
-        !validateName(firstNameInput, firstNameFeedback) ||
-        !validateName(lastNameInput, lastNameFeedback) ||
-        !validateAddress(addressInput, addressFeedback) ||
-        !validateAddress(address2Input, address2Feedback) ||
-        !validateCountry(countrySelect, countryFeedback) ||
-        !validateCity(cityInput, cityFeedback) ||
-        !validateZip(zipInput, zipFeedback) ||
-        !validatePaymentMethod(paymentRadios, paymentRadiosFeedback) ||
-        !validateCardName(nameOnCardInput, nameOnCardFeedback) ||
-        !validateCardNumber(cardNumberInput, cardNumberFeedback) ||
-        !validateCardExpiration(cardExpirationInput, cardExpirationFeedback) ||
-        !validateCvv(cardCvvInput, cardCvvFeedback)
-      ) {
+      let isFormValid = true;
+      let firstInvalidInput = null;
+
+      fieldsToValidate.forEach((field) => {
+        const isValid = field.forceValidate();
+
+        if (!isValid) {
+          isFormValid = false;
+          if (!firstInvalidInput) {
+            firstInvalidInput = field.element;
+          }
+        }
+      });
+
+      if (!isFormValid) {
+        if (firstInvalidInput) {
+          firstInvalidInput.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
         return;
       }
 
@@ -279,7 +248,9 @@ function Submit() {
         city: document.querySelector("#city-input").value,
         zip: document.querySelector("#zip-input").value,
         paymentMethod: selected.id,
-        nameOnCard: document.querySelector("#name-on-card-input").value,
+        nameOnCard: document
+          .querySelector("#name-on-card-input")
+          .value.toUpperCase(),
         cardNumber: document.querySelector("#card-number-input").value,
         expiration: document.querySelector("#card-expiration-input").value,
         cvv: document.querySelector("#card-cvv-code").value,
