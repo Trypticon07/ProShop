@@ -51,7 +51,9 @@ import {
   validateEmail,
   validatePassword,
   setupLiveValidation,
-} from "./validation.js";
+} from "./utils/validation.js";
+import { submitFormData } from "./utils/submit.js";
+import axios from "axios";
 
 let addedListener = false;
 
@@ -291,48 +293,59 @@ document.addEventListener("DOMContentLoaded", renderOrders);
   );
 
   // 1. Username Form
-  document.getElementById("usernameForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const isValid = usernameField.forceValidate();
-    if (isValid) {
-      submitProfileUpdate(
-        "/profile/editUsername",
-        { username: usernameInput.value },
-        { username: { input: usernameInput, feedback: usernameFeedback } },
-        usernameBackendResponse,
-      );
-    }
-  });
+  document
+    .getElementById("usernameForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const isValid = usernameField.forceValidate();
+
+      if (isValid) {
+        const fieldMap = {
+          username: { input: usernameInput, feedback: usernameFeedback },
+        };
+        const result = await submitFormData({
+          endpoint: "/profile/editUsername",
+          payload: { username: usernameInput.value },
+          fieldMap: fieldMap,
+          backendResponseEl: usernameBackendResponse,
+        });
+        if (result.success) {
+          window.location.href = "profile.html";
+        }
+      }
+    });
 
   // 2. Email Form
-  document.getElementById("emailForm").addEventListener("submit", (e) => {
+  document.getElementById("emailForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const isValid = emailField.forceValidate();
     if (isValid) {
-      submitProfileUpdate(
-        "/profile/editEmail",
-        { email: emailInput.value },
-        { email: { input: emailInput, feedback: emailFeedback } },
-        emailBackendResponse,
-      );
+      const fieldMap = {
+        email: { input: emailInput, feedback: emailFeedback },
+      };
+      const result = await submitFormData({
+        endpoint: "/profile/editEmail",
+        payload: { email: emailInput.value },
+        fieldMap: fieldMap,
+        backendResponseEl: emailBackendResponse,
+      });
+      if (result.success) {
+        window.location.href = "profile.html";
+      }
     }
   });
 
   // 3. Password Form
-  document.getElementById("passwordForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const isOldValid = oldPasswordField.forceValidate();
-    const isNewValid = newPasswordField.forceValidate();
+  document
+    .getElementById("passwordForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const isOldValid = oldPasswordField.forceValidate();
+      const isNewValid = newPasswordField.forceValidate();
 
-    const isValid = isOldValid && isNewValid;
-    if (isValid) {
-      submitProfileUpdate(
-        "/profile/changePassword",
-        {
-          oldPassword: oldPasswordInput.value,
-          newPassword: newPasswordInput.value,
-        },
-        {
+      const isValid = isOldValid && isNewValid;
+      if (isValid) {
+        const fieldMap = {
           oldPassword: {
             input: oldPasswordInput,
             feedback: oldPasswordFeedback,
@@ -341,58 +354,22 @@ document.addEventListener("DOMContentLoaded", renderOrders);
             input: newPasswordInput,
             feedback: newPasswordFeedback,
           },
-        },
-        passwordBackendResponse,
-      );
-    }
-  });
-})();
-
-async function submitProfileUpdate(
-  endpoint,
-  payload,
-  fieldMap,
-  backendResponseEl,
-) {
-  try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}${endpoint}`,
-      payload,
-      { withCredentials: true },
-    );
-
-    console.log(response.data);
-    window.location.href = "profile.html";
-  } catch (err) {
-    const res = err.response?.data;
-    const status = err.response?.status;
-    // 1. Handle unexpected or server errors early
-    if (!status || !res) {
-      console.log("Error while waiting for server response: ", err);
-      alert(
-        "There was an error while trying to log in. If this keeps happening, inform the site owner with this info: " +
-          err,
-      );
-      return;
-    }
-
-    // 2. Handle 429 Rate Limit
-    if (status === 429 && res.field === "rateLimit" && backendResponseEl) {
-      backendResponseEl.textContent = res.error;
-      backendResponseEl.classList.replace("d-none", "d-block");
-      return;
-    }
-
-    // 4. Handle 400 and 409 Field Validation Errors
-    if ((status === 400 || status === 409) && res.field) {
-      const targetUI = fieldMap[res.field];
-      if (targetUI) {
-        targetUI.input.classList.add("is-invalid");
-        targetUI.feedback.textContent = res.error;
+        };
+        const result = await submitFormData({
+          endpoint: "/profile/changePassword",
+          payload: {
+            oldPassword: oldPasswordInput.value,
+            newPassword: newPasswordInput.value,
+          },
+          fieldMap: fieldMap,
+          backendResponseEl: passwordBackendResponse,
+        });
+        if (result.success) {
+          window.location.href = "profile.html";
+        }
       }
-    }
-  }
-}
+    });
+})();
 
 fetch(`${import.meta.env.VITE_API_URL}/profile`, {
   credentials: "include",

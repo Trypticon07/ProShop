@@ -60,8 +60,10 @@ import {
   validateCountry,
   validatePaymentMethod,
   setupLiveValidation,
-} from "./validation.js";
+} from "./utils/validation.js";
 import { clearCart } from "./common.js";
+import { submitFormData } from "./utils/submit.js";
+import axios from "axios";
 
 backBtn.addEventListener("click", () => {
   window.location.href = "index.html";
@@ -147,7 +149,7 @@ setInterval(() => {
   ];
 
   Array.from(forms).forEach((form) => {
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
       event.stopPropagation();
 
@@ -174,8 +176,37 @@ setInterval(() => {
         }
         return;
       }
+      const selectedPaymentMethod = document.querySelector(
+        'input[name="paymentMethod"]:checked',
+      );
 
-      Submit();
+      const fieldMap = {
+        firstName: { input: firstNameInput, feedback: firstNameFeedback },
+        lastName: { input: lastNameInput, feedback: lastNameFeedback },
+        email: { input: emailInput, feedback: emailFeedback },
+        address: { input: addressInput, feedback: addressFeedback },
+        address2: { input: address2Input, feedback: address2Feedback },
+        country: { input: countrySelect, feedback: countryFeedback },
+        city: { input: cityInput, feedback: cityFeedback },
+        zip: { input: zipInput, feedback: zipFeedback },
+        paymentMethod: {
+          input: paymentRadios,
+          feedback: paymentRadiosFeedback,
+        },
+      };
+      const result = await submitFormData({
+        endpoint: "/order/add",
+        payload: { username: usernameInput.value },
+        fieldMap: fieldMap,
+        backendResponseEl: backendResponse,
+      });
+      if (result.success) {
+        if (response.data) {
+          clearCart();
+        }
+        screen1.classList.add("d-none");
+        screen2.classList.remove("d-none");
+      }
     });
   });
 })();
@@ -231,10 +262,6 @@ async function loadCart() {
 }
 
 function Submit() {
-  const selected = document.querySelector(
-    'input[name="paymentMethod"]:checked',
-  );
-
   axios
     .post(
       `${import.meta.env.VITE_API_URL}/order/add`,
@@ -302,7 +329,7 @@ function Submit() {
       } else {
         console.log("Error while waiting for server response: " + err);
         alert(
-          "There was an error while trying to log in. If this keeps happening, inform the site owner with this info: " +
+          "There was an error while trying to access the server. If this keeps happening, inform the site owner with this info: " +
             err,
         );
       }

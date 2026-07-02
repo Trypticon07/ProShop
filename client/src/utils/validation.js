@@ -310,6 +310,7 @@ export const validateCaptcha = (
 
 export const validatePaymentMethod = (paymentRadios, paymentRadiosFeedback) => {
   const checkedRadio = Array.from(paymentRadios).find((radio) => radio.checked);
+  // Converting an element into a boolean:
   const isValid = !!checkedRadio;
 
   const errorMessage = "Please select a payment method.";

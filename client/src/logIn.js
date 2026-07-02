@@ -15,8 +15,8 @@ import {
   validatePassword,
   validateCaptcha,
   setupLiveValidation,
-} from "./validation.js";
-
+} from "./utils/validation.js";
+import axios from "axios";
 window.addEventListener("load", () => {
   const interval = setInterval(() => {
     if (window.grecaptcha?.render) {
@@ -148,7 +148,7 @@ function Submit(captchaToken) {
       } else {
         console.log("Error while waiting for server response: " + err);
         alert(
-          "There was an error while trying to log in. If this keeps happening, inform the site owner with this info: " +
+          "There was an error while trying to access the server. If this keeps happening, inform the site owner with this info: " +
             err,
         );
       }

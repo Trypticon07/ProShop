@@ -22,7 +22,8 @@ import {
   session,
   addToCart,
 } from "./common.js";
-import { validateEmail, setupLiveValidation } from "./validation.js";
+import { validateEmail, setupLiveValidation } from "./utils/validation.js";
+import axios from "axios";
 
 let isProcessing = false;
 
@@ -381,7 +382,8 @@ function sendMessage() {
     })
     .catch((err) => {
       typingElement.innerHTML = `<strong>Error:</strong> Unable to access the server`;
-      //appendMessage("Error", "Unable to access the server");
+      // TODO: Use this function
+      // appendMessage("Error", "Unable to access the server");
       console.error(err);
     });
 }

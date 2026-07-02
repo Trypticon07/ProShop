@@ -22,7 +22,7 @@ import {
   validateSupportDescription as validateDescription,
   setupLiveValidation,
 } from "./validation";
-
+import axios from "axios";
 backBtn.addEventListener("click", () => {
   window.location.href = "index.html";
 });
@@ -129,7 +129,7 @@ function Submit() {
       } else {
         console.log("Error while waiting for server response: " + err);
         alert(
-          "There was an error while trying to log in. If this keeps happening, inform the site owner with this info: " +
+          "There was an error while trying to access the server. If this keeps happening, inform the site owner with this info: " +
             err,
         );
       }

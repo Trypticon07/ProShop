@@ -815,7 +815,11 @@ app.post("/order/add", async (req, res) => {
       !req.body.cardNumber ||
       !req.body.cvv
     ) {
-      return res.status(400).json({ error: "Missing required fields" });
+      return res.status(400).json({
+        isInvalid: true,
+        field: "paymentMethod",
+        error: "Missing required fields.",
+      });
     }
 
     const query1 = `
