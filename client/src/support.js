@@ -21,7 +21,7 @@ import {
   validateEmail,
   validateSupportDescription as validateDescription,
   setupLiveValidation,
-} from "./validation";
+} from "./utils/validation.js";
 import axios from "axios";
 backBtn.addEventListener("click", () => {
   window.location.href = "index.html";
