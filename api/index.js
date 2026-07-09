@@ -816,9 +816,60 @@ app.post("/order/add", async (req, res) => {
       !req.body.cvv
     ) {
       return res.status(400).json({
-        isInvalid: true,
-        field: "lastName",
-        error: "Missing required fields.",
+        errors: [
+          {
+            field: "firstName",
+            error: "Email is required",
+          },
+          {
+            field: "lastName",
+            error: "Email is required",
+          },
+          {
+            field: "email",
+            error: "Email is required",
+          },
+          {
+            field: "address",
+            error: "Email is required",
+          },
+          {
+            field: "address2",
+            error: "Email is required",
+          },
+          {
+            field: "country",
+            error: "Email is required",
+          },
+          {
+            field: "city",
+            error: "Email is required",
+          },
+          {
+            field: "zip",
+            error: "Email is required",
+          },
+          {
+            field: "paymentMethod",
+            error: "Email is required",
+          },
+          {
+            field: "cardExpiration",
+            error: "Email is required",
+          },
+          {
+            field: "nameOnCard",
+            error: "Email is required",
+          },
+          {
+            field: "cardNumber",
+            error: "Email is required",
+          },
+          {
+            field: "cardCvv",
+            error: "Email is required",
+          },
+        ],
       });
     }
 

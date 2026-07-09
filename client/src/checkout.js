@@ -202,22 +202,21 @@ setInterval(() => {
         },
         cardCvv: { input: cardCvvInput, feedback: cardCvvFeedback },
       };
-      const payload = {};
-      // const payload = {
-      //   firstName: firstNameInput.value,
-      //   lastName: lastNameInput.value,
-      //   email: emailInput.value,
-      //   address: addressInput.value,
-      //   address2: address2Input.value,
-      //   country: countrySelect.value,
-      //   city: cityInput.value,
-      //   zip: zipInput.value,
-      //   paymentMethod: selectedPaymentMethod,
-      //   nameOnCard: nameOnCardInput.value.toUpperCase(),
-      //   cardNumber: cardNumberInput.value,
-      //   cardExpiration: cardExpirationInput.value,
-      //   cardCvv: cardCvvInput.value,
-      // };
+      const payload = {
+        firstName: firstNameInput.value,
+        lastName: lastNameInput.value,
+        email: emailInput.value,
+        address: addressInput.value,
+        address2: address2Input.value,
+        country: countrySelect.value,
+        city: cityInput.value,
+        zip: zipInput.value,
+        paymentMethod: selectedPaymentMethod,
+        nameOnCard: nameOnCardInput.value.toUpperCase(),
+        cardNumber: cardNumberInput.value,
+        cardExpiration: cardExpirationInput.value,
+        cardCvv: cardCvvInput.value,
+      };
       const result = await submitFormData({
         endpoint: "/order/add",
         payload: payload,

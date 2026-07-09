@@ -34,18 +34,21 @@ export async function submitFormData({
     }
 
     // 3. 400 and 409 Field Validation Errors
-    if ((status === 400 || status === 409) && res.field) {
-      const targetUI = fieldMap[res.field];
-      if (targetUI) {
+    if ((status === 400 || status === 409) && res.errors) {
+      res.errors.forEach(({ field, error }) => {
+        const targetUI = fieldMap[field];
+        if (!targetUI) {
+          return;
+        }
         const inputs = Array.isArray(targetUI.input)
           ? targetUI.input
           : [targetUI.input];
         inputs.forEach((input) => {
           input.classList.add("is-invalid");
         });
-        targetUI.feedback.textContent = res.error;
+        targetUI.feedback.textContent = error;
         targetUI.feedback.classList.add("d-block");
-      }
+      });
     }
 
     return { success: false, errorType: "validation", error: res.error };
