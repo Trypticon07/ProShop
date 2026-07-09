@@ -795,7 +795,7 @@ app.post("/order/add", async (req, res) => {
     const paymentMethod = req.body.paymentMethod;
 
     // card data
-    const cardExpirationDate = req.body.expiration;
+    const cardExpiration = req.body.expiration;
     const nameOnCard = req.body.nameOnCard;
 
     const status = "pending";
@@ -810,14 +810,14 @@ app.post("/order/add", async (req, res) => {
       !city ||
       !zip ||
       !paymentMethod ||
-      !cardExpirationDate ||
+      !cardExpiration ||
       !nameOnCard ||
       !req.body.cardNumber ||
       !req.body.cvv
     ) {
       return res.status(400).json({
         isInvalid: true,
-        field: "paymentMethod",
+        field: "lastName",
         error: "Missing required fields.",
       });
     }
@@ -854,7 +854,7 @@ app.post("/order/add", async (req, res) => {
     if (
       processPayment(
         nameOnCard,
-        cardExpirationDate,
+        cardExpiration,
         req.body.cardNumber,
         req.body.cvv,
       )

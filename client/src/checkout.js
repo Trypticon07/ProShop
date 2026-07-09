@@ -18,9 +18,10 @@ const countryFeedback = document.querySelector("#countryFeedback");
 const cityFeedback = document.querySelector("#cityFeedback");
 const zipFeedback = document.querySelector("#zipFeedback");
 
-const paymentRadiosElement = document.querySelectorAll(
-  "#payment-method input[type='radio']",
-);
+const paymentRadiosElement = [
+  // Converting NodeList into an Array.
+  ...document.querySelectorAll("#payment-method input[type='radio']"),
+];
 const paymentRadios = document.querySelectorAll("input[name='paymentMethod']");
 const paymentRadiosFeedback = document.querySelector("#paymentRadiosFeedback");
 
@@ -190,13 +191,36 @@ setInterval(() => {
         city: { input: cityInput, feedback: cityFeedback },
         zip: { input: zipInput, feedback: zipFeedback },
         paymentMethod: {
-          input: paymentRadios,
+          input: paymentRadiosElement,
           feedback: paymentRadiosFeedback,
         },
+        nameOnCard: { input: nameOnCardInput, feedback: nameOnCardFeedback },
+        cardNumber: { input: cardNumberInput, feedback: cardNumberFeedback },
+        cardExpiration: {
+          input: cardExpirationInput,
+          feedback: cardExpirationFeedback,
+        },
+        cardCvv: { input: cardCvvInput, feedback: cardCvvFeedback },
       };
+      const payload = {};
+      // const payload = {
+      //   firstName: firstNameInput.value,
+      //   lastName: lastNameInput.value,
+      //   email: emailInput.value,
+      //   address: addressInput.value,
+      //   address2: address2Input.value,
+      //   country: countrySelect.value,
+      //   city: cityInput.value,
+      //   zip: zipInput.value,
+      //   paymentMethod: selectedPaymentMethod,
+      //   nameOnCard: nameOnCardInput.value.toUpperCase(),
+      //   cardNumber: cardNumberInput.value,
+      //   cardExpiration: cardExpirationInput.value,
+      //   cardCvv: cardCvvInput.value,
+      // };
       const result = await submitFormData({
         endpoint: "/order/add",
-        payload: { username: usernameInput.value },
+        payload: payload,
         fieldMap: fieldMap,
         backendResponseEl: backendResponse,
       });
@@ -259,79 +283,4 @@ async function loadCart() {
   if (totalProducts > 0) {
     totalInCart.textContent = totalProducts;
   }
-}
-
-function Submit() {
-  axios
-    .post(
-      `${import.meta.env.VITE_API_URL}/order/add`,
-      {
-        firstName: document.querySelector("#first-name-input").value,
-        lastName: document.querySelector("#last-name-input").value,
-        email: document.querySelector("#checkout-email-input").value,
-        address: document.querySelector("#address-input").value,
-        address2: document.querySelector("#address2-input").value,
-        country: document.querySelector("#country-select").value,
-        city: document.querySelector("#city-input").value,
-        zip: document.querySelector("#zip-input").value,
-        paymentMethod: selected.id,
-        nameOnCard: document
-          .querySelector("#name-on-card-input")
-          .value.toUpperCase(),
-        cardNumber: document.querySelector("#card-number-input").value,
-        expiration: document.querySelector("#card-expiration-input").value,
-        cvv: document.querySelector("#card-cvv-code").value,
-      },
-      {
-        withCredentials: true,
-      },
-    )
-    .then((response) => {
-      if (response.data) {
-        clearCart();
-      }
-      screen1.classList.add("d-none");
-      screen2.classList.remove("d-none");
-    })
-    .catch((err) => {
-      // TODO: add error logging before processing it!
-      console.log(err);
-      const res = err.response.data;
-      const status = err.response?.status;
-      if (status === 401) {
-        backendResponse.textContent = "Invalid email or password";
-        backendResponse.classList.remove("d-none");
-        backendResponse.classList.add("d-block");
-        checkForm.classList.remove("form-valid");
-        checkForm.classList.add("form-invalid");
-      } else if (status === 400) {
-        if (res?.isInvalid) {
-          if (res.field === "email") {
-            emailInput.classList.add("is-invalid");
-            emailFeedback.textContent = res.error;
-          } else if (res?.field === "password") {
-            passwordInput.classList.add("is-invalid");
-            passwordFeedback.textContent = res.error;
-          } else if (res?.field === "captcha") {
-            captchaError.textContent = res.error;
-            captchaError.classList.remove("d-none");
-            captchaError.classList.add("d-block");
-          }
-        }
-      } else if (err.response?.status === 429) {
-        if (res?.isInvalid) {
-          if (res.field === "rateLimit") {
-            backendResponse.textContent = res.error;
-            backendResponse.classList.remove("d-none");
-            backendResponse.classList.add("d-block");
-          }
-        }
-      } else {
-        console.log("Error while waiting for server response: " + err);
-        alert(
-          "There was an error while trying to access the server. If this keeps happening, inform the site owner with this info: " +
-            err,
-        );
-      }
-    });
 }

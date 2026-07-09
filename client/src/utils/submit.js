@@ -17,8 +17,6 @@ export async function submitFormData({
   } catch (err) {
     const res = err.response?.data;
     const status = err.response?.status;
-    console.log(res);
-    console.log(status);
     // 1. Unexpected or server errors
     if (!status || !res) {
       console.error("Server connection error: ", err);
@@ -39,14 +37,14 @@ export async function submitFormData({
     if ((status === 400 || status === 409) && res.field) {
       const targetUI = fieldMap[res.field];
       if (targetUI) {
-        if (targetUI === "paymentRadios") {
-          paymentRadios.forEach((radio) => {
-            radio.classList.add("is-invalid");
-          });
-          targetUI.feedback.textContent = res.error;
-        }
-        targetUI.input.classList.add("is-invalid");
+        const inputs = Array.isArray(targetUI.input)
+          ? targetUI.input
+          : [targetUI.input];
+        inputs.forEach((input) => {
+          input.classList.add("is-invalid");
+        });
         targetUI.feedback.textContent = res.error;
+        targetUI.feedback.classList.add("d-block");
       }
     }
 
