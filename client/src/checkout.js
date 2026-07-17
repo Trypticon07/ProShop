@@ -203,7 +203,7 @@ setInterval(() => {
         cardCvv: { input: cardCvvInput, feedback: cardCvvFeedback },
       };
       const payload = {
-        firstName: firstNameInput.value,
+        firstName: firstNameInput,
         lastName: lastNameInput.value,
         email: emailInput.value,
         address: addressInput.value,
@@ -224,9 +224,7 @@ setInterval(() => {
         backendResponseEl: backendResponse,
       });
       if (result.success) {
-        if (response.data) {
-          clearCart();
-        }
+        clearCart();
         screen1.classList.add("d-none");
         screen2.classList.remove("d-none");
       }

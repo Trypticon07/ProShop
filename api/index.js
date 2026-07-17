@@ -14,6 +14,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const isProduction = process.env.NODE_ENV === "production";
+const isHttps = process.env.USE_HTTPS === "true";
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -58,8 +59,8 @@ app.use(
     proxy: true,
     cookie: {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
+      secure: isHttps,
+      sameSite: isHttps ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 24, // 1 day
     },
   }),
@@ -247,8 +248,9 @@ app.post("/logIn", loginLimiter, async (req, res) => {
       req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 30; // 30 days
     } else {
       req.session.cookie.expires = false;
+      console.log("here0");
     }
-
+    console.log("here1");
     res.status(200).send("You have successfully logged in!");
   } catch (err) {
     console.error("reCAPTCHA verification error:", err);
@@ -795,7 +797,7 @@ app.post("/order/add", async (req, res) => {
     const paymentMethod = req.body.paymentMethod;
 
     // card data
-    const cardExpiration = req.body.expiration;
+    const cardExpiration = req.body.cardExpiration;
     const nameOnCard = req.body.nameOnCard;
 
     const status = "pending";
@@ -813,7 +815,7 @@ app.post("/order/add", async (req, res) => {
       !cardExpiration ||
       !nameOnCard ||
       !req.body.cardNumber ||
-      !req.body.cvv
+      !req.body.cardCvv
     ) {
       return res.status(400).json({
         errors: [
@@ -907,7 +909,7 @@ app.post("/order/add", async (req, res) => {
         nameOnCard,
         cardExpiration,
         req.body.cardNumber,
-        req.body.cvv,
+        req.body.cardCvv,
       )
     ) {
       const updateQuery = `
@@ -1062,9 +1064,9 @@ app.post("/order/cancel", async (req, res) => {
   }
 });
 
-function processPayment(nameOnCard, cardExpirationDate, cardNumber, cvvCode) {
+function processPayment(nameOnCard, cardExpiration, cardNumber, cardCvv) {
   // Here you can put payment processing code.
-  if (nameOnCard && cardExpirationDate && cardNumber && cvvCode) {
+  if (nameOnCard && cardExpiration && cardNumber && cardCvv) {
     return true;
   } else {
     return false;
