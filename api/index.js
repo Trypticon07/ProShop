@@ -248,9 +248,7 @@ app.post("/logIn", loginLimiter, async (req, res) => {
       req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 30; // 30 days
     } else {
       req.session.cookie.expires = false;
-      console.log("here0");
     }
-    console.log("here1");
     res.status(200).send("You have successfully logged in!");
   } catch (err) {
     console.error("reCAPTCHA verification error:", err);
