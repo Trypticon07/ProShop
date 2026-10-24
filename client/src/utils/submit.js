@@ -33,24 +33,57 @@ export async function submitFormData({
       return { success: false, errorType: "rateLimit", error: res.error };
     }
 
-    // 3. 400 and 409 Field Validation Errors
-    if ((status === 400 || status === 409) && res.errors) {
-      res.errors.forEach(({ field, error }) => {
-        const targetUI = fieldMap[field];
-        if (!targetUI) {
-          return;
-        }
-        const inputs = Array.isArray(targetUI.input)
-          ? targetUI.input
-          : [targetUI.input];
-        inputs.forEach((input) => {
-          input.classList.add("is-invalid");
-        });
-        targetUI.feedback.textContent = error;
-        targetUI.feedback.classList.add("d-block");
-      });
+    // 3. 401 Unauthorized
+    if (
+      status === 401 &&
+      res.errorType === "unauthorized" &&
+      backendResponseEl
+    ) {
+      backendResponseEl.textContent = res.errorText;
+      backendResponseEl.classList.replace("d-none", "d-block");
+      return {
+        success: false,
+        errorType: "auth",
+        error: res.errorText,
+      };
     }
 
-    return { success: false, errorType: "validation", error: res.error };
+    // 4. 400 and 409 Field Validation Errors
+    if (status === 400 || status === 409) {
+      const errorList =
+        res.errors ||
+        (res.field ? [{ field: res.field, error: res.error }] : []);
+      if (errorList.length > 0) {
+        errorList.forEach(({ field, error }) => {
+          const targetUI = fieldMap[field];
+          if (!targetUI) return;
+          // Сonvert both Array and NodeList to a regular array.
+          const inputs = targetUI.input?.forEach
+            ? Array.from(targetUI.input)
+            : [targetUI.input];
+          inputs.forEach((input) => {
+            input.classList.add("is-invalid");
+          });
+          if (targetUI.feedback) {
+            targetUI.feedback.textContent = error;
+            targetUI.feedback.classList.add("d-block");
+          }
+        });
+      }
+      return { success: false, errorType: "validation", errors: errorList };
+    }
+    const fallbackMessage =
+      res.error || "Something went wrong. Please try again later.";
+
+    if (backendResponseEl) {
+      backendResponseEl.textContent = fallbackMessage;
+      backendResponseEl.classList.replace("d-none", "d-block");
+    }
+
+    return {
+      success: false,
+      errorType: "server_or_network",
+      error: fallbackMessage,
+    };
   }
 }

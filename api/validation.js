@@ -1,3 +1,4 @@
+// TODO: Change validation functions
 export function checkEmail(emailInput) {
   if (emailInput.length < 6 || emailInput.length > 100) {
     return {
@@ -34,6 +35,14 @@ export function checkPassword(passwordInput) {
 }
 
 export function checkUsername(username) {
+  if (!username) {
+    return {
+      isInvalid: true,
+      field: "username",
+      error: "Username must be between 3 and 50 characters.",
+    };
+  }
+  username = username.trim();
   if (username.length < 3 || username.length > 50) {
     return {
       isInvalid: true,

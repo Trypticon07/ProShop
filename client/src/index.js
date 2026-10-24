@@ -23,7 +23,7 @@ import {
   addToCart,
 } from "./common.js";
 import { validateEmail, setupLiveValidation } from "./utils/validation.js";
-import axios from "axios";
+import { submitFormData } from "./utils/submit.js";
 
 let isProcessing = false;
 
@@ -33,7 +33,7 @@ let isProcessing = false;
     validateEmail(emailInput, emailFeedback),
   );
   if (form) {
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
       event.stopPropagation();
       const isValid = emailField.forceValidate();
@@ -47,48 +47,23 @@ let isProcessing = false;
         }
         return;
       }
-      Submit();
+      const fieldMap = {
+        email: { input: emailInput, feedback: emailFeedback },
+      };
+      const result = await submitFormData({
+        endpoint: "/subscribe",
+        payload: { email: emailInput.value },
+        fieldMap: fieldMap,
+        backendResponseEl: backendResponse,
+      });
+      if (result.success) {
+        emailInput.disabled = true;
+        subscribeBtn.classList.add("disabled");
+        validEmailFeedback.classList.remove("d-none");
+      }
     });
   }
 })();
-
-function Submit() {
-  axios
-    .post(`${import.meta.env.VITE_API_URL}/subscribe`, {
-      email: document.querySelector("#main-email-input").value,
-    })
-    .then((response) => {
-      emailInput.disabled = true;
-      subscribeBtn.classList.add("disabled");
-      validEmailFeedback.classList.remove("d-none");
-    })
-    .catch((err) => {
-      const res = err.response.data;
-      const status = err.response?.status;
-      if (status === 400) {
-        if (res?.isInvalid) {
-          if (res.field === "email") {
-            emailInput.classList.add("is-invalid");
-            emailFeedback.textContent = res.error;
-          }
-        }
-      } else if (err.response?.status === 429) {
-        if (res?.isInvalid) {
-          if (res.field === "rateLimit") {
-            backendResponse.textContent = res.error;
-            backendResponse.classList.remove("d-none");
-            backendResponse.classList.add("d-block");
-          }
-        }
-      } else {
-        console.log("Error while waiting for server response: " + err);
-        alert(
-          "There was an error while trying to subscribe. If this keeps happening, inform the site owner with this info: " +
-            err,
-        );
-      }
-    });
-}
 
 document.getElementById("close-chat").addEventListener("click", () => {
   document.getElementById("chat-box").style.display = "none";
@@ -364,7 +339,7 @@ function sendMessage() {
   isProcessing = true;
 
   const typingElement = appendMessage("Bot", "Typing...");
-
+  // TODO: Use axios
   fetch(`${import.meta.env.VITE_API_URL}/chat`, {
     method: "POST",
     headers: {

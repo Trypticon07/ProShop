@@ -109,7 +109,7 @@ setInterval(() => {
 
 (() => {
   loadCart();
-  const forms = document.querySelectorAll(".needs-validation");
+  const form = document.querySelector(".needs-validation");
 
   const fieldsToValidate = [
     setupLiveValidation(firstNameInput, () =>
@@ -149,86 +149,84 @@ setInterval(() => {
     ),
   ];
 
-  Array.from(forms).forEach((form) => {
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      event.stopPropagation();
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
 
-      let isFormValid = true;
-      let firstInvalidInput = null;
+    let isFormValid = true;
+    let firstInvalidInput = null;
 
-      fieldsToValidate.forEach((field) => {
-        const isValid = field.forceValidate();
+    fieldsToValidate.forEach((field) => {
+      const isValid = field.forceValidate();
 
-        if (!isValid) {
-          isFormValid = false;
-          if (!firstInvalidInput) {
-            firstInvalidInput = field.element;
-          }
+      if (!isValid) {
+        isFormValid = false;
+        if (!firstInvalidInput) {
+          firstInvalidInput = field.element;
         }
-      });
-
-      if (!isFormValid) {
-        if (firstInvalidInput) {
-          firstInvalidInput.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-        }
-        return;
-      }
-      const selectedPaymentMethod = document.querySelector(
-        'input[name="paymentMethod"]:checked',
-      );
-
-      const fieldMap = {
-        firstName: { input: firstNameInput, feedback: firstNameFeedback },
-        lastName: { input: lastNameInput, feedback: lastNameFeedback },
-        email: { input: emailInput, feedback: emailFeedback },
-        address: { input: addressInput, feedback: addressFeedback },
-        address2: { input: address2Input, feedback: address2Feedback },
-        country: { input: countrySelect, feedback: countryFeedback },
-        city: { input: cityInput, feedback: cityFeedback },
-        zip: { input: zipInput, feedback: zipFeedback },
-        paymentMethod: {
-          input: paymentRadiosElement,
-          feedback: paymentRadiosFeedback,
-        },
-        nameOnCard: { input: nameOnCardInput, feedback: nameOnCardFeedback },
-        cardNumber: { input: cardNumberInput, feedback: cardNumberFeedback },
-        cardExpiration: {
-          input: cardExpirationInput,
-          feedback: cardExpirationFeedback,
-        },
-        cardCvv: { input: cardCvvInput, feedback: cardCvvFeedback },
-      };
-      const payload = {
-        firstName: firstNameInput,
-        lastName: lastNameInput.value,
-        email: emailInput.value,
-        address: addressInput.value,
-        address2: address2Input.value,
-        country: countrySelect.value,
-        city: cityInput.value,
-        zip: zipInput.value,
-        paymentMethod: selectedPaymentMethod,
-        nameOnCard: nameOnCardInput.value.toUpperCase(),
-        cardNumber: cardNumberInput.value,
-        cardExpiration: cardExpirationInput.value,
-        cardCvv: cardCvvInput.value,
-      };
-      const result = await submitFormData({
-        endpoint: "/order/add",
-        payload: payload,
-        fieldMap: fieldMap,
-        backendResponseEl: backendResponse,
-      });
-      if (result.success) {
-        clearCart();
-        screen1.classList.add("d-none");
-        screen2.classList.remove("d-none");
       }
     });
+
+    if (!isFormValid) {
+      if (firstInvalidInput) {
+        firstInvalidInput.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+      return;
+    }
+    const selectedPaymentMethod = document.querySelector(
+      'input[name="paymentMethod"]:checked',
+    );
+
+    const fieldMap = {
+      firstName: { input: firstNameInput, feedback: firstNameFeedback },
+      lastName: { input: lastNameInput, feedback: lastNameFeedback },
+      email: { input: emailInput, feedback: emailFeedback },
+      address: { input: addressInput, feedback: addressFeedback },
+      address2: { input: address2Input, feedback: address2Feedback },
+      country: { input: countrySelect, feedback: countryFeedback },
+      city: { input: cityInput, feedback: cityFeedback },
+      zip: { input: zipInput, feedback: zipFeedback },
+      paymentMethod: {
+        input: paymentRadiosElement,
+        feedback: paymentRadiosFeedback,
+      },
+      nameOnCard: { input: nameOnCardInput, feedback: nameOnCardFeedback },
+      cardNumber: { input: cardNumberInput, feedback: cardNumberFeedback },
+      cardExpiration: {
+        input: cardExpirationInput,
+        feedback: cardExpirationFeedback,
+      },
+      cardCvv: { input: cardCvvInput, feedback: cardCvvFeedback },
+    };
+    const payload = {
+      firstName: firstNameInput,
+      lastName: lastNameInput.value,
+      email: emailInput.value,
+      address: addressInput.value,
+      address2: address2Input.value,
+      country: countrySelect.value,
+      city: cityInput.value,
+      zip: zipInput.value,
+      paymentMethod: selectedPaymentMethod,
+      nameOnCard: nameOnCardInput.value.toUpperCase(),
+      cardNumber: cardNumberInput.value,
+      cardExpiration: cardExpirationInput.value,
+      cardCvv: cardCvvInput.value,
+    };
+    const result = await submitFormData({
+      endpoint: "/order/add",
+      payload: payload,
+      fieldMap: fieldMap,
+      backendResponseEl: backendResponse,
+    });
+    if (result.success) {
+      clearCart();
+      screen1.classList.add("d-none");
+      screen2.classList.remove("d-none");
+    }
   });
 })();
 

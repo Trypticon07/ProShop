@@ -70,7 +70,6 @@ const registerLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 mins
   max: 3,
   message: {
-    isInvalid: true,
     field: "rateLimit",
     error: "Too many registration attempts. Please try again after 10 minutes.",
   },
@@ -82,7 +81,6 @@ const loginLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 mins
   max: 5,
   message: {
-    isInvalid: true,
     field: "rateLimit",
     error: "Too many log in attempts. Please try again after 10 minutes.",
   },
@@ -94,7 +92,6 @@ const subscriptionLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 mins
   max: 3,
   message: {
-    isInvalid: true,
     field: "rateLimit",
     error: "Too many subscription attempts. Please try again after 10 minutes.",
   },
@@ -106,10 +103,9 @@ const supportLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 mins
   max: 3,
   message: {
-    isInvalid: true,
     field: "rateLimit",
     error:
-      "Too many to ask a support attempts. Please try again after 10 minutes.",
+      "Too many attempts to contact support. Please try again after 10 minutes.",
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -119,7 +115,6 @@ const profileLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 mins
   max: 3,
   message: {
-    isInvalid: true,
     field: "rateLimit",
     error: "Too many changing attempts. Please try again after 10 minutes.",
   },
@@ -141,7 +136,6 @@ app.post("/register", registerLimiter, async (req, res) => {
     );
     if (!response.data.success) {
       return res.status(400).json({
-        isInvalid: true,
         field: "captcha",
         error: "Please verify that you are not a robot.",
       });
@@ -149,14 +143,15 @@ app.post("/register", registerLimiter, async (req, res) => {
     const emailCheck = checkEmail(email);
     const passwordCheck = checkPassword(password);
     const usernameCheck = checkUsername(username);
-    if (emailCheck.isInvalid) {
-      return res.status(400).json(emailCheck);
-    }
-    if (usernameCheck.isInvalid) {
-      return res.status(400).json(usernameCheck);
-    }
-    if (passwordCheck.isInvalid) {
-      return res.status(400).json(passwordCheck);
+
+    const errors = [emailCheck, passwordCheck, usernameCheck]
+      // Filter only invalid fields
+      .filter((check) => check.isInvalid)
+      // Remove flag isInvalid form the object
+      .map(({ field, error }) => ({ field, error }));
+
+    if (errors.length > 0) {
+      return res.status(400).json({ errors });
     }
 
     const DBresult = await pool.query("SELECT * FROM users WHERE email = $1", [
@@ -164,8 +159,7 @@ app.post("/register", registerLimiter, async (req, res) => {
     ]);
 
     if (DBresult.rows.length > 0) {
-      return res.status(400).json({
-        isInvalid: true,
+      return res.status(409).json({
         field: "email",
         error: "Email is already used.",
       });
@@ -186,7 +180,7 @@ app.post("/register", registerLimiter, async (req, res) => {
       username: newUser.username,
     };
 
-    // Session cookie — expires on browser close
+    // Session cookie expires on browser close
     req.session.cookie.expires = false;
 
     res.status(201).send("User created");
@@ -209,19 +203,21 @@ app.post("/logIn", loginLimiter, async (req, res) => {
     );
     if (!response.data.success) {
       return res.status(400).json({
-        isInvalid: true,
         field: "captcha",
-        error: "Please confirm that you are not a robot.",
+        error: "Please verify that you are not a robot.",
       });
     }
-
+    //TODO: Add proper validation:
     const emailCheck = checkEmail(email);
     const passwordCheck = checkPassword(password);
-    if (emailCheck.isInvalid) {
-      return res.status(400).json(emailCheck);
-    }
-    if (passwordCheck.isInvalid) {
-      return res.status(400).json(passwordCheck);
+    const errors = [emailCheck, passwordCheck]
+      // Filter only invalid fields
+      .filter((check) => check.isInvalid)
+      // Remove flag isInvalid form the object
+      .map(({ field, error }) => ({ field, error }));
+
+    if (errors.length > 0) {
+      return res.status(400).json({ errors });
     }
 
     const result = await pool.query("SELECT * FROM users WHERE email = $1", [
@@ -229,7 +225,21 @@ app.post("/logIn", loginLimiter, async (req, res) => {
     ]);
 
     if (result.rows.length === 0) {
-      return res.status(401).send("invalid email or password");
+      //TODO: Change responses everywhere to one standart:
+      return res.status(401).json({
+        errorType: "unauthorized",
+        errorText: "Incorrect email or password.",
+        errorFields: [
+          {
+            field: "email",
+            error: "",
+          },
+          {
+            field: "password",
+            error: "",
+          },
+        ],
+      });
     }
 
     const user = result.rows[0];
@@ -237,7 +247,21 @@ app.post("/logIn", loginLimiter, async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(401).send("invalid email or password");
+      return res.status(401).json({
+        isInvalid: true,
+        errorType: "unauthorized",
+        errorText: "Incorrect email or password.",
+        errorFields: [
+          {
+            field: "email",
+            error: "",
+          },
+          {
+            field: "password",
+            error: "",
+          },
+        ],
+      });
     }
     req.session.user = {
       id: user.id,
@@ -251,7 +275,6 @@ app.post("/logIn", loginLimiter, async (req, res) => {
     }
     res.status(200).send("You have successfully logged in!");
   } catch (err) {
-    console.error("reCAPTCHA verification error:", err);
     console.error(err);
     res.status(500).send("Server error");
   }

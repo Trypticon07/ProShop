@@ -7,7 +7,6 @@ export const updateFieldUI = (input, feedback, isValid, msg) => {
 
 export const validateUsername = (usernameInput, usernameFeedback) => {
   const username = usernameInput.value.trim();
-
   const isValid = username.length >= 3 && username.length <= 30;
   return updateFieldUI(
     usernameInput,

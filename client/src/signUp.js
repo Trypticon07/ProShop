@@ -20,6 +20,7 @@ import {
   validateCaptcha,
   setupLiveValidation,
 } from "./utils/validation.js";
+import { submitFormData } from "./utils/submit.js";
 import axios from "axios";
 window.addEventListener("load", () => {
   const interval = setInterval(() => {
@@ -42,7 +43,7 @@ document
     icon.className = isHidden ? "bi bi-eye-slash-fill" : "bi bi-eye-fill";
   });
 (() => {
-  const forms = document.querySelectorAll(".needs-validation");
+  const form = document.querySelector(".needs-validation");
 
   const fieldsToValidate = [
     setupLiveValidation(usernameInput, () =>
@@ -59,101 +60,62 @@ document
     ),
   ];
 
-  Array.from(forms).forEach((form) => {
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
 
-      let isFormValid = true;
-      let firstInvalidInput = null;
+    let isFormValid = true;
+    let firstInvalidInput = null;
 
-      fieldsToValidate.forEach((field) => {
-        const isValid = field.forceValidate();
+    fieldsToValidate.forEach((field) => {
+      const isValid = field.forceValidate();
 
-        if (!isValid) {
-          isFormValid = false;
-          if (!firstInvalidInput) {
-            firstInvalidInput = field.element;
-          }
+      if (!isValid) {
+        isFormValid = false;
+        if (!firstInvalidInput) {
+          firstInvalidInput = field.element;
         }
-      });
-
-      if (!isFormValid) {
-        if (firstInvalidInput) {
-          firstInvalidInput.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-        }
-        return;
       }
-      const captchaResponse = grecaptcha.getResponse();
-      const isCaptchaValid = validateCaptcha(
-        captchaResponse,
-        captchaError,
-        captchaWidget,
-      );
-      if (!isCaptchaValid) {
-        captchaWidget.scrollIntoView({ behavior: "smooth", block: "center" });
-        return;
-      }
-      Submit(captchaResponse);
     });
+
+    if (!isFormValid) {
+      if (firstInvalidInput) {
+        firstInvalidInput.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+      return;
+    }
+    const captchaResponse = grecaptcha.getResponse();
+    const isCaptchaValid = validateCaptcha(
+      captchaResponse,
+      captchaError,
+      captchaWidget,
+    );
+    if (!isCaptchaValid) {
+      captchaWidget.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    const fieldMap = {
+      username: { input: usernameInput, feedback: usernameFeedback },
+      email: { input: emailInput, feedback: emailFeedback },
+      password: { input: passwordInput, feedback: passwordFeedback },
+      captcha: { input: captchaWidget, feedback: captchaError },
+    };
+    const result = await submitFormData({
+      endpoint: "/register",
+      payload: {
+        username: usernameInput.value,
+        email: emailInput.value,
+        password: passwordInput.value,
+        captcha: captchaResponse,
+      },
+      fieldMap: fieldMap,
+      backendResponseEl: backendResponse,
+    });
+    if (result.success) {
+      window.location.href = "index.html";
+    }
   });
 })();
-
-function Submit(captchaToken) {
-  axios
-    .post(
-      `${import.meta.env.VITE_API_URL}/register`,
-      {
-        username: document.querySelector("#username-input").value,
-        password: document.querySelector("#password-input").value,
-        email: document.querySelector("#email-input").value,
-        captcha: captchaToken,
-        agreeCheck: agreeCheck.checked,
-      },
-      {
-        withCredentials: true,
-      },
-    )
-    .then((response) => {
-      window.location.href = "index.html";
-    })
-    .catch((err) => {
-      const res = err.response.data;
-      const status = err.response?.status;
-      if (status === 400) {
-        if (res?.isInvalid) {
-          if (res.field === "email") {
-            emailInput.classList.add("is-invalid");
-            emailFeedback.textContent = res.error;
-          } else if (res?.field === "password") {
-            passwordInput.classList.add("is-invalid");
-            passwordFeedback.textContent = res.error;
-          } else if (res?.field === "username") {
-            usernameInput.classList.add("is-invalid");
-            usernameFeedback.textContent = res.error;
-          } else if (res?.field === "captcha") {
-            captchaError.textContent = res.error;
-            captchaError.classList.remove("d-none");
-            captchaError.classList.add("d-block");
-          }
-        }
-      } else if (err.response?.status === 429) {
-        if (res?.isInvalid) {
-          if (res.field === "rateLimit") {
-            backendResponse.textContent = res.error;
-            backendResponse.classList.remove("d-none");
-            backendResponse.classList.add("d-block");
-          }
-        }
-      } else {
-        console.log("Error while waiting for server response: " + err);
-        alert(
-          "There was an error while trying to access the server. If this keeps happening, inform the site owner with this info: " +
-            err,
-        );
-      }
-    });
-}
