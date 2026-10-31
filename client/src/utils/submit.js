@@ -51,7 +51,7 @@ export async function submitFormData({
     // 4. 400 and 409 Field Validation Errors
     if (status === 400 || status === 409) {
       const errorList =
-        res.errors ||
+        res.errorList ||
         (res.field ? [{ field: res.field, error: res.error }] : []);
       if (errorList.length > 0) {
         errorList.forEach(({ field, error }) => {
@@ -65,6 +65,7 @@ export async function submitFormData({
             input.classList.add("is-invalid");
           });
           if (targetUI.feedback) {
+            // TODO: Clear backendResponseEl!
             targetUI.feedback.textContent = error;
             targetUI.feedback.classList.add("d-block");
           }

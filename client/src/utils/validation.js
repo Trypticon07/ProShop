@@ -1,4 +1,4 @@
-export const updateFieldUI = (input, feedback, isValid, msg) => {
+const updateFieldUI = (input, feedback, isValid, msg) => {
   input.classList.toggle("is-valid", isValid);
   input.classList.toggle("is-invalid", !isValid);
   feedback.textContent = isValid ? "" : msg;
@@ -12,7 +12,7 @@ export const validateUsername = (usernameInput, usernameFeedback) => {
     usernameInput,
     usernameFeedback,
     isValid,
-    "Username must be at least 3 characters long.",
+    "Username must be between 3 and 30 characters.",
   );
 };
 
@@ -36,17 +36,18 @@ export const validateEmail = (emailInput, emailFeedback) => {
 };
 
 export const validatePassword = (passwordInput, passwordFeedback) => {
+  const password = passwordInput.value;
   return updateFieldUI(
     passwordInput,
     passwordFeedback,
-    passwordInput.value.trim().length >= 8,
-    "Password must be at least 8 characters long.",
+    password.length >= 8 && password.length <= 100,
+    "Password must be between 8 and 100 characters.",
   );
 };
 
-export function validateCardNumber(cardNumberInput, cardNumberFeedback) {
+export const validateCardNumber = (cardNumberInput, cardNumberFeedback) => {
   const number = cardNumberInput.value.trim();
-  // deleting all spaces
+  // Deleting all spaces
   const digits = number.replace(/\s+/g, "");
 
   // Only numbers and length 13–19
@@ -78,7 +79,7 @@ export function validateCardNumber(cardNumberInput, cardNumberFeedback) {
     isValid,
     "Please enter a valid card number.",
   );
-}
+};
 
 export function validateCardExpiration(expirationInput, expirationFeedback) {
   const expirationValue = expirationInput.value.trim();
@@ -96,7 +97,7 @@ export function validateCardExpiration(expirationInput, expirationFeedback) {
   let month = parseInt(match[1], 10);
   let year = parseInt(match[2], 10);
 
-  // if year format is YY, converting to YYYY
+  // converting to YYYY
   if (year < 100) {
     const currentYear = new Date().getFullYear();
     const prefix = Math.floor(currentYear / 100) * 100;
@@ -127,7 +128,6 @@ export const validateName = (nameInput, nameFeedback) => {
     );
   }
   const nameRegex = /^[\p{L}'\s-]+$/u;
-  // const nameRegex = /^[\p{L}'-\s]+$/u;
   if (!nameRegex.test(trimmedName)) {
     return updateFieldUI(
       nameInput,
@@ -227,14 +227,14 @@ export const validateCardName = (cardNameInput, cardNameFeedback) => {
   return updateFieldUI(cardNameInput, cardNameFeedback, true, "");
 };
 
-export const validateCvv = (input = cvvInput, feedback = cvvFeedback) => {
-  const trimmedCvv = input.value.trim();
+export const validateCvv = (cvvInput, cvvFeedback) => {
+  const trimmedCvv = cvvInput.value.trim();
 
   const cvvRegex = /^\d{3,4}$/;
 
   return updateFieldUI(
-    input,
-    feedback,
+    cvvInput,
+    cvvFeedback,
     cvvRegex.test(trimmedCvv),
     "CVV must be 3 or 4 digits long.",
   );
@@ -256,7 +256,7 @@ export const validateSupportDescription = (
 ) => {
   const trimmedText = descriptionInput.value.trim();
 
-  if (trimmedText.length < 15) {
+  if (trimmedText.length < 15 || trimmedText.length > 3000) {
     return updateFieldUI(
       descriptionInput,
       descriptionFeedback,
@@ -282,7 +282,7 @@ export const validateAgreeCheck = (agreeCheck, agreeFeedback) => {
     agreeCheck,
     agreeFeedback,
     agreeCheck.checked,
-    "You must agree before submitting.",
+    "You must agree to the terms and conditions.",
   );
 };
 

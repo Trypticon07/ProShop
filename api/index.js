@@ -5,7 +5,11 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import bcrypt from "bcrypt";
 import axios from "axios";
-import { checkEmail, checkUsername, checkPassword } from "./validation.js";
+import {
+  validateEmail,
+  validateUsername,
+  validatePassword,
+} from "./validation.js";
 import { sendMessage } from "./model.js";
 import session from "express-session";
 import rateLimit from "express-rate-limit";
@@ -140,18 +144,17 @@ app.post("/register", registerLimiter, async (req, res) => {
         error: "Please verify that you are not a robot.",
       });
     }
-    const emailCheck = checkEmail(email);
-    const passwordCheck = checkPassword(password);
-    const usernameCheck = checkUsername(username);
-
-    const errors = [emailCheck, passwordCheck, usernameCheck]
+    const errorList = [
+      validateEmail(email),
+      validatePassword(password),
+      validateUsername(username),
+    ]
       // Filter only invalid fields
       .filter((check) => check.isInvalid)
       // Remove flag isInvalid form the object
       .map(({ field, error }) => ({ field, error }));
-
-    if (errors.length > 0) {
-      return res.status(400).json({ errors });
+    if (errorList.length > 0) {
+      return res.status(400).json({ errorList });
     }
 
     const DBresult = await pool.query("SELECT * FROM users WHERE email = $1", [
@@ -164,7 +167,7 @@ app.post("/register", registerLimiter, async (req, res) => {
         error: "Email is already used.",
       });
     }
-
+    // TODO: Store saltRounds safely
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -191,12 +194,14 @@ app.post("/register", registerLimiter, async (req, res) => {
 });
 
 app.post("/logIn", loginLimiter, async (req, res) => {
+  // TODO: Check constants for undefined fields and trim necessary fields
+  // const email = req.body.email ? req.body.email.trim().toLowerCase() : "";
+  // const { username, email, password, captcha, agreeTerms } = req.body;
   const password = req.body.password;
   const email = req.body.email;
 
   const userCaptchaToken = req.body.captcha;
   const secretKey = recaptchaSecretKey;
-
   try {
     const response = await axios.post(
       `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${userCaptchaToken}`,
@@ -208,16 +213,14 @@ app.post("/logIn", loginLimiter, async (req, res) => {
       });
     }
     //TODO: Add proper validation:
-    const emailCheck = checkEmail(email);
-    const passwordCheck = checkPassword(password);
-    const errors = [emailCheck, passwordCheck]
+    const errorList = [validateEmail(email), validatePassword(password)]
       // Filter only invalid fields
       .filter((check) => check.isInvalid)
       // Remove flag isInvalid form the object
       .map(({ field, error }) => ({ field, error }));
 
-    if (errors.length > 0) {
-      return res.status(400).json({ errors });
+    if (errorList.length > 0) {
+      return res.status(400).json({ errorList });
     }
 
     const result = await pool.query("SELECT * FROM users WHERE email = $1", [
@@ -283,7 +286,7 @@ app.post("/logIn", loginLimiter, async (req, res) => {
 app.post("/subscribe", subscriptionLimiter, async (req, res) => {
   const email = req.body.email;
   try {
-    const emailCheck = checkEmail(email);
+    const emailCheck = validateEmail(email);
     if (emailCheck.isInvalid) {
       return res.status(400).json(emailCheck);
     }
@@ -384,7 +387,7 @@ app.post("/profile/editUsername", profileLimiter, async (req, res) => {
     if (!userId) return res.status(401).send("Not authorized");
     const username = req.body.username;
 
-    const usernameCheck = checkUsername(username);
+    const usernameCheck = validateUsername(username);
     if (usernameCheck.isInvalid) {
       return res.status(400).json(usernameCheck);
     }
@@ -410,7 +413,7 @@ app.post("/profile/editEmail", profileLimiter, async (req, res) => {
     const userId = req.session.user?.id;
     if (!userId) return res.status(401).send("Not authorized");
     const email = req.body.email;
-    const emailCheck = checkEmail(email);
+    const emailCheck = validateEmail(email);
     if (emailCheck.isInvalid) {
       return res.status(400).json(emailCheck);
     }
@@ -452,7 +455,7 @@ app.post("/profile/changePassword", profileLimiter, async (req, res) => {
     const oldPassword = req.body.oldPassword;
     const newPassword = req.body.newPassword;
 
-    const oldPasswordCheck = checkPassword(oldPassword);
+    const oldPasswordCheck = validatePassword(oldPassword);
     if (oldPasswordCheck.isInvalid) {
       return res.status(400).json({
         ...oldPasswordCheck,
@@ -460,7 +463,7 @@ app.post("/profile/changePassword", profileLimiter, async (req, res) => {
       });
     }
 
-    const newPasswordCheck = checkPassword(newPassword);
+    const newPasswordCheck = validatePassword(newPassword);
     if (newPasswordCheck.isInvalid) {
       return res.status(400).json({
         ...oldPasswordCheck,
@@ -839,7 +842,7 @@ app.post("/order/add", async (req, res) => {
       !req.body.cardCvv
     ) {
       return res.status(400).json({
-        errors: [
+        errorList: [
           {
             field: "firstName",
             error: "Email is required",

@@ -16,7 +16,6 @@ import {
   validateCaptcha,
   setupLiveValidation,
 } from "./utils/validation.js";
-import axios from "axios";
 import { submitFormData } from "./utils/submit.js";
 window.addEventListener("load", () => {
   const interval = setInterval(() => {
@@ -100,7 +99,7 @@ document
     const result = await submitFormData({
       endpoint: "/logIn",
       payload: {
-        email: emailInput.value,
+        email: emailInput.value.trim(),
         password: passwordInput.value,
         captcha: captchaResponse,
       },

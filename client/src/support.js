@@ -19,7 +19,7 @@ const backBtn = document.querySelector("#to-home-page");
 import {
   validateName,
   validateEmail,
-  validateSupportDescription as validateDescription,
+  validateSupportDescription,
   setupLiveValidation,
 } from "./utils/validation.js";
 import axios from "axios";
@@ -45,7 +45,7 @@ secondSlide.classList.add("d-none");
     ),
     setupLiveValidation(
       descriptionInput,
-      () => validateDescription(descriptionInput, descriptionFeedback),
+      () => validateSupportDescription(descriptionInput, descriptionFeedback),
       false,
     ),
   ];

@@ -102,6 +102,7 @@ document
       email: { input: emailInput, feedback: emailFeedback },
       password: { input: passwordInput, feedback: passwordFeedback },
       captcha: { input: captchaWidget, feedback: captchaError },
+      agreeTerms: { input: agreeCheck, feedback: agreeFeedback },
     };
     const result = await submitFormData({
       endpoint: "/register",
@@ -110,6 +111,7 @@ document
         email: emailInput.value,
         password: passwordInput.value,
         captcha: captchaResponse,
+        agreeTerms: agreeCheck.checked,
       },
       fieldMap: fieldMap,
       backendResponseEl: backendResponse,
