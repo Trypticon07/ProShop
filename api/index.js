@@ -149,9 +149,7 @@ app.post("/register", registerLimiter, async (req, res) => {
       validatePassword(password),
       validateUsername(username),
     ]
-      // Filter only invalid fields
       .filter((check) => check.isInvalid)
-      // Remove flag isInvalid form the object
       .map(({ field, error }) => ({ field, error }));
     if (errorList.length > 0) {
       return res.status(400).json({ errorList });
@@ -164,7 +162,7 @@ app.post("/register", registerLimiter, async (req, res) => {
     if (DBresult.rows.length > 0) {
       return res.status(409).json({
         field: "email",
-        error: "Email is already used.",
+        error: "Email is already registered!",
       });
     }
     // TODO: Store saltRounds safely
@@ -214,9 +212,7 @@ app.post("/logIn", loginLimiter, async (req, res) => {
     }
     //TODO: Add proper validation:
     const errorList = [validateEmail(email), validatePassword(password)]
-      // Filter only invalid fields
       .filter((check) => check.isInvalid)
-      // Remove flag isInvalid form the object
       .map(({ field, error }) => ({ field, error }));
 
     if (errorList.length > 0) {
@@ -289,6 +285,17 @@ app.post("/subscribe", subscriptionLimiter, async (req, res) => {
     const emailCheck = validateEmail(email);
     if (emailCheck.isInvalid) {
       return res.status(400).json(emailCheck);
+    }
+
+    const DBresult = await pool.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
+
+    if (DBresult.rows.length > 0) {
+      return res.status(409).json({
+        field: "email",
+        error: "Email is already subscribed!",
+      });
     }
 
     await pool.query("INSERT INTO mailing_list (email) VALUES ($1)", [email]);
@@ -508,10 +515,15 @@ app.post("/profile/changePassword", profileLimiter, async (req, res) => {
 });
 
 app.get("/session", (req, res) => {
-  if (req.session.user) {
-    res.json({ loggedIn: true, user: req.session.user });
-  } else {
-    res.status(401).json({ loggedIn: false });
+  try {
+    if (req.session.user) {
+      res.json({ loggedIn: true, user: req.session.user });
+    } else {
+      res.status(401).json({ loggedIn: false });
+    }
+  } catch (error) {
+    console.error("Session check error:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
