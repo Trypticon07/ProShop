@@ -13,6 +13,7 @@ import {
   validateDescription,
   validateAddress,
   validateCountry,
+  validateCity,
   validatePostalCode,
   validatePaymentMethod,
   validateCardExpiration,
