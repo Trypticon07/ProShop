@@ -30,12 +30,12 @@ export const validateEmail = (email) => {
   }
 };
 
-export function validatePassword(password) {
+export function validatePassword(password, fieldName = "password") {
   if (!password || typeof password !== "string") {
     return {
       isInvalid: true,
-      field: "password",
-      error: "Please enter a password email.",
+      field: fieldName,
+      error: "Please enter a valid password.",
     };
   }
   if (password.length >= 8 && password.length <= 100) {
@@ -43,7 +43,7 @@ export function validatePassword(password) {
   } else {
     return {
       isInvalid: true,
-      field: "password",
+      field: fieldName,
       error: "Password must be between 8 and 100 characters.",
     };
   }
@@ -74,7 +74,7 @@ export const validateCardNumber = (cardNumber) => {
     return {
       isInvalid: true,
       field: "cardNumber",
-      error: "Please enter a valid cardNumber.",
+      error: "Please enter a valid card number.",
     };
   }
   const number = cardNumber.trim();
@@ -158,11 +158,11 @@ export function validateCardExpiration(expiration) {
   }
 }
 
-export const validateName = (name, nameType) => {
+export const validateName = (name, fieldName) => {
   if (!name || typeof name !== "string") {
     return {
       isInvalid: true,
-      field: `${nameType}`,
+      field: `${fieldName}`,
       error: "Please enter a valid name.",
     };
   }
@@ -171,7 +171,7 @@ export const validateName = (name, nameType) => {
   if (trimmedName.length < 2 || trimmedName.length > 50) {
     return {
       isInvalid: true,
-      field: `${nameType}`,
+      field: `${fieldName}`,
       error: "Name must be between 2 and 50 characters long.",
     };
   }
@@ -181,17 +181,17 @@ export const validateName = (name, nameType) => {
   } else {
     return {
       isInvalid: true,
-      field: `${nameType}`,
+      field: `${fieldName}`,
       error: "Name can only contain letters, hyphens, apostrophes, and spaces.",
     };
   }
 };
 
-export const validateAddress = (address, addressType) => {
+export const validateAddress = (address, fieldName) => {
   if (!address || typeof address !== "string") {
     return {
       isInvalid: true,
-      field: `${addressType}`,
+      field: `${fieldName}`,
       error: "Please enter a valid address.",
     };
   }
@@ -202,7 +202,7 @@ export const validateAddress = (address, addressType) => {
   } else {
     return {
       isInvalid: true,
-      field: `${addressType}`,
+      field: `${fieldName}`,
       error: "Address must be between 5 and 100 characters long.",
     };
   }
@@ -243,7 +243,7 @@ export const validateZip = (zip) => {
     return {
       isInvalid: true,
       field: "zip",
-      error: "Please enter a valid zip.",
+      error: "Please enter a valid postal code.",
     };
   }
   const trimmedZip = zip.trim();

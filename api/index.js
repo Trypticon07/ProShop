@@ -9,6 +9,15 @@ import {
   validateEmail,
   validateUsername,
   validatePassword,
+  validateName,
+  validateDescription,
+  validateAddress,
+  validateCountry,
+  validateZip,
+  validatePaymentMethod,
+  validateCardExpiration,
+  validateCardName,
+  validateCardNumber,
 } from "./validation.js";
 import { sendMessage } from "./model.js";
 import session from "express-session";
@@ -224,7 +233,6 @@ app.post("/logIn", loginLimiter, async (req, res) => {
     ]);
 
     if (result.rows.length === 0) {
-      //TODO: Change responses everywhere to one standart:
       return res.status(401).json({
         errorType: "unauthorized",
         errorText: "Incorrect email or password.",
@@ -282,9 +290,9 @@ app.post("/logIn", loginLimiter, async (req, res) => {
 app.post("/subscribe", subscriptionLimiter, async (req, res) => {
   const email = req.body.email;
   try {
-    const emailCheck = validateEmail(email);
-    if (emailCheck.isInvalid) {
-      return res.status(400).json(emailCheck);
+    const emailValidation = validateEmail(email);
+    if (emailValidation.isInvalid) {
+      return res.status(400).json(emailValidation);
     }
 
     const DBresult = await pool.query("SELECT * FROM users WHERE email = $1", [
@@ -313,37 +321,17 @@ app.post("/support", supportLimiter, async (req, res) => {
   const email = req.body.email;
   const description = req.body.description;
   try {
-    if (email.length < 6 || email.length > 100) {
-      return res.status(400).json({
-        isInvalid: true,
-        field: "email",
-        error: "Email must be between 6 and 100 characters.",
-      });
-    } else if (
-      !email.includes("@") ||
-      !email.includes(".") ||
-      email.indexOf("@") === 0 ||
-      email.lastIndexOf(".") < email.indexOf("@")
-    ) {
-      return res.status(400).json({
-        isInvalid: true,
-        field: "email",
-        error: "Email is invalid.",
-      });
-    }
-    if (firstName.length < 1 || firstName.length > 30) {
-      return {
-        isInvalid: true,
-        field: "firstName",
-        error: "First name must be between 1 and 30 characters.",
-      };
-    }
-    if (lastName.length < 1 || lastName.length > 30) {
-      return {
-        isInvalid: true,
-        field: "lastName",
-        error: "Last name must be between 1 and 30 characters.",
-      };
+    const errorList = [
+      validateEmail(email),
+      validateName(firstName, "firstName"),
+      validateName(lastName, "lastName"),
+      validateDescription(description),
+    ]
+      .filter((check) => check.isInvalid)
+      .map(({ field, error }) => ({ field, error }));
+
+    if (errorList.length > 0) {
+      return res.status(400).json({ errorList });
     }
 
     await pool.query(
@@ -394,9 +382,9 @@ app.post("/profile/editUsername", profileLimiter, async (req, res) => {
     if (!userId) return res.status(401).send("Not authorized");
     const username = req.body.username;
 
-    const usernameCheck = validateUsername(username);
-    if (usernameCheck.isInvalid) {
-      return res.status(400).json(usernameCheck);
+    const usernameValidation = validateUsername(username);
+    if (usernameValidation.isInvalid) {
+      return res.status(400).json(usernameValidation);
     }
     const query = `
           UPDATE users
@@ -420,9 +408,9 @@ app.post("/profile/editEmail", profileLimiter, async (req, res) => {
     const userId = req.session.user?.id;
     if (!userId) return res.status(401).send("Not authorized");
     const email = req.body.email;
-    const emailCheck = validateEmail(email);
-    if (emailCheck.isInvalid) {
-      return res.status(400).json(emailCheck);
+    const emailValidation = validateEmail(email);
+    if (emailValidation.isInvalid) {
+      return res.status(400).json(emailValidation);
     }
     const checkQuery = `
           SELECT id FROM users 
@@ -461,23 +449,16 @@ app.post("/profile/changePassword", profileLimiter, async (req, res) => {
     if (!userId) return res.status(401).send("Not authorized");
     const oldPassword = req.body.oldPassword;
     const newPassword = req.body.newPassword;
+    const errorList = [
+      validatePassword(oldPassword, "oldPassword"),
+      validatePassword(newPassword, "newPassword"),
+    ]
+      .filter((check) => check.isInvalid)
+      .map(({ field, error }) => ({ field, error }));
 
-    const oldPasswordCheck = validatePassword(oldPassword);
-    if (oldPasswordCheck.isInvalid) {
-      return res.status(400).json({
-        ...oldPasswordCheck,
-        field: "oldPassword",
-      });
+    if (errorList.length > 0) {
+      return res.status(400).json({ errorList });
     }
-
-    const newPasswordCheck = validatePassword(newPassword);
-    if (newPasswordCheck.isInvalid) {
-      return res.status(400).json({
-        ...oldPasswordCheck,
-        field: "newPassword",
-      });
-    }
-
     const result = await pool.query("SELECT * FROM users WHERE id = $1", [
       userId,
     ]);
@@ -822,6 +803,7 @@ app.post("/order/add", async (req, res) => {
   try {
     const userId = req.session.user?.id;
     if (!userId) return res.status(401).send("Not authorized");
+
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
     const email = req.body.email;
@@ -837,78 +819,26 @@ app.post("/order/add", async (req, res) => {
     const nameOnCard = req.body.nameOnCard;
 
     const status = "pending";
+    const errorList = [
+      validateName(firstName, "firstName"),
+      validateName(lastName, "lastName"),
+      validateEmail(email),
+      validateAddress(address, "address"),
+      validateAddress(address2, "address2"),
+      validateCountry(country),
+      validateCity(city),
+      validateZip(zip),
+      validatePaymentMethod(paymentMethod),
+      validateCardExpiration(cardExpiration),
+      validateCardName(nameOnCard),
+      validateCardNumber(req.body.cardNumber),
+      validateCvv(req.body.cardCvv),
+    ]
+      .filter((check) => check.isInvalid)
+      .map(({ field, error }) => ({ field, error }));
 
-    if (
-      !firstName ||
-      !lastName ||
-      !email ||
-      !address ||
-      !address2 ||
-      !country ||
-      !city ||
-      !zip ||
-      !paymentMethod ||
-      !cardExpiration ||
-      !nameOnCard ||
-      !req.body.cardNumber ||
-      !req.body.cardCvv
-    ) {
-      return res.status(400).json({
-        errorList: [
-          {
-            field: "firstName",
-            error: "Email is required",
-          },
-          {
-            field: "lastName",
-            error: "Email is required",
-          },
-          {
-            field: "email",
-            error: "Email is required",
-          },
-          {
-            field: "address",
-            error: "Email is required",
-          },
-          {
-            field: "address2",
-            error: "Email is required",
-          },
-          {
-            field: "country",
-            error: "Email is required",
-          },
-          {
-            field: "city",
-            error: "Email is required",
-          },
-          {
-            field: "zip",
-            error: "Email is required",
-          },
-          {
-            field: "paymentMethod",
-            error: "Email is required",
-          },
-          {
-            field: "cardExpiration",
-            error: "Email is required",
-          },
-          {
-            field: "nameOnCard",
-            error: "Email is required",
-          },
-          {
-            field: "cardNumber",
-            error: "Email is required",
-          },
-          {
-            field: "cardCvv",
-            error: "Email is required",
-          },
-        ],
-      });
+    if (errorList.length > 0) {
+      return res.status(400).json({ errorList });
     }
 
     const query1 = `
