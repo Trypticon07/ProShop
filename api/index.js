@@ -844,7 +844,7 @@ app.post("/order/add", async (req, res) => {
     }
 
     const query1 = `
-      INSERT INTO orders (user_id, first_name, last_name, email, address, address2, country, city, postalCode, payment_method, status, created_at)
+      INSERT INTO orders (user_id, first_name, last_name, email, address, address2, country, city, postal_code, payment_method, status, created_at)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
       RETURNING ID;
     `;
@@ -961,7 +961,7 @@ app.post("/order/details", async (req, res) => {
          o.address2,
          o.country,
          o.city,
-         o.postalCode,
+         o.postal_code,
          o.payment_method,
          o.status,
          o.created_at,
@@ -978,7 +978,7 @@ app.post("/order/details", async (req, res) => {
       JOIN products p ON oi.product_id = p.id
       WHERE o.user_id = $1 AND o.id = $2
       GROUP BY o.id, o.first_name, o.last_name, o.email,
-           o.address, o.address2, o.country, o.city, o.postalCode,
+           o.address, o.address2, o.country, o.city, o.postal_code,
            o.payment_method, o.status, o.created_at
       ORDER BY o.created_at DESC;
     `;

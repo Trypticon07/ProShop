@@ -204,7 +204,7 @@ setInterval(() => {
       cardCvv: { input: cardCvvInput, feedback: cardCvvFeedback },
     };
     const payload = {
-      firstName: firstNameInput,
+      firstName: firstNameInput.value,
       lastName: lastNameInput.value,
       email: emailInput.value,
       address: addressInput.value,
@@ -212,7 +212,7 @@ setInterval(() => {
       country: countrySelect.value,
       city: cityInput.value,
       postalCode: postalCodeInput.value,
-      paymentMethod: selectedPaymentMethod,
+      paymentMethod: selectedPaymentMethod.value,
       nameOnCard: nameOnCardInput.value.toUpperCase(),
       cardNumber: cardNumberInput.value,
       cardExpiration: cardExpirationInput.value,

@@ -332,7 +332,7 @@ export const validateCountry = (country) => {
       error: "Please select your country from the list.",
     };
   }
-  const countries = ["Ukraine", "Poland", "United States"];
+  const countries = ["UA", "PL", "US"];
   const isValid = countries.includes(country);
   if (isValid) {
     return { isInvalid: false };
