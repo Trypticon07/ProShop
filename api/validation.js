@@ -238,32 +238,32 @@ export const validateCity = (city) => {
   }
 };
 
-export const validateZip = (zip) => {
-  if (!zip || typeof zip !== "string") {
+export const validatePostalCode = (postalCode) => {
+  if (!postalCode || typeof postalCode !== "string") {
     return {
       isInvalid: true,
-      field: "zip",
+      field: "postalCode",
       error: "Please enter a valid postal code.",
     };
   }
-  const trimmedZip = zip.trim();
+  const trimmedCode = postalCode.trim();
 
-  if (trimmedZip.length < 3 || trimmedZip.length > 12) {
+  if (trimmedCode.length < 3 || trimmedCode.length > 12) {
     return {
       isInvalid: true,
-      field: "zip",
+      field: "postalCode",
       error: "Postal code must be between 3 and 12 characters long.",
     };
   }
 
-  const zipRegex = /^[a-zA-Z0-9\s\-]+$/;
+  const regex = /^[a-zA-Z0-9\s\-]+$/;
 
-  if (zipRegex.test(trimmedZip)) {
+  if (regex.test(trimmedCode)) {
     return { isInvalid: false };
   } else {
     return {
       isInvalid: true,
-      field: "zip",
+      field: "postalCode",
       error:
         "Postal code can only contain letters, numbers, spaces, and hyphens.",
     };

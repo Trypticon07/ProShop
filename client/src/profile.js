@@ -37,7 +37,7 @@ const orderAddress = document.getElementById("orderAddressField");
 const orderAddress2 = document.getElementById("orderAddress2Field");
 const orderCountry = document.getElementById("orderCountryField");
 const orderCity = document.getElementById("orderCityField");
-const orderZip = document.getElementById("orderZipField");
+const orderPostalCode = document.getElementById("orderPostalCodeField");
 const orderPaymentMethod = document.getElementById("orderPaymentMethodField");
 const orderDate = document.getElementById("orderDateField");
 const orderStatus = document.getElementById("orderStatusField");
@@ -152,7 +152,7 @@ function getOrderDetails(orderId) {
       orderAddress2.textContent = orderDetails.address2;
       orderCountry.textContent = orderDetails.country;
       orderCity.textContent = orderDetails.city;
-      orderZip.textContent = orderDetails.zip;
+      orderPostalCode.textContent = orderDetails.postalCode;
       orderPaymentMethod.textContent = orderDetails.payment_method;
       orderDate.textContent = formatDate(orderDetails.created_at);
       orderStatus.textContent = orderDetails.status;

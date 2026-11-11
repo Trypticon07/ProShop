@@ -10,13 +10,13 @@ const addressInput = document.querySelector("#address-input");
 const address2Input = document.querySelector("#address2-input");
 const countrySelect = document.querySelector("#country-select");
 const cityInput = document.querySelector("#city-input");
-const zipInput = document.querySelector("#zip-input");
+const postalCodeInput = document.querySelector("#postalCode-input");
 
 const addressFeedback = document.querySelector("#addressFeedback");
 const address2Feedback = document.querySelector("#address2Feedback");
 const countryFeedback = document.querySelector("#countryFeedback");
 const cityFeedback = document.querySelector("#cityFeedback");
-const zipFeedback = document.querySelector("#zipFeedback");
+const postalCodeFeedback = document.querySelector("#postalCodeFeedback");
 
 const paymentRadiosElement = [
   // Converting NodeList into an Array.
@@ -55,7 +55,7 @@ import {
   validateCardExpiration,
   validateAddress,
   validateCity,
-  validateZip,
+  validatePostalCode,
   validateCardName,
   validateCvv,
   validateCountry,
@@ -131,7 +131,9 @@ setInterval(() => {
       validateCountry(countrySelect, countryFeedback),
     ),
     setupLiveValidation(cityInput, () => validateCity(cityInput, cityFeedback)),
-    setupLiveValidation(zipInput, () => validateZip(zipInput, zipFeedback)),
+    setupLiveValidation(postalCodeInput, () =>
+      validatePostalCode(postalCodeInput, postalCodeFeedback),
+    ),
     setupLiveValidation(paymentRadiosElement, () =>
       validatePaymentMethod(paymentRadios, paymentRadiosFeedback),
     ),
@@ -188,7 +190,7 @@ setInterval(() => {
       address2: { input: address2Input, feedback: address2Feedback },
       country: { input: countrySelect, feedback: countryFeedback },
       city: { input: cityInput, feedback: cityFeedback },
-      zip: { input: zipInput, feedback: zipFeedback },
+      postalCode: { input: postalCodeInput, feedback: postalCodeFeedback },
       paymentMethod: {
         input: paymentRadiosElement,
         feedback: paymentRadiosFeedback,
@@ -209,7 +211,7 @@ setInterval(() => {
       address2: address2Input.value,
       country: countrySelect.value,
       city: cityInput.value,
-      zip: zipInput.value,
+      postalCode: postalCodeInput.value,
       paymentMethod: selectedPaymentMethod,
       nameOnCard: nameOnCardInput.value.toUpperCase(),
       cardNumber: cardNumberInput.value,

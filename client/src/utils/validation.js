@@ -175,30 +175,30 @@ export const validateCity = (cityInput, cityFeedback) => {
   return updateFieldUI(cityInput, cityFeedback, true, "");
 };
 
-export const validateZip = (zipInput, zipFeedback) => {
-  const trimmedZip = zipInput.value.trim();
+export const validatePostalCode = (postalCodeInput, postalCodeFeedback) => {
+  const trimmedCode = postalCodeInput.value.trim();
 
-  if (trimmedZip.length < 3 || trimmedZip.length > 12) {
+  if (trimmedCode.length < 3 || trimmedCode.length > 12) {
     return updateFieldUI(
-      zipInput,
-      zipFeedback,
+      postalCodeInput,
+      postalCodeFeedback,
       false,
       "Postal code must be between 3 and 12 characters long.",
     );
   }
 
-  const zipRegex = /^[a-zA-Z0-9\s\-]+$/;
+  const regex = /^[a-zA-Z0-9\s\-]+$/;
 
-  if (!zipRegex.test(trimmedZip)) {
+  if (!regex.test(trimmedCode)) {
     return updateFieldUI(
-      zipInput,
-      zipFeedback,
+      postalCodeInput,
+      postalCodeFeedback,
       false,
       "Postal code can only contain letters, numbers, spaces, and hyphens.",
     );
   }
 
-  return updateFieldUI(zipInput, zipFeedback, true, "");
+  return updateFieldUI(postalCodeInput, postalCodeFeedback, true, "");
 };
 
 export const validateCardName = (cardNameInput, cardNameFeedback) => {

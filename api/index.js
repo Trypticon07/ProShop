@@ -13,7 +13,7 @@ import {
   validateDescription,
   validateAddress,
   validateCountry,
-  validateZip,
+  validatePostalCode,
   validatePaymentMethod,
   validateCardExpiration,
   validateCardName,
@@ -811,7 +811,7 @@ app.post("/order/add", async (req, res) => {
     const address2 = req.body.address2;
     const country = req.body.country;
     const city = req.body.city;
-    const zip = req.body.zip;
+    const postalCode = req.body.postalCode;
     const paymentMethod = req.body.paymentMethod;
 
     // card data
@@ -827,7 +827,7 @@ app.post("/order/add", async (req, res) => {
       validateAddress(address2, "address2"),
       validateCountry(country),
       validateCity(city),
-      validateZip(zip),
+      validatePostalCode(postalCode),
       validatePaymentMethod(paymentMethod),
       validateCardExpiration(cardExpiration),
       validateCardName(nameOnCard),
@@ -842,7 +842,7 @@ app.post("/order/add", async (req, res) => {
     }
 
     const query1 = `
-      INSERT INTO orders (user_id, first_name, last_name, email, address, address2, country, city, zip, payment_method, status, created_at)
+      INSERT INTO orders (user_id, first_name, last_name, email, address, address2, country, city, postalCode, payment_method, status, created_at)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
       RETURNING ID;
     `;
@@ -855,7 +855,7 @@ app.post("/order/add", async (req, res) => {
       address2,
       country,
       city,
-      zip,
+      postalCode,
       paymentMethod,
       status,
     ];
@@ -959,7 +959,7 @@ app.post("/order/details", async (req, res) => {
          o.address2,
          o.country,
          o.city,
-         o.zip,
+         o.postalCode,
          o.payment_method,
          o.status,
          o.created_at,
@@ -976,7 +976,7 @@ app.post("/order/details", async (req, res) => {
       JOIN products p ON oi.product_id = p.id
       WHERE o.user_id = $1 AND o.id = $2
       GROUP BY o.id, o.first_name, o.last_name, o.email,
-           o.address, o.address2, o.country, o.city, o.zip,
+           o.address, o.address2, o.country, o.city, o.postalCode,
            o.payment_method, o.status, o.created_at
       ORDER BY o.created_at DESC;
     `;
@@ -1031,7 +1031,6 @@ app.post("/order/cancel", async (req, res) => {
 });
 
 function processPayment(nameOnCard, cardExpiration, cardNumber, cardCvv) {
-  // Here you can put payment processing code.
   if (nameOnCard && cardExpiration && cardNumber && cardCvv) {
     return true;
   } else {
